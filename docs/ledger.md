@@ -26,15 +26,15 @@ Ladder at 1 GWe / 3 GWe (config stacks, concept-YAML chamber):
 |---|---|---|
 | design baseline (Helion's implied point) | 119.4 | 114.9 |
 | tier 1 records | 86.7 | 83.2 |
-| tier 2 extrapolations | 38.3 | 34.2 |
-| tier 3 speculation | 16.8 | 12.8 |
+| tier 2 extrapolations | 38.3 | 35.0 |
+| tier 3 speculation | 16.6 | 13.2 |
 
 Design-optimized coherent minima (chamber, wall class, and burn mix chosen
 by `scripts/coherent_min.py` under the physics-consistency constraints in
-`scripts/study.py`): **tier 2: 33.7** at 1 GWe; **tier 3: 16.1** at 1 GWe,
-**12.0** at 3 GWe. Reconciliation bands around the minima (model gaps and
-conservatisms, `scripts/reconciliation.py`): tier 2 within 27.6-38.4, tier 3
-within 13.9-17.3 at 1 GWe.
+`scripts/study.py`): **tier 2: 33.7** at 1 GWe; **tier 3: 15.8** at 1 GWe,
+**12.3** at 3 GWe. Reconciliation bands around the minima (model gaps and
+conservatisms, `scripts/reconciliation.py`): tier 2 within 27.3-38.4, tier 3
+within 13.8-17.1 at 1 GWe.
 
 ## Coherence constraints (enforced, not advisory)
 
@@ -57,10 +57,16 @@ flagged in the output of every script rather than reported:
    energy under the tungsten millisecond-melt bound (1.5 MJ/m^2, no
    margin).
 4. **The D-rich fuel credit travels with its consequences.** Above
-   dd_frac 0.5 the machine breeds tens of kg of tritium per year
-   (41 kg/yr at 0.85); `study.run` charges a 200 M$ tritium-plant adder on
-   C220500 (band 100-300 swept in reconciliation), and O&M stays at the
-   baseline 27.5, never at an "aneutronic" discount.
+   dd_frac 0.5 the machine is a bulk tritium facility: the tier-2 machine
+   carries 185 MW of plant-level neutron power and breeds about 73 kg of
+   tritium per year, and Helion's own store-for-decay fuel cycle implies an
+   equilibrium getter-bed inventory of production rate x mean decay time,
+   about 1.3 tonnes of tritium on site (ITER's site limit is 4 kg).
+   `study.run` charges a tritium-plant adder on C220500: 50 M$ fixed core
+   plus a throughput-scaled balance anchored at 200 M$ for the tier-2
+   reference machine (band 100-300 swept in reconciliation; given the
+   tonne-class inventory, the allowance is more likely low than high). O&M
+   stays at the baseline 27.5, never at an "aneutronic" discount.
 
 ## Tier 1: records and published bounds
 
@@ -91,7 +97,7 @@ flagged in the output of every script rather than reported:
 | eta_pin | 0.95 | 0.98 | Solid-state pulsed-power wall-plug efficiency; plausible for modern semiconductor switching, no datasheet or Helion statement located. | UNSOURCED |
 | max_f_rep | 1.0 | 3.0 | No public Helion statement of a numeric plant rep rate exists (Polaris target about 1/s; Trenta about 1/10 min; the 1-10 Hz band is the concept YAML's roadmap paraphrase). 3 Hz is what the bought wall supports at this tier's recovery parameters; it remains UNSOURCED as a demonstrated cadence (nothing MJ-class has run at 1 Hz continuously). The band top (10 Hz) is tier 3. | UNSOURCED-ROADMAP |
 | fw_class | panel | hhf | Machine-design purchase, not a record: divertor-grade monoblock wall (ITER divertor procurement anchor, 2.5 M$/m^2 NOAK, 10 MW/m^2 qualification) over the real 37.7 m^2 cylinder, about 94 M$/module, to make 3 Hz admissible in the concept-YAML chamber. The design-optimized tier-2 minimum instead buys a longer chamber with the cheaper panel wall (see coherent minimum below). | design purchase |
-| dhe3_dd_frac | 0.314 | 0.85 | D-rich operation to raise in-situ He-3 breeding and cut the purchased-fuel line; the concept's own stated direction, but 0.85 is the top of a sweep, not a derived operating point. Adopted only jointly with f_rad 0.28 and the tritium-plant adder (coherence constraints 1 and 4). | UNSOURCED |
+| dhe3_dd_frac | 0.314 | 0.85 | D-rich operation to raise in-situ He-3 breeding (prompt D-D He-3 plus stored-tritium decay) and cut the purchased-fuel line; the concept's own stated direction, but 0.85 is the top of a sweep, not a derived operating point. Adopted only jointly with f_rad 0.28 and the tritium-plant adder (coherence constraints 1 and 4). | UNSOURCED |
 | f_rad | 0.163 | 0.28 | Bremsstrahlung-consistent radiated fraction at dd_frac 0.85 under the study calibration; relativistic corrections would raise it another 10-25%. Not an optimistic move: this knob *costs* 3.2 $/MWh against the incoherent alternative, and is the price of the fuel credit. | physics floor |
 
 **Held at baseline in tier 2, harmonized with the Borealis ledger:**
@@ -127,26 +133,27 @@ constraints, at each evidence level:
 | evidence level | minimum | design at the minimum |
 |---|---|---|
 | tier 2, 1 GWe | **33.7** | cited shot (101.4 MJ), 8 modules at 2.9 Hz, 20 m x 0.5 m chambers, panel wall at 1.8 MW/m^2, D-rich mix with tritium plant |
-| tier 3, 1 GWe | **16.1** | 300 MJ shots (Q about 6), single module at 5.9 Hz, 45 m x 1.0 m chamber, panel wall at 1.9 MW/m^2 |
-| tier 3, 3 GWe | **12.0** | 2 such modules at 8.8 Hz, 45 m x 1.5 m chambers |
+| tier 3, 1 GWe | **15.8** | 300 MJ shots (Q about 6), single module at 5.9 Hz, 45 m x 1.0 m chamber, panel wall at 1.9 MW/m^2 |
+| tier 3, 3 GWe | **12.3** | 2 such modules at 8.8 Hz, 45 m x 1.5 m chambers |
 
 Reconciliation (`scripts/reconciliation.py`) puts honest bands around
 these: recovery-store and switch-stack replacement that CAS72 does not
 charge (+2.4 tier 2, +0.0 tier 3), HVDC-class switch repricing (+1.6 /
 +0.7), tritium-plant band (+-0.7), against the model's over-sized recovery
-store (-2.6 / -1.2) and a thermal-bottoming basis change (-5.1 / -0.4):
-tier 2 lands in 27.6-38.4, tier 3 in 13.9-17.3 at 1 GWe.
+store (-2.6 / -1.0) and a thermal-bottoming basis change (-5.4 / -0.5):
+tier 2 lands in 27.3-38.4, tier 3 in 13.8-17.1 at 1 GWe.
 
 **The $10/MWh target is not reached by any coherent stack in this study.**
-The closest approaches: 12.0 at 3 GWe on full tier-3 speculation, and 9.5
-only if He-3 is additionally free (u_he3 = 0), which is one more
-speculation than tier 3 already carries. What carries the floor at the
-tier-3 minimum is no longer the capacitor bank: it is buildings (CAS21
-286 M$), heat rejection and BOP (CAS24-26 about 170 M$), CAS50 (197 M$),
-fuel handling plus the tritium plant (240 M$), and the first wall of the
-big chamber (109 M$) - the accounts
-`down_select/03_costingfe_alignment.md` already flags as carrying a
-systematic bias against small modular units. See `docs/writeup.md`.
+The closest approaches: 12.3 at 3 GWe on full tier-3 speculation, and 10.3
+if He-3 is additionally free (u_he3 = 0), one more speculation than tier 3
+already carries - and even that no longer breaks 10 once the tritium plant
+scales with the throughput that breeds the He-3. What carries the floor at
+the tier-3 minimum is no longer the capacitor bank: it is buildings (CAS21
+286 M$), heat rejection and BOP (CAS24-26 about 170 M$), CAS50 (197 M$,
+of which 140 is the decommissioning provision), fuel handling plus the
+tritium plant (about 210 M$), and the first wall of the big chamber
+(109 M$). See `docs/writeup.md` for the account-by-account anatomy and the
+small-plant-penalty analysis.
 
 ## Robustness of the tier-2 coherent minimum
 

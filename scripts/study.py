@@ -62,8 +62,16 @@ Q_LIM = {"panel": 2.0, "hhf": 10.0, "beam_dump": 20.0}
 
 # Tritium-plant capital [M$, plant-level] charged when the burn mix is D-rich
 # enough to make the machine a bulk tritium facility (tens of kg/yr bred).
-# Red-team band 100-300 M$; mid-band point, swept in reconciliation.py.
+# Red-team band 100-300 M$ (allowance, not an estimate) anchored at this
+# study's tier-2 reference machine: 1 GWe, dd_frac 0.85, about 185 MW of
+# plant-level neutron power and about 73 kg/yr of bred tritium; mid-band
+# point, swept in reconciliation.py. The plant splits into a fixed core
+# (isotope separation, safety envelope, getter-bed decay store) and a
+# throughput-scaled balance, so a small plant is not charged the full
+# reference facility and a bigger one is charged more.
 TRITIUM_PLANT_MUSD = 200.0
+TRITIUM_FIXED_MUSD = 50.0
+TRITIUM_REF_P_NEUTRON_MW = 184.7  # plant-level neutron power at the reference
 DD_FRAC_TRITIUM_THRESHOLD = 0.5
 
 _VACUUM_T_DEFAULT = 0.10  # m; concept YAML plasma-to-wall gap
@@ -112,12 +120,18 @@ def run(model: CostModel, fwd: dict, tritium_adder: bool = True):
     """
     fwd = dict(fwd)
     overrides = None
+    tritium_musd = 0.0
     if tritium_adder and fwd.get("dhe3_dd_frac", 0.131) > DD_FRAC_TRITIUM_THRESHOLD:
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             probe = model.forward(size_from_power=True, **fwd)
         base_c220500 = float(probe.cas22_detail["C220500"])
-        overrides = {"C220500": base_c220500 + TRITIUM_PLANT_MUSD}
+        p_neutron_total = float(probe.power_table.p_neutron) * int(probe.solved_n_mod)
+        tritium_musd = TRITIUM_FIXED_MUSD + (
+            (TRITIUM_PLANT_MUSD - TRITIUM_FIXED_MUSD)
+            * p_neutron_total / TRITIUM_REF_P_NEUTRON_MW
+        )
+        overrides = {"C220500": base_c220500 + tritium_musd}
 
     with warnings.catch_warnings(record=True) as caught:
         warnings.simplefilter("always")
@@ -134,7 +148,7 @@ def run(model: CostModel, fwd: dict, tritium_adder: bool = True):
         "q_wall_mw_m2": p_wall / area,
         "e_flash_mj_m2": (p_wall / f_rep / area) if f_rep > 0 else float("inf"),
         "capital_per_kw": float(result.costs.capital_per_kw),
-        "tritium_adder_musd": (TRITIUM_PLANT_MUSD if overrides else 0.0),
+        "tritium_adder_musd": tritium_musd,
         "warnings": sorted({str(w.message) for w in caught}),
     }
     return result, diag

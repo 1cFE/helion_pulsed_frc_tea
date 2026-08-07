@@ -130,12 +130,24 @@ def test_tier1_rung(model, base_cfg):
 def test_tier2_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg, "best_case.yaml", "tier2.yaml")
     assert diag["lcoe"] == pytest.approx(38.3, abs=0.2)
-    assert diag["tritium_adder_musd"] == 200.0  # D-rich mix carries its plant
+    # D-rich mix carries its plant; the adder is anchored at 200 M$ for this
+    # rung's own throughput (185 MW plant neutron power)
+    assert diag["tritium_adder_musd"] == pytest.approx(200.0, abs=0.5)
+
+
+def test_tritium_adder_scales_with_throughput(model, base_cfg):
+    """A 3 GWe D-rich plant pays about 3x the reference tritium plant; the
+    facility does not amortize away with scale."""
+    fwd = dict(base_cfg["forward"], net_electric_mw=3000.0)
+    apply_records(fwd, "best_case.yaml")
+    apply_records(fwd, "tier2.yaml")
+    _, diag = run(model, fwd)
+    assert diag["tritium_adder_musd"] == pytest.approx(500.0, rel=0.1)
 
 
 def test_tier3_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg, *TIER_CONFIGS)
-    assert diag["lcoe"] == pytest.approx(16.8, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(16.6, abs=0.2)
 
 
 def test_tier2_coherent_minimum(model, base_cfg):
@@ -155,7 +167,7 @@ def test_tier3_coherent_minimum(model, base_cfg):
     fwd.update(yield_per_shot_mj=300.0, chamber_length=45.0, plasma_t=1.0,
                r_bore=1.1, fw_class="panel")
     _, diag = run(model, fwd)
-    assert diag["lcoe"] == pytest.approx(16.1, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(15.8, abs=0.2)
     assert not coherence_violations(fwd, diag, "tier3")
     assert diag["e_flash_mj_m2"] < E_FLASH_MELT_MJ_M2
 

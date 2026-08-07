@@ -7,9 +7,10 @@ $10/MWh (1 cent/kWh) target?
 
 **Answer: the coherent floor is about 16 $/MWh at 1 GWe and 12 $/MWh at
 3 GWe, on full tier-3 speculation. The $10 target is not reached by any
-internally consistent stack the study can construct; it needs one more
-speculation on top of full speculation (He-3 at effectively zero price
-brings 3 GWe to 9.5). The evidence-backed numbers are far higher: 86.7 on
+internally consistent stack the study can construct; even He-3 at zero
+price on top of full speculation lands at 10.3 at 3 GWe, because the
+tritium plant that funds the He-3 self-supply scales with the throughput
+that breeds it. The evidence-backed numbers are far higher: 86.7 on
 records alone, 33.7 on labelled extrapolations.**
 
 All numbers at costingfe `9f86c13`, reproduced by `scripts/tiers.py`,
@@ -22,14 +23,14 @@ tests pin the ladder in `tests/test_study.py`.
 |---|---|---|---|
 | design baseline | 119.4 | 114.9 | Helion's implied point: 50 MJ driver, 101.4 MJ yield, 1 Hz, D-rich mix at its bremsstrahlung floor |
 | tier 1: records | 86.7 | 83.2 | finance (4.25%), 2.5 yr construction, 8% indirects, availability 0.95 |
-| tier 2: extrapolations | 38.3 | 34.2 | cap life 1e9, recovery composite 0.765, 3 Hz on a bought divertor-class wall, D-rich mix with tritium plant |
-| tier 3: speculation | 16.8 | 12.8 | 10 Hz, composite 0.90, cap $/J 0.1, cap life 1e10, He-3 at 0.5 M$/kg, 80 yr |
+| tier 2: extrapolations | 38.3 | 35.0 | cap life 1e9, recovery composite 0.765, 3 Hz on a bought divertor-class wall, D-rich mix with tritium plant |
+| tier 3: speculation | 16.6 | 13.2 | 10 Hz, composite 0.90, cap $/J 0.1, cap life 1e10, He-3 at 0.5 M$/kg, 80 yr |
 
 Design optimization under the same evidence (chamber size, wall class, and
 yield chosen rather than inherited) improves the last two rungs to **33.7**
-(tier 2, 1 GWe) and **16.1 / 12.0** (tier 3, 1 / 3 GWe). Reconciliation
-bands (model gaps vs conservatisms): tier 2 in 27.6-38.4, tier 3 in
-13.9-17.3 at 1 GWe.
+(tier 2, 1 GWe) and **15.8 / 12.3** (tier 3, 1 / 3 GWe). Reconciliation
+bands (model gaps vs conservatisms): tier 2 in 27.3-38.4, tier 3 in
+13.8-17.1 at 1 GWe.
 
 ## How to push toward the minimum: what actually works
 
@@ -64,48 +65,100 @@ a Helion-class machine down the ladder are:
    double-booked version of them (0.97 x 0.95) was worth 38 $/MWh in the
    earlier draft, and that was an artifact of counting one projected
    number twice.
-6. **Scale** (16.1 to 12.0). The 3 GWe plant amortizes buildings, BOP,
-   and CAS50 across modules. This is the same sublinear-BOP effect that
-   penalizes the 50 MWe unit Helion actually sells; at 50 MWe the same
-   stack prices far above any of these numbers.
+6. **Scale** (15.8 to 12.3). The 3 GWe plant amortizes buildings, fixed
+   site costs, and staffing across modules. The tritium plant does *not*
+   amortize: it scales with the throughput that breeds the He-3.
 
 ## What carries the floor
 
-At the tier-3 minimum (16.1, single 300 MJ module at 5.9 Hz), the
+At the tier-3 minimum (15.8, single 300 MJ module at 5.9 Hz), the
 capacitor-driver narrative is spent: the driver bank is 15 M$ of a 641 M$
 reactor account. The floor is carried by:
 
 | item | M$ | $/MWh (approx) |
 |---|---|---|
 | buildings (CAS21) | 286 | 1.6 |
-| CAS50 (capitalized supplementary) | 197 | 1.1 |
-| fuel handling + tritium plant (C220500) | 240 | 1.3 |
+| CAS50 (capitalized supplementary), of which decommissioning provision 140 | 197 | 1.1 |
+| fuel handling + tritium plant (C220500) | 210 | 1.2 |
 | heat rejection + turbine-plant BOP (CAS24-26) | 170 | 0.9 |
 | first wall of the 45 m chamber (C220101) | 109 | 0.6 |
 | DEC power electronics (C220109) | 64 | 0.4 |
 | O&M (CAS70) | 54/yr | 6.5 |
-| annualized capital, all-in | | about 7.8 |
+| annualized capital, all-in | | about 7.5 |
 
-Two of these lines are already flagged program-wide as systematically
-biased against small modular units (buildings and BOP scaling,
-`down_select/03_costingfe_alignment.md`), which is why the honest answer
-to "can this reach 10" is *not quite, and the residual is as much a claim
-about the cost model's treatment of small plants as about the concept*.
+## The small-plant penalty, untangled
+
+The program's alignment note (`down_select/03_costingfe_alignment.md`)
+flags a bias against "small modular units". Two controlled sweeps at the
+tier-3 stack (`scripts/module_scan.py`: family of machines at constant
+gain Q_sci = 6 and constant wall loading, driver and chamber scaled with
+module power) separate what is actually being charged:
+
+**Module count at fixed plant size is nearly free.** At 1 GWe, going from
+one 1-GWe module to thirteen 80-MWe modules costs +2.1 $/MWh (15.8 to
+17.9). Buildings, CAS50, and CAS24-26 are exactly flat: they price
+plant-total power and do not care how many chambers deliver it. The only
+modularity tax is CAS22's per-module fixed items (installation labor,
+per-chamber pumping/vessel minima), and it only bites below about 100 MWe
+per module.
+
+**Standalone plant size is very expensive.** The same physics sold as a
+one-module standalone plant:
+
+| plant | LCOE | $/kW | dominant penalties |
+|---|---|---|---|
+| 1 GWe | 15.8 | 1378 | - |
+| 250 MWe | 26.1 | 2187 | fixed site buildings, staffing^0.5 |
+| 50 MWe | 62.8 | 6361 | O&M 27 $/MWh (staffing law), 141 M$ of buildings (2800 $/kW), tritium-plant fixed core |
+
+So the model's "bias" decomposes into three distinct mechanisms:
+
+1. **Fixed site dollars** (about 138 M$ of CAS21 regardless of size: site
+   improvements 75, assembly hall 21, maintenance 15, control room 12...).
+   These are calibrated on ARIES/fission-class site analogs. Whether a
+   factory-shipped 50 MWe unit on a gas-plant pad needs them is an
+   analog-class question, not a scaling law - per the program's own rule
+   that fission is not the default analog. A gas-class recalibration would
+   release roughly 100 M$ (about 0.7 $/MWh at 1 GWe, transformative at
+   50 MWe).
+2. **The staffing law** (CAS70/CAS40 scale as P^0.5, INL basis). At
+   50 MWe this alone is 27 $/MWh. The counter-story is fleet operation
+   (one remote operations center serving many sites), which no documented
+   record supports today - so under ledger discipline it stays.
+3. **No fleet learning.** The one thing mass-producing 50 MWe units
+   should earn - a Wright-curve discount on the equipment portion of
+   CAS22 - does not exist in the model (`multi_unit_labor_factor` 0.92
+   touches installation labor only). This is the alignment note's gap 1,
+   and it is the only mechanism that could make the small-unit strategy
+   *positively* cheaper rather than merely less penalized. It must be
+   anchored carefully: the NOAK unit costs already assume a mature
+   industry, so a Wright exponent may only be applied to production beyond
+   the fleet size the NOAK constants implicitly price, or it double-counts.
+
+The in-model conclusion is unambiguous either way: this concept's
+economics live in power parks - many modules sharing one site, one staff,
+one BOP - not in distributed standalone 50 MWe plants. Helion's actual
+50 MWe PPA unit, priced standalone at the full tier-3 stack, is a 60+
+$/MWh machine in this framework; clustered at the GWe scale the same
+hardware is 16.
 
 ## What would have to be true to reach $10/MWh
 
 In decreasing order of plausibility, on top of the full tier-3 stack at
-3 GWe (12.0):
+3 GWe (12.3):
 
-- **He-3 at effectively zero cost** (9.5): a mature D-D breeding economy
-  or an external He-3 supply at two orders below today's price.
-- **The small-module BOP/buildings bias resolved in the concept's favor**:
-  if CAS21 + CAS50 + CAS24-26 scale like factory-built gas plants rather
-  than like nuclear-adjacent civil works, 2-3 $/MWh comes out.
-- **A cheaper tritium story**: the 240 M$ fuel-handling line presumes the
-  D-rich machine is a bulk tritium facility. If Helion's stored-decay
-  fuel cycle licenses and operates lighter than that, about 1 $/MWh
-  comes out.
+- **He-3 at effectively zero cost** (10.3): a mature D-D breeding economy
+  or an external supply at two orders below today's price - and even this
+  does not break 10, because the tritium plant scales with breeding
+  throughput.
+- **Gas-class site and decommissioning analogs** (about 1-1.5 $/MWh): the
+  fixed CAS21 site items and the 140 M$ dhe3 decommissioning provision
+  recalibrated from fission-adjacent to industrial-plant class. Defensible
+  only for the He-3-lean machine; the D-rich machine's tonne-class
+  tritium inventory argues the other way.
+- **A real fleet-learning term** on CAS22 equipment, anchored beyond the
+  NOAK reference fleet: the only mechanism that rewards the mass-produced
+  small-unit strategy at all.
 
 None of these is in the study's evidence base at any tier. Within what the
 study can defend: **records support about 87, defensible extrapolation
@@ -135,7 +188,7 @@ about 34, and coherent speculation bottoms at 16 (1 GWe) / 12 (3 GWe).**
 Same framework, same evidence discipline, one ledger harmonized against
 the other (divergence table in `docs/ledger.md`). At the speculation tier
 the two concepts land within about a dollar of each other at 3 GWe
-(Borealis 11.1, this 12.0); at the extrapolation tier the mirror is
+(Borealis 11.1, this 12.3); at the extrapolation tier the mirror is
 materially cheaper (16.9 vs 33.7), chiefly because it needs no
 capacitor-life miracle, no tritium plant, and no rep-rate roadmap - its
 levers are already in the evidence tiers. On the down-select axis "how

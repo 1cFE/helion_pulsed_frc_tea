@@ -65,6 +65,7 @@ python3 coherent_min.py    # constrained minimum hunt (the headline numbers)
 python3 tornado.py         # one-at-a-time reversion from the tier-2 minimum
 python3 he3_scan.py        # He-3 price x burn-mix sweep
 python3 locus_scan.py      # (max_f_rep, yield) surface with coherence flags
+python3 module_scan.py     # module-count vs standalone-plant-size sweeps
 python3 reconciliation.py  # adders/credits the model cannot price, honest bands
 python3 -m pytest ../tests # closure, config-integrity, ladder regression
 ```
