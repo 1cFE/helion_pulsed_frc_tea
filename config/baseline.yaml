@@ -1,0 +1,40 @@
+# config/baseline.yaml
+# Helion-class pulsed D-He3 FRC with inductive DEC - DESIGN BASELINE.
+# This is Helion's own implied operating point, not an independent design:
+# e_driver_mj = 50 is sourced (Polaris capacitor bank), max_f_rep = 1 Hz is
+# third-party (NRC filing ML21026A315, IEEE Spectrum), and the concept
+# YAML's yield (101.4 MJ) is back-derived so the model's own DEC chain
+# reproduces Helion's 50 MWe PPA claim at 1 Hz. The shot design point stays
+# at the concept-YAML values and is not overridden here.
+#
+# Conversion is inductive DEC only, no turbine (eta_th = 0 is the concept
+# preset): radiated and non-recovered charged energy is discarded, not
+# bottomed. A thermal-bottoming add-back is carried in
+# scripts/reconciliation.py, mirroring how Borealis carried its excluded
+# DEC add-back.
+
+concept: pulsed_frc
+fuel: dhe3
+
+forward:
+  # --- Customer requirements (baseline anchor; scale scan varies this) ---
+  # 1 GWe as an integer count of Helion-class modules, for comparability
+  # with borealis_mirror_tea and the down-select. Helion's 50 MWe PPA unit
+  # is a point on the scale scan, not the baseline.
+  net_electric_mw: 1000.0
+  availability: 0.85          # repo-typical baseline; record hunted in the ledger
+  lifetime_yr: 30.0           # standard TEA book life; 80 yr is an ANTI-record here (see ledger)
+  construction_time_yr: 6.0   # repo-typical baseline; record hunted in the ledger
+  interest_rate: 0.07         # repo default nominal
+  inflation_rate: 0.0245
+  noak: true
+
+  # --- Burn point (the D-rich direction Helion's own materials describe) ---
+  # dhe3_dd_frac 0.314 with f_rad 0.163: the D-rich grounding point from the
+  # design doc. The pair is CALIBRATION-CONSISTENT: 0.163 at mix 0.314
+  # implies T_i about 60-70 keV (T_e = T_i/2) under Bosch-Hale + brems,
+  # which anchors the f_rad_floor() coupling every other burn mix must obey.
+  # (The concept YAML's shipped default, f_rad 0.05 at dd_frac 0.131, is
+  # itself below the bremsstrahlung floor; this baseline does not use it.)
+  dhe3_dd_frac: 0.314
+  f_rad: 0.163

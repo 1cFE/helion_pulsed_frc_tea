@@ -1,0 +1,50 @@
+# config/tier3.yaml
+# Tier 3: labelled speculation, applied on top of tier 2. No entry here has
+# a source; each is the optimistic edge of a stated argument or an explicit
+# leap. Geometry note: this tier does NOT keep the 0.5 m x 10 m chamber.
+# Yield above ~150 MJ flash-melts that wall (per-shot areal energy over the
+# tungsten bound), so scripts/coherent_min.py solves the chamber size and
+# yield jointly under the wall constraints instead of asserting Q = 40 in a
+# chamber that cannot survive it. yield_per_shot_mj therefore has no entry
+# in this file; the coherent scan owns it.
+
+records:
+  max_f_rep:
+    value: 10.0
+    source: "SPECULATION: top of the third-party 1-10 Hz roadmap band. No duty-cycle analysis (thermal, switch, vacuum recovery at 100 ms period) supports it; largest rep-rated MJ-class precedent is orders of magnitude away."
+
+  cap_shot_lifetime:
+    value: 1.0e+10
+    source: "SPECULATION: required for coherence with 10 Hz (9e9 shots over an 80-yr-book plant would otherwise replace the bank ~10x); no source at any price. Cost-at-life scaling says this multiplies capacitor $/J, which the c_cap entry below IGNORES - the two are jointly heroic."
+
+  eta_dec:
+    value: 0.95
+    source: "SPECULATION: with f_pdv below, composite 0.90 = the APS DPP24 theory optimum ('optimal cycles exceeding 90%') taken at face value with zero engineering margin."
+
+  f_pdv:
+    value: 0.947
+    source: "SPECULATION: with eta_dec above, composite = 0.90, the theory optimum exactly. Requires ~80x adiabatic volume expansion with full fusion-product thermalization and negligible transport during expansion."
+
+  c_cap_allin_per_joule:
+    value: 0.1
+    source: "SPECULATION: below the model's own documented 0.5-4.0 range floor, against the industry statement that Hz-rate operation still needs a 5-10x cost cut. Directly contradicts the derating physics that buys cap_shot_lifetime above."
+
+  u_he3:
+    value: 5.0e+5
+    source: "SPECULATION: no fleet-scale He-3 market exists at any price; baseline 2e6 $/kg already prices a kilogram as though supply were liquid."
+
+  dec_staged_recovery_factor:
+    value: 0.5
+    source: "SPECULATION: the patent's 'net reduction in cost and size' for staged recovery is unquantified; the capacitor report's duty analysis puts the credit plausibly below 2x. 0.5 is the optimistic edge."
+
+  c_inv_per_kw_net:
+    value: 50.0
+    source: "SPECULATION: grid-tie inverter at a third of the modeled $/kW. Small lever."
+
+  multi_unit_labor_factor:
+    value: 0.80
+    source: "SPECULATION: fleet installation-labor learning beyond the modeled 0.92. Small lever."
+
+  lifetime_yr:
+    value: 80.0
+    source: "Adopted only at this tier: 80 yr becomes favourable once cap_shot_lifetime is high enough that replacement no longer accumulates faster than the capital-recovery benefit (it is an anti-record at tiers 1-2). Borealis's civil-works record travels only under that condition."

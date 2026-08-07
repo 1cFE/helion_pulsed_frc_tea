@@ -1,0 +1,30 @@
+# config/best_case.yaml
+# Tier 1: records and published bounds. Applied on top of baseline.yaml.
+# Post-red-team composition: eta_dec 0.97 (patent prophetic band, not a
+# record) and cap_shot_lifetime 1e9 (published TARGET resting on a vendor
+# catalog extrapolation, not a life test) are REMOVED from this tier and
+# carried in tier2.yaml as labelled extrapolations. lifetime_yr is held at
+# 30: on this concept 80 years is an anti-record until capacitor life
+# reaches 1e9 (replacement accumulates faster than the capital-recovery
+# benefit), so it is adopted only in tier 3 where that condition holds.
+
+records:
+  interest_rate:
+    value: 0.0425
+    source: "Apostoleris et al., Prog. Photovolt. 2021: MBR3 Dubai PPA backs out a 4.25% nominal blended WACC; sovereign-backed long-term-offtake generation analog, same ruling as the Borealis ledger."
+
+  inflation_rate:
+    value: 0.02
+    source: "Federal Reserve longer-run goals statement; the interest-rate record is only coherent against a credible 2% backdrop."
+
+  construction_time_yr:
+    value: 2.5
+    source: "Siemens Energy: 1200 MWe single CCGT block in about 30 months. Applies more strongly here than to the mirror: the plant is an integer count of factory-built modules."
+
+  indirect_fraction:
+    value: 0.08
+    source: "US DOE/NETL QGESS cost-estimation methodology: EPCM is 8-10% of total direct cost; 0.08 is the low end of the documented band."
+
+  availability:
+    value: 0.95
+    source: "Geothermal baseload analog (US DOE, 97-98%) DERATED for shot-cycled hardware the analog does not have: at tier-2 rep rates each module swaps a multi-thousand-unit capacitor bank every few years, plausibly 0.5-1.5% of availability staggered. DIVERGES from Borealis (0.98) with this stated technology reason (red-team Finding 9)."

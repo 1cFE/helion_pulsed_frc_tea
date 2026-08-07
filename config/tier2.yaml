@@ -1,0 +1,52 @@
+# config/tier2.yaml
+# Tier 2: labelled extrapolations, applied on top of tier 1.
+# Post-red-team composition. Three structural changes from the earlier draft:
+# (1) the recovery pair is capped as a COMPOSITE (eta_dec * f_pdv = 0.765
+#     <= 0.80): the only published figure ("optimal burn cycles exceeding
+#     90% recovery", APS DPP24) speaks to the product, and assigning 0.95
+#     and 0.97 to the factors separately double-booked it;
+# (2) max_f_rep is 3 Hz WITH the divertor-class wall bought explicitly
+#     (fw_class hhf, priced in-model at 2.5 M$/m^2 on the real cylinder
+#     area), because 10 Hz exceeds any wall the study can cost and every
+#     public Helion cadence statement; 10 Hz moves to tier 3;
+# (3) the D-rich burn mix carries its bremsstrahlung-consistent radiated
+#     fraction (f_rad 0.28, from the review's Bosch-Hale + brems table at
+#     the study calibration) and scripts/study.py charges the tritium-plant
+#     adder for it - the fuel credit and its physical consequences travel
+#     together or not at all.
+# Held at baseline, harmonized with the Borealis ledger: om_cost_dhe3
+# (27.5, lowest documented CCGT fixed-O&M already), installation_frac
+# (0.14, no defensible record on this cost basis), inflation (tier 1).
+
+records:
+  cap_shot_lifetime:
+    value: 1.0e+9
+    source: "Pacific Fusion AMPS (arXiv:2504.10680 sec 4.1): 100->35 kV derating projected to reach ~1e9 shots at ~9x lower energy density. A published NOAK TARGET resting on a vendor catalog extrapolation - tier 2, not the record grade an earlier draft gave it. At 3 Hz x 0.95 availability x 30 yr = 2.7e9 shots the bank is replaced ~1.7x, charged to CAS72 by the model."
+
+  eta_dec:
+    value: 0.90
+    source: "Bottom of the Helion patent band (US 2024/0275198 A1: 'up to 90% and higher'), circuit-only, prophetic language, no fusion-inclusive measurement. Paired with f_pdv below under the composite cap."
+
+  f_pdv:
+    value: 0.85
+    source: "PdV fraction consistent with an ~18x adiabatic volume expansion (1-(V0/V1)^(2/3)); with eta_dec above, composite 0.765 stays under the 0.80 tier-2 cap on the single published projection."
+
+  eta_pin:
+    value: 0.98
+    source: "UNSOURCED-PLAUSIBLE: modern solid-state pulsed-power wall-plug efficiency; no device datasheet or Helion statement located. Worth little alone; retained with this grade."
+
+  max_f_rep:
+    value: 3.0
+    source: "UNSOURCED-ROADMAP, wall-limited: no public Helion statement of a numeric plant rep rate exists (Polaris target ~1/s; Trenta ~1/10 min). 3 Hz is the ceiling the bought hhf wall class supports at this tier's recovery parameters; the 1-10 Hz band's top is tier 3."
+
+  fw_class:
+    value: hhf
+    source: "Machine design purchase, not a record: divertor-grade monoblock wall (ITER divertor procurement anchor, 2.5 M$/m^2 NOAK, 10 MW/m^2 qualification) bought over the real 37.7 m^2 cylinder area to make 3 Hz admissible. ~94 M$/module."
+
+  dhe3_dd_frac:
+    value: 0.85
+    source: "D-rich operation for in-situ He-3 breeding - the concept's own direction, but 0.85 is the top of a sweep, not an operating point. Carried WITH its consequences: f_rad below, tritium adder in study.py (41 kg/yr bred tritium at this mix), O&M held at baseline."
+
+  f_rad:
+    value: 0.28
+    source: "Bremsstrahlung-consistent radiated fraction at dd_frac 0.85 under the study calibration (baseline 0.163 at 0.314 -> T_i 60-70 keV; Bosch-Hale + non-relativistic brems; relativistic corrections raise it further). Replaces the withdrawn 0.05, which was below the physical floor."
