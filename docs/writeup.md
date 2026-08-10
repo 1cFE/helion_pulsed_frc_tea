@@ -183,8 +183,10 @@ In decreasing order of plausibility, on top of the full tier-3 stack at
 3 GWe (12.4):
 
 - **He-3 at effectively zero cost** (10.4): a mature D-D breeding economy
-  or an external supply at two orders below today's price - and even this
-  does not break 10, because the tritium plant scales with breeding
+  or an external supply at two orders below the observed market (the only
+  transacted prices, 2024-2026, are 19-22 M$/kg on gram-to-kilogram
+  volumes; even tier 3's 0.5 M$/kg entry is 40x below them) - and even
+  this does not break 10, because the tritium plant scales with breeding
   throughput.
 - **Gas-class site and decommissioning analogs** (about 1-1.5 $/MWh): the
   fixed CAS21 site items and the 140 M$ dhe3 decommissioning provision

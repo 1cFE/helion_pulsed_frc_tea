@@ -137,7 +137,7 @@ an explicit leap. See `config/tier3.yaml` for the per-knob notes.
 | cap_shot_lifetime | 1e10 | required for coherence with 10 Hz; no source at any price; jointly heroic with the $/J entry below |
 | eta_dec x f_pdv | 0.95 x 0.947 = 0.90 | the theory-optimal composite taken at face value, zero engineering margin |
 | c_cap_allin_per_joule | 0.1 | below the model's own documented range floor; contradicts the derating physics that buys the cap life above |
-| u_he3 | 5e5 $/kg | no fleet-scale He-3 market exists at any price |
+| u_he3 | 5e5 $/kg | no fleet-scale He-3 market exists at any price. The only observed transactions are gram-to-kilogram scale at 19-22 M$/kg (2024 spot about $2,500/L per Edelgas; Interlune's 2025 DOE and Maybell Quantum agreements priced "at approximately today's commercial market price"; TAE's 2026 Black Moon lunar supply option discloses no price). This entry is 40x below every observed price, and the new entrants (lunar: Interlune, Black Moon; terrestrial: Pulsar Helium) are building toward the high price, not under it. |
 | dec_staged_recovery_factor | 0.5 | patent's unquantified "net reduction in cost and size", optimistic edge |
 | c_inv_per_kw_net | 50 $/kW | small lever |
 | multi_unit_labor_factor | 0.80 | small lever |
@@ -164,6 +164,21 @@ f_pdv (1 - f_rad)) and are priced in every number above. What remains
 outside: HVDC-class switch repricing (+1.6 tier 2 / +0.7 tier 3),
 tritium-plant band (+-0.7 / +-0.5), and a thermal-bottoming basis change
 (-5.5 / -0.5): tier 2 lands in 27.7-36.2, tier 3 in 14.8-17.1 at 1 GWe.
+
+**The observed He-3 market makes the fuel accounting first-order.** At the
+observed 19-22 M$/kg spot (he3_scan's 2e7 row) the tier-2 minimum machine
+reads 110 $/MWh at dd_frac 0.85 and 293 lean: no mix survives market-priced
+He-3. That reading follows from the model's fuel accounting, which charges
+every primary D-He3 event as purchased He-3 and credits bred He-3 only
+through its in-plasma burn fraction; exhaust-recovered bred He-3 and the
+decay store's output are not netted against purchases. The u_he3 = 0 row
+(25.5) is the full steady-state self-supply limit. The distance between
+those two readings, 25.5 vs 110 at the same machine, is the value of an
+open accounting question: the study prices the decay store's capital,
+inventory, and licensing consequences but does not credit its product,
+which is conservative-incoherent in the same sense constraint 4 forbids
+optimistic-incoherence. Worth about 8 $/MWh at the study's u_he3 and
+80+ at the observed spot; item 6 below.
 
 **The $10/MWh target is not reached by any coherent stack in this study.**
 The closest approaches: 12.4 at 3 GWe on full tier-3 speculation, and 10.4
@@ -248,3 +263,10 @@ rather than through a lifetime knob the model ignores.
    and dwell time) for the reactor-scale machine. It gates dhe3_f_T = 0
    and with it the neutron spectrum the shielding and wall accounts are
    priced against (`scripts/tritium_burn.py`).
+6. A resolved steady-state He-3 balance in the fuel account: whether
+   NOAK operation may net exhaust-recovered bred He-3 and decay-store
+   output against primary D-He3 burn (costingfe currently charges
+   1 - dd_frac purchased He-3 per event regardless). At the study's
+   u_he3 this is an 8 $/MWh question; at the observed 19-22 M$/kg spot
+   it decides whether the concept works at all outside full
+   self-sufficiency.
