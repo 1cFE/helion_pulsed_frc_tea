@@ -88,6 +88,27 @@ each burned triton emits a 14.1 MeV neutron (5.8x the D-D neutron
 energy), so the LCOE story is insensitive while the shielding basis and
 wall spectrum are not.
 
+The model's own `burn_fraction` closes the same loop with no density or
+dwell input: the per-shot D burnup pins the integrated exposure
+n_D <sigma v> tau, so f_T = 1 - (1 - e^-x)/x with
+x = (sv_DT/sv_DD)(-ln(1 - f_D)). At the concept YAML's burn_fraction
+0.15 (an unsourced MIF-literature midpoint; the vendor publishes Q, not
+burnup) the implied in-pulse tritium burn is **78-93%** across 70-20 keV
+if tritons thermalize and stay confined - flatly inconsistent with
+dhe3_f_T = 0. Three ways out, none free: (a) per-shot burnup at or below
+about 7e-4, which multiplies the CAS80 recycle-loss line 15x at
+fuel_recovery 0.99 (2.4x at 0.999), collapses the bred-He-3 recycle
+credit (f_He3_eff 0.95 -> 0.05-0.3), and inflates the vacuum-pumping
+throughput the same knob sizes by two orders; (b) prompt loss of the
+1 MeV tritons from the small-s plasmoid before they thermalize, a
+fast-ion confinement question measurable on Polaris, which also moves
+about 1 MeV per T branch from recoverable to undirected; (c) accept the
+burn: priced at dhe3_f_T = 0.78 the tier-2 rung is 49.1 and the tier-3
+minimum 19.0, plant neutron power rises about 5x with a dominant
+14.1 MeV component, and the decay store shrinks to about 0.2-0.3 t - and
+those LCOE figures are floors, because the wall/shield audit checks
+surface heat only, not the D-T-class neutron loading it would imply.
+
 ## Tier 1: records and published bounds
 
 | knob | baseline | value | analog class | why it applies | source | grade |
@@ -168,11 +189,15 @@ tritium-plant band (+-0.7 / +-0.5), and a thermal-bottoming basis change
 **The observed He-3 market makes the fuel accounting first-order.** At the
 observed 19-22 M$/kg spot (he3_scan's 2e7 row) the tier-2 minimum machine
 reads 110 $/MWh at dd_frac 0.85 and 293 lean: no mix survives market-priced
-He-3. That reading follows from the model's fuel accounting, which charges
-every primary D-He3 event as purchased He-3 and credits bred He-3 only
-through its in-plasma burn fraction; exhaust-recovered bred He-3 and the
-decay store's output are not netted against purchases. The u_he3 = 0 row
-(25.5) is the full steady-state self-supply limit. The distance between
+He-3. That reading follows from the model's fuel accounting: prompt bred He-3
+is credited nearly fully (cumulative recycle fraction
+bf / (1 - fr (1 - bf)) = 0.95 at the concept's burn/recovery pair), but
+the decay store's He-3 return, 0.42 atoms per primary event and equal to
+the prompt branch, is never netted against the purchased
+1 - dd_frac per event. The plant burns 0.55 He-3 per primary event
+against 0.42 prompt bred, so without the decay return it imports about
+35 kg/yr; crediting the return flips it to a net exporter. The
+u_he3 = 0 row (25.5) is the full steady-state self-supply limit. The distance between
 those two readings, 25.5 vs 110 at the same machine, is the value of an
 open accounting question: the study prices the decay store's capital,
 inventory, and licensing consequences but does not credit its product,
@@ -259,14 +284,20 @@ rather than through a lifetime knob the model ignores.
 4. A costed tritium plant scope for the D-rich fuel cycle (the 100-300 M$
    band here is an allowance, not an estimate), including its licensing
    posture.
-5. A per-shot D burnup fraction (equivalently, compression-peak density
-   and dwell time) for the reactor-scale machine. It gates dhe3_f_T = 0
-   and with it the neutron spectrum the shielding and wall accounts are
-   priced against (`scripts/tritium_burn.py`).
+5. A sourced per-shot burnup fraction and the fast-triton confinement
+   physics for the reactor-scale machine. The declared burn_fraction 0.15
+   and dhe3_f_T = 0 are mutually inconsistent by an order of magnitude
+   (78-93% implied in-pulse T burn in the thermalized limit,
+   `scripts/tritium_burn.py`); the same knob sizes the vacuum pumping,
+   the fuel recycle loss, and the bred-He-3 credit, so its resolution
+   moves four accounts at once. Prompt MeV-triton loss from the small-s
+   plasmoid is the one escape that preserves store-and-decay at high
+   burnup, and it is measurable on Polaris.
 6. A resolved steady-state He-3 balance in the fuel account: whether
-   NOAK operation may net exhaust-recovered bred He-3 and decay-store
-   output against primary D-He3 burn (costingfe currently charges
-   1 - dd_frac purchased He-3 per event regardless). At the study's
-   u_he3 this is an 8 $/MWh question; at the observed 19-22 M$/kg spot
-   it decides whether the concept works at all outside full
-   self-sufficiency.
+   NOAK operation may net the decay store's He-3 return against primary
+   D-He3 burn (costingfe credits prompt bred He-3 via the recycle
+   fraction but charges 1 - dd_frac purchased He-3 per event with no
+   decay return). At the study's u_he3 this is an 8 $/MWh question; at
+   the observed 19-22 M$/kg spot it decides whether the concept works at
+   all outside full self-sufficiency. Coupled to item 5: the decay
+   return only exists if the tritium survives the pulse.

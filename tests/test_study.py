@@ -194,3 +194,14 @@ def test_tritium_in_pulse_burn_anchors():
 
     assert burn_probability(1e23, 50.0, 1e-3) == pytest.approx(0.043, abs=0.005)
     assert burn_probability(3e22, 50.0, 3e-4) < 0.01
+
+
+def test_burnup_closure_contradicts_store_and_decay():
+    """The concept YAML's burn_fraction 0.15 implies 78-93% in-pulse T burn
+    (thermalized-triton limit); store-and-decay (f_T under 1%) requires
+    per-shot burnup below about 7e-4."""
+    from tritium_burn import f_t_from_burnup
+
+    assert f_t_from_burnup(0.15, 70.0) == pytest.approx(0.78, abs=0.02)
+    assert f_t_from_burnup(0.15, 20.0) == pytest.approx(0.93, abs=0.02)
+    assert f_t_from_burnup(7.3e-4, 70.0) < 0.011

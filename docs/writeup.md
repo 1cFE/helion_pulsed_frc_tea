@@ -101,15 +101,22 @@ is pumped, isotope-separated, and stored on getter beds to decay into the
 He-3 the plant burns (12.3 yr half-life). Two audits sit on top of that
 basis (`scripts/tritium_burn.py`):
 
-- **The dhe3_f_T = 0 idealization holds only for short, thin pulses.** A
-  triton born mid-pulse burns with probability (1/2) n_D <sigma v>_DT tau,
-  and D-T reactivity is 14-43x D-D at 20-70 keV, so each percent of
-  per-shot D burnup burns 14-43% of the bred tritium in-plasma. At
-  Helion's stated sub-millisecond dwell and 1e22-3e22 m^-3 the burn
-  fraction stays below about 1%; at 1e23 m^-3 with millisecond-plus dwell
-  it reaches 4-13%. Priced at 4% the LCOE barely moves (+0.2-0.3 $/MWh)
-  but plant neutron power rises 23% and gains a 14.1 MeV component the
-  shielding basis does not carry.
+- **The dhe3_f_T = 0 idealization holds only for short, thin pulses, and
+  the model's own burnup contradicts it.** A triton born mid-pulse burns
+  with probability (1/2) n_D <sigma v>_DT tau, and D-T reactivity is
+  14-43x D-D at 20-70 keV, so each percent of per-shot D burnup burns
+  14-43% of the bred tritium in-plasma. The declared burn_fraction 0.15
+  therefore implies 78-93% in-pulse tritium burn if tritons thermalize
+  and stay confined; store-and-decay requires either burnup below about
+  7e-4 (which multiplies the fuel recycle loss 15x at 99% recovery and
+  inflates the pumping throughput two orders) or prompt MeV-triton loss
+  from the small-s plasmoid. Priced at the thermalized limit
+  (dhe3_f_T = 0.78) the tier-2 rung is 49.1 and the tier-3 minimum 19.0,
+  with plant neutron power up 5x at 14.1 MeV, before any repricing of
+  the wall and shield for that spectrum. The plant-scale rates behind
+  this: at the tier-3 minimum the single module runs 7.1e20 D-D and
+  4.6e20 D-He3 reactions per second (three quarters of the D-He3 burns
+  fed by recycled bred He-3), breeding 0.30 mg of tritium per shot.
 
 - **The store is a tonne-class tritium inventory.** Store-for-decay fixes
   the equilibrium inventory at production rate x 17.8 yr mean life: about

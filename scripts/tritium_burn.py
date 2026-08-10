@@ -31,6 +31,7 @@ Two anchors make the scan robust to both unknowns:
   while the burned alpha adds recoverable charged energy.
 """
 import csv
+import math
 
 from study import (  # noqa: I001  sets COSTINGFE_BACKEND before costingfe imports
     OUTPUT_DIR,
@@ -41,9 +42,9 @@ from study import (  # noqa: I001  sets COSTINGFE_BACKEND before costingfe impor
     run,
 )
 
-from costingfe.layers.reactivity import sigv_dd_n, sigv_dd_p, sigv_dt
+from costingfe.layers.physics import Q_DD_NHE3, Q_DD_PT, Q_DHE3, Q_DT
+from costingfe.layers.reactivity import sigv_dd_n, sigv_dd_p, sigv_dhe3, sigv_dt
 
-E_N_DD_MJ = 2.45 * 1.602e-19 * 1e6  # J per D-D neutron
 SECONDS_PER_YEAR = 8760.0 * 3600.0
 M_T_KG = 3.016 * 1.66054e-27  # triton mass
 T_MEAN_LIFE_YR = 12.33 / 0.6931  # decay store residence to He-3
@@ -66,11 +67,70 @@ POINTS = {
         ),
     ),
 }
-F_T_SCENARIOS = (0.0, 0.01, 0.04)
+# 0.78 is the thermalized-triton limit at the concept's own burn_fraction
+# 0.15 (f_t_from_burnup at the study's 70 keV calibration).
+F_T_SCENARIOS = (0.0, 0.01, 0.04, 0.78)
 
 
 def burn_probability(n_d_m3: float, t_i_kev: float, tau_s: float) -> float:
     return 0.5 * n_d_m3 * float(sigv_dt(t_i_kev)) * tau_s
+
+
+def reaction_rates(result):
+    """Absolute reaction rates from the model's own power table and burn mix.
+
+    Primary events split (1 - dd_frac) D-He3 / dd_frac D-D by count (the
+    cas80 convention). Bred He-3 recycles through the exhaust loop and
+    eventually fuses with cumulative probability f_He3_eff =
+    bf / (1 - fr (1 - bf)) (the model's own crediting); those burns ride on
+    the D-D event term, so total D-He3 burns exceed the primary count. The
+    mean energy per primary event is the same q_eff cas80 uses, so
+    rate x q_eff reproduces p_fus exactly. T production is the D-D T branch
+    (half the D-D events); its decay-He3 return is NOT in the model."""
+    p = result.params
+    dd = p["dhe3_dd_frac"]
+    f_t = p.get("dhe3_f_T", 0.0)
+    bf, fr = p["burn_fraction"], p["fuel_recovery"]
+    f_he3_eff = bf / (1.0 - fr * (1.0 - bf))
+    q_eff_mev = (1.0 - dd) * Q_DHE3 + dd * (
+        0.5 * (Q_DD_PT + Q_DD_NHE3)
+        + 0.5 * f_t * Q_DT
+        + 0.5 * f_he3_eff * Q_DHE3
+    )
+    p_fus_w = float(result.power_table.p_fus) * 1e6  # per module
+    r = p_fus_w / (q_eff_mev * 1.602e-13)
+    return dict(
+        events=r,
+        dd=dd * r,
+        dhe3_primary=(1.0 - dd) * r,  # fed by purchased He-3 (cas80 charges these)
+        dhe3_bred=0.5 * dd * f_he3_eff * r,  # fed by recycled bred He-3
+        t_prod=0.5 * dd * r,
+        he3_prod=0.5 * dd * r,
+        f_he3_eff=f_he3_eff,
+    )
+
+
+def f_t_from_burnup(f_d: float, t_i_kev: float) -> float:
+    """In-pulse T burn probability implied by the per-shot D burnup alone.
+
+    The D burnup fixes the integrated exposure x_DD = n_D <sv>_DD tau
+    (= -ln(1 - f_D)); a triton born at time t sees the same n_D tau scaled
+    by the DT/DD reactivity ratio for the remaining dwell. Averaging over
+    birth times gives f_T = 1 - (1 - e^-x)/x with x = ratio * x_DD. No
+    density or dwell needed: the ratio is the only physics input, and it
+    assumes the triton thermalizes and stays confined for the rest of the
+    pulse (prompt fast-triton orbit loss would truncate it)."""
+    x_dd = -math.log1p(-f_d)
+    ratio = float(sigv_dt(t_i_kev)) / float(sigv_dd_n(t_i_kev) + sigv_dd_p(t_i_kev))
+    x = ratio * x_dd
+    return 1.0 - (1.0 - math.exp(-x)) / x
+
+
+def he3_over_d(r_dhe3_over_r_dd: float, t_i_kev: float) -> float:
+    """Plasma composition implied by the burn-rate ratio:
+    n_He3/n_D = (1/2) x (R_DHe3/R_DD) x <sv>_DD/<sv>_DHe3."""
+    sv_dd = float(sigv_dd_n(t_i_kev) + sigv_dd_p(t_i_kev))
+    return 0.5 * r_dhe3_over_r_dd * sv_dd / float(sigv_dhe3(t_i_kev))
 
 
 def point_fwd(spec):
@@ -83,12 +143,12 @@ def point_fwd(spec):
 
 
 def breed_rate_kg_yr(result) -> float:
-    """T breeding from the plant's own D-D neutron count: the n and T
-    branches are equiprobable, so one triton is born per 2.45 MeV neutron."""
-    pt = result.power_table
-    p_n_w = float(pt.p_neutron) * int(result.solved_n_mod) * 1e6
+    """T breeding from the reaction rates: one triton per D-D T-branch
+    reaction (half the D-D events). Not derived from neutron power, which
+    mixes 2.45 and 14.1 MeV neutrons once dhe3_f_T > 0."""
+    rr = reaction_rates(result)
     availability = float(result.params["availability"])
-    r_t = p_n_w / E_N_DD_MJ * availability  # tritons/s, calendar-averaged
+    r_t = rr["t_prod"] * int(result.solved_n_mod) * availability
     return r_t * SECONDS_PER_YEAR * M_T_KG
 
 
@@ -110,7 +170,52 @@ if __name__ == "__main__":
     for name, spec in POINTS.items():
         cfg, fwd = point_fwd(spec)
         model = build_model(cfg)
-        print(f"\n== {name}: priced consequence of dhe3_f_T ==")
+
+        r0, d0 = run(model, dict(fwd))
+        rr = reaction_rates(r0)
+        n_mod = d0["n_mod"]
+        f_rep = d0["f_rep_hz"]
+        dhe3_total = rr["dhe3_primary"] + rr["dhe3_bred"]
+        print(f"\n== {name}: reaction rates (model power table, dd_frac "
+              f"{fwd.get('dhe3_dd_frac')}) ==")
+        print(f"  per module: D-D {rr['dd']:.2e} /s; D-He3 {dhe3_total:.2e} /s "
+              f"({rr['dhe3_primary']:.2e} purchased-fed + {rr['dhe3_bred']:.2e} "
+              f"bred-recycle at f_He3_eff {rr['f_he3_eff']:.2f})")
+        print(f"  per module bred: T {rr['t_prod']:.2e} /s (to decay store), "
+              f"He-3 {rr['he3_prod']:.2e} /s (prompt)")
+        print(f"  plant ({n_mod} mod): D-D {rr['dd'] * n_mod:.2e} /s, "
+              f"D-He3 {dhe3_total * n_mod:.2e} /s, "
+              f"T {rr['t_prod'] * n_mod:.2e} /s")
+        print(f"  per shot ({f_rep:.2f} Hz): {(rr['dd'] + dhe3_total) / f_rep:.2e} "
+              f"reactions, T bred {rr['t_prod'] / f_rep:.2e} "
+              f"({rr['t_prod'] / f_rep * 5.008e-27 * 1e6:.2f} mg)")
+        print(f"  He-3 balance per primary event: burn "
+              f"{(dhe3_total) / rr['events']:.2f} vs bred prompt "
+              f"{rr['he3_prod'] / rr['events']:.2f} + decay-store return "
+              f"{rr['t_prod'] / rr['events']:.2f} (NOT credited by cas80)")
+        for t_i in T_I_KEV:
+            print(f"  T_i {t_i:>3.0f} keV: n_He3/n_D = "
+                  f"{he3_over_d(dhe3_total / rr['dd'], t_i):.3f}")
+
+        fb = float(r0.params["burn_fraction"])
+        print(f"  burnup closure at the model's own burn_fraction {fb}: "
+              + ", ".join(
+                  f"f_T({t_i:.0f} keV) = {f_t_from_burnup(fb, t_i):.0%}"
+                  for t_i in T_I_KEV))
+        for t_i in (70.0,):
+            ratio_half = 0.5 * float(sigv_dt(t_i)) / float(
+                sigv_dd_n(t_i) + sigv_dd_p(t_i))
+            fb_max = 0.01 / ratio_half
+            mult_015 = 1.0 + (1 - fb) / fb * 0.01
+            mult_low_99 = 1.0 + (1 - fb_max) / fb_max * 0.01
+            mult_low_999 = 1.0 + (1 - fb_max) / fb_max * 0.001
+            print(f"  store-and-decay (f_T <= 1%) needs burn_fraction <= "
+                  f"{fb_max:.1e} at {t_i:.0f} keV; CAS80 fuel-loss multiplier "
+                  f"then {mult_low_99:.1f}x at fuel_recovery 0.99 "
+                  f"({mult_low_999:.2f}x at 0.999) vs {mult_015:.2f}x at "
+                  f"burn_fraction {fb}")
+
+        print(f"== {name}: priced consequence of dhe3_f_T ==")
         print(f"{'f_T':>5} {'LCOE':>6} {'P_n MW':>7} {'T kg/yr':>8} "
               f"{'store t':>8} {'adder M$':>9} {'coherent':>9}")
         for f_t in F_T_SCENARIOS:
