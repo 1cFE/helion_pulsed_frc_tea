@@ -4,11 +4,6 @@ Runs the tier-2 and tier-3 coherent-minimum points (from coherent_min.py)
 and reports, on top of each:
 
 ADDERS (model gaps the red-team review identified, still open in costingfe):
-- Recovery-store + switch replacement: CAS72 replaces only C220107 (the
-  driver bank); the recovery store (delta_cap) and switch stack (delta_switch)
-  cycle once per shot with the same film physics and are never replaced.
-  Charged here with the model's own levelized-replacement closed form at the
-  same cap_shot_lifetime.
 - Switch-stack duty repricing: delta_switch prices the stack at 6% of the
   cap bank (single-shot practice); a stack commuting GW-class average power
   continuously is HVDC-valve class, order 100 M$/GW of commutated power.
@@ -16,19 +11,19 @@ ADDERS (model gaps the red-team review identified, still open in costingfe):
   stack (study.py); the band is 100-300.
 
 CREDITS (model conservatisms):
-- C220109 store sizing: markup_cap = eta_dec*(1 + q_sci*f_ch) - 1 sizes the
-  recovery store for ALL charged fusion energy, but the physics path only
-  returns eta_dec*(E_driver + f_pdv*(1-f_rad)*f_ch*Y) to the circuit. Rerun
-  with the physics-consistent store via cost_overrides.
 - Thermal bottoming: the machine basis discards p_th (eta_th = 0); a
   low-grade bottoming cycle (eta_th 0.30) on the rejected stream is a real
   design option the basis excludes. Run in-model as an add-back scenario.
 
+Two former entries are now inside costingfe and priced on every quoted
+number rather than reconciled here: the CAS72 replacement event includes
+the shot-cycled recovery store and switch (C220109_cap / C220109_switch),
+and the store markup is sized for the physics-returned energy
+(f_pdv, 1 - f_rad).
+
 Anatomy: top capital accounts at each point, so the writeup can name what
 carries the floor instead of gesturing at it.
 """
-import math
-
 from study import (
     OUTPUT_DIR,
     apply_records,
@@ -51,7 +46,6 @@ POINTS = {
     ),
 }
 
-MARKUP_SWITCH_BIDIR = 0.06
 HVDC_MUSD_PER_GW = 100.0  # continuous-commutation silicon, HVDC valve class
 TRITIUM_BAND_MUSD = (100.0, 300.0)
 TRITIUM_POINT_MUSD = 200.0
@@ -60,14 +54,6 @@ ETA_TH_BOTTOMING = 0.30
 
 def crf(i, n):
     return i * (1 + i) ** n / ((1 + i) ** n - 1)
-
-
-def levelized_replacement(event_cost, t_replace, i, n):
-    """Mirror of costingfe.layers.economics.levelized_replacement_cost."""
-    s = (1.0 + i) ** (-t_replace)
-    n_rep = max(0.0, math.ceil(n / t_replace) - 1.0)
-    pv = event_cost * s * (1.0 - s**n_rep) / (1.0 - s)
-    return pv * crf(i, n)
 
 
 def analyze(label, spec):
@@ -104,21 +90,9 @@ def analyze(label, spec):
 
     # --- adders ---
     f_rep = diag["f_rep_hz"]
-    shots_per_year = f_rep * 8760 * 3600 * avail
-    t_replace = float(p["cap_shot_lifetime"]) / shots_per_year
-
-    c220107 = d22.get("C220107", 0.0)
-    q_sci = float(pt.q_sci)
     f_ch = 1.0 - float(pt.p_neutron) / float(pt.p_fus)
     eta_dec, f_pdv, f_rad = p["eta_dec"], p["f_pdv"], p["f_rad"]
-    staged = float(p.get("dec_staged_recovery_factor", 1.0))
-    markup_cap = max(eta_dec * (1 + q_sci * f_ch) - 1, 0.0)
-    delta_cap = c220107 * markup_cap * staged
-    delta_switch = c220107 * MARKUP_SWITCH_BIDIR
-
-    rep_annual = levelized_replacement(
-        (delta_cap + delta_switch) * n_mod, t_replace, i, n)
-    adder_recovery_replacement = rep_annual * 1e6 / mwh_per_year
+    delta_switch = d22.get("C220109_switch", 0.0)
 
     p_driver = float(p["e_driver_mj"]) * f_rep  # per-module average [MW]
     p_commutated_gw = (p_driver + eta_dec * f_pdv
@@ -134,38 +108,20 @@ def analyze(label, spec):
         if dd > 0.5 else (0.0, 0.0)
     )
 
-    print(f"  ADDER recovery-store+switch replacement (every "
-          f"{t_replace:.1f} yr): +{adder_recovery_replacement:.2f} $/MWh")
     print(f"  ADDER switch stack at HVDC class ({p_commutated_gw:.2f} GW "
           f"commutated): +{adder_switch_repricing:.2f} $/MWh")
     if dd > 0.5:
         print(f"  ADDER tritium-plant band vs 200 M$ point: "
               f"{tri_lo:+.2f} / {tri_hi:+.2f} $/MWh")
 
-    # --- credits (both rerun in-model) ---
-    markup_cap_phys = max(
-        eta_dec * (1 + q_sci * f_ch * f_pdv * (1 - f_rad)) - 1, 0.0)
-    c220109 = d22.get("C220109", 0.0)
-    c220109_phys = c220109 - (markup_cap - markup_cap_phys) * c220107 * staged
-    import warnings as _w
-    with _w.catch_warnings():
-        _w.simplefilter("ignore")
-        r_phys = model.forward(
-            size_from_power=True, cost_overrides={"C220109": c220109_phys}, **fwd)
-    credit_store = float(r_phys.costs.lcoe) - diag["lcoe"]
-    print(f"  CREDIT physics-consistent recovery store "
-          f"(C220109 {c220109:.0f} -> {c220109_phys:.0f} M$/module): "
-          f"{credit_store:+.2f} $/MWh")
-
+    # --- credit (rerun in-model) ---
     _, diag_bottom = run(model, dict(fwd, eta_th=ETA_TH_BOTTOMING))
     credit_bottoming = diag_bottom["lcoe"] - diag["lcoe"]
     print(f"  CREDIT thermal bottoming at eta_th {ETA_TH_BOTTOMING} "
           f"(basis change): {credit_bottoming:+.2f} $/MWh")
 
-    lo = (diag["lcoe"] + adder_recovery_replacement + tri_lo
-          + min(credit_store, 0.0) + min(credit_bottoming, 0.0))
-    hi = (diag["lcoe"] + adder_recovery_replacement + adder_switch_repricing
-          + tri_hi)
+    lo = diag["lcoe"] + tri_lo + min(credit_bottoming, 0.0)
+    hi = diag["lcoe"] + adder_switch_repricing + tri_hi
     print(f"  HONEST BAND: {lo:.1f} - {hi:.1f} $/MWh")
     return diag["lcoe"], lo, hi
 

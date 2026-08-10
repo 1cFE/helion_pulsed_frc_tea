@@ -14,9 +14,10 @@ turbine, 1 GWe as an integer count of Helion-class modules; design basis in
 `docs/red_team_review.md` (all of whose verdicts are folded into the tier
 composition below), narrative answer in `docs/writeup.md`.
 
-All numbers at costingfe `9f86c13` (cylinder geometry + wall-flux audit for
-linear pulsed concepts), pinned by the regression tests in
-`tests/test_study.py`. The tier stacks are `config/best_case.yaml`,
+All numbers at costingfe `ac2d1a8` (cylinder geometry + wall-flux audit
+for linear pulsed concepts; shot-cycled CAS72 replacement scope;
+physics-consistent recovery-store markup), pinned by the regression tests
+in `tests/test_study.py`. The tier stacks are `config/best_case.yaml`,
 `config/tier2.yaml`, `config/tier3.yaml`; `scripts/tiers.py` reproduces the
 ladder end to end.
 
@@ -24,17 +25,17 @@ Ladder at 1 GWe / 3 GWe (config stacks, concept-YAML chamber):
 
 | rung | 1 GWe | 3 GWe |
 |---|---|---|
-| design baseline (Helion's implied point) | 119.4 | 114.9 |
-| tier 1 records | 86.7 | 83.2 |
-| tier 2 extrapolations | 38.3 | 35.0 |
+| design baseline (Helion's implied point) | 133.3 | 129.8 |
+| tier 1 records | 104.5 | 100.9 |
+| tier 2 extrapolations | 38.6 | 35.3 |
 | tier 3 speculation | 16.6 | 13.2 |
 
 Design-optimized coherent minima (chamber, wall class, and burn mix chosen
 by `scripts/coherent_min.py` under the physics-consistency constraints in
-`scripts/study.py`): **tier 2: 33.7** at 1 GWe; **tier 3: 15.8** at 1 GWe,
-**12.3** at 3 GWe. Reconciliation bands around the minima (model gaps and
-conservatisms, `scripts/reconciliation.py`): tier 2 within 27.3-38.4, tier 3
-within 13.8-17.1 at 1 GWe.
+`scripts/study.py`): **tier 2: 33.9** at 1 GWe; **tier 3: 15.8** at 1 GWe,
+**12.4** at 3 GWe. Reconciliation bands around the minima (model gaps and
+conservatisms, `scripts/reconciliation.py`): tier 2 within 27.7-36.2, tier 3
+within 14.8-17.1 at 1 GWe.
 
 ## Coherence constraints (enforced, not advisory)
 
@@ -58,15 +59,34 @@ flagged in the output of every script rather than reported:
    margin).
 4. **The D-rich fuel credit travels with its consequences.** Above
    dd_frac 0.5 the machine is a bulk tritium facility: the tier-2 machine
-   carries 185 MW of plant-level neutron power and breeds about 73 kg of
+   carries 185 MW of plant-level neutron power and breeds about 71 kg of
    tritium per year, and Helion's own store-for-decay fuel cycle implies an
    equilibrium getter-bed inventory of production rate x mean decay time,
-   about 1.3 tonnes of tritium on site (ITER's site limit is 4 kg).
-   `study.run` charges a tritium-plant adder on C220500: 50 M$ fixed core
-   plus a throughput-scaled balance anchored at 200 M$ for the tier-2
-   reference machine (band 100-300 swept in reconciliation; given the
-   tonne-class inventory, the allowance is more likely low than high). O&M
-   stays at the baseline 27.5, never at an "aneutronic" discount.
+   about 1.3 tonnes of tritium on site. For scale: that inventory is
+   1.2e10 Ci, dissipates about 410 kW of continuous decay heat in the
+   store, is roughly 300x ITER's 4 kg site limit and about 45x the world's
+   civilian tritium stock (about 25-30 kg, CANDU-derived). `study.run`
+   charges a tritium-plant adder on C220500: 50 M$ fixed core plus a
+   throughput-scaled balance anchored at 200 M$ for the tier-2 reference
+   machine (band 100-300 swept in reconciliation; given the tonne-class
+   inventory, the allowance is more likely low than high). O&M stays at
+   the baseline 27.5, never at an "aneutronic" discount.
+
+The store-and-decay idealization itself (dhe3_f_T = 0: no bred triton
+burns in-plasma) is checked in `scripts/tritium_burn.py`. A triton born
+mid-pulse burns before the pulse ends with probability
+(1/2) n_D <sigma v>_DT tau, and because D-T reactivity is 14-43x D-D at
+20-70 keV, each percent of per-shot D burnup burns 14-43% of the bred
+tritium in-plasma; the fuel cycle is only self-consistent with low
+per-shot burnup bought back by rep rate. At Helion's stated
+sub-millisecond dwell (helionenergy.com/faq) and Trenta-class densities
+(1e22-3e22 m^-3) the burn fraction stays below about 1% and dhe3_f_T = 0
+is a good approximation; at reactor-class compression (1e23 m^-3) with
+millisecond-plus dwell it reaches 4-13%. Priced at dhe3_f_T = 0.04 the
+tier-2 rung moves only +0.3 $/MWh, but plant neutron power rises 23% and
+each burned triton emits a 14.1 MeV neutron (5.8x the D-D neutron
+energy), so the LCOE story is insensitive while the shielding basis and
+wall spectrum are not.
 
 ## Tier 1: records and published bounds
 
@@ -132,47 +152,53 @@ constraints, at each evidence level:
 
 | evidence level | minimum | design at the minimum |
 |---|---|---|
-| tier 2, 1 GWe | **33.7** | cited shot (101.4 MJ), 8 modules at 2.9 Hz, 20 m x 0.5 m chambers, panel wall at 1.8 MW/m^2, D-rich mix with tritium plant |
-| tier 3, 1 GWe | **15.8** | 300 MJ shots (Q about 6), single module at 5.9 Hz, 45 m x 1.0 m chamber, panel wall at 1.9 MW/m^2 |
-| tier 3, 3 GWe | **12.3** | 2 such modules at 8.8 Hz, 45 m x 1.5 m chambers |
+| tier 2, 1 GWe | **33.9** | cited shot (101.4 MJ), 8 modules at 2.9 Hz, 20 m x 0.5 m chambers, panel wall at 1.8 MW/m^2, D-rich mix with tritium plant |
+| tier 3, 1 GWe | **15.8** | 300 MJ shots (Q about 6), single module at 5.9 Hz, 45 m x 1.0 m chamber, panel wall at 1.9 MW/m^2 (a 200-750 MJ plateau ties within 0.1) |
+| tier 3, 3 GWe | **12.4** | 3 modules of the 200 MJ / 45 m design at 8.9 Hz (larger shots trip the wall audit once the integer module count snaps down) |
 
 Reconciliation (`scripts/reconciliation.py`) puts honest bands around
-these: recovery-store and switch-stack replacement that CAS72 does not
-charge (+2.4 tier 2, +0.0 tier 3), HVDC-class switch repricing (+1.6 /
-+0.7), tritium-plant band (+-0.7), against the model's over-sized recovery
-store (-2.6 / -1.0) and a thermal-bottoming basis change (-5.4 / -0.5):
-tier 2 lands in 27.3-38.4, tier 3 in 13.8-17.1 at 1 GWe.
+these. The recovery-store/switch replacement gap and the over-sized
+recovery store are now inside costingfe (CAS72 replaces the shot-cycled
+C220109_cap and C220109_switch with the bank; markup_cap carries
+f_pdv (1 - f_rad)) and are priced in every number above. What remains
+outside: HVDC-class switch repricing (+1.6 tier 2 / +0.7 tier 3),
+tritium-plant band (+-0.7 / +-0.5), and a thermal-bottoming basis change
+(-5.5 / -0.5): tier 2 lands in 27.7-36.2, tier 3 in 14.8-17.1 at 1 GWe.
 
 **The $10/MWh target is not reached by any coherent stack in this study.**
-The closest approaches: 12.3 at 3 GWe on full tier-3 speculation, and 10.3
-if He-3 is additionally free (u_he3 = 0), one more speculation than tier 3
+The closest approaches: 12.4 at 3 GWe on full tier-3 speculation, and 10.4
+if He-3 is additionally free (u_he3 = 0, `scripts/he3_scan.py` footer),
+one more speculation than tier 3
 already carries - and even that no longer breaks 10 once the tritium plant
 scales with the throughput that breeds the He-3. What carries the floor at
 the tier-3 minimum is no longer the capacitor bank: it is buildings (CAS21
-286 M$), heat rejection and BOP (CAS24-26 about 170 M$), CAS50 (197 M$,
+286 M$), heat rejection and BOP (CAS24-26 about 170 M$), CAS50 (196 M$,
 of which 140 is the decommissioning provision), fuel handling plus the
-tritium plant (about 210 M$), and the first wall of the big chamber
+tritium plant (about 203 M$), and the first wall of the big chamber
 (109 M$). See `docs/writeup.md` for the account-by-account anatomy and the
 small-plant-penalty analysis.
 
 ## Robustness of the tier-2 coherent minimum
 
-One-at-a-time reversion from the 33.7 point (`scripts/tornado.py`):
+One-at-a-time reversion from the 33.9 point (`scripts/tornado.py`):
 
 | knob reverted | LCOE | delta |
 |---|---|---|
-| cap_shot_lifetime -> 1e8 | 53.4 | +19.7 |
-| max_f_rep -> 1 Hz | 49.0 | +15.4 |
-| dhe3_dd_frac -> 0.314 (with its f_rad) | 46.2 | +12.5 |
-| f_rad -> 0.163 (incoherent: floor violated) | 30.5 | -3.2 |
-| eta_dec -> 0.85 | 36.2 | +2.6 |
-| f_pdv -> 0.80 | 35.7 | +2.0 |
-| eta_pin -> 0.95 | 35.5 | +1.9 |
+| cap_shot_lifetime -> 1e8 | 73.2 | +39.2 |
+| dhe3_dd_frac -> 0.314 (with its f_rad) | 46.8 | +12.9 |
+| max_f_rep -> 1 Hz | 45.4 | +11.4 |
+| f_rad -> 0.163 (incoherent: floor violated) | 31.0 | -3.0 |
+| eta_dec -> 0.85 | 36.6 | +2.7 |
+| f_pdv -> 0.80 | 35.8 | +1.9 |
+| eta_pin -> 0.95 | 35.8 | +1.9 |
 
-The three load-bearing tier-2 entries are the capacitor life, the rep
-rate, and the burn mix - respectively a published target, an unsourced
-roadmap band, and an unsourced sweep endpoint. None is a record. That is
-the honest quality of the 33.7 figure.
+The cap-life lever doubled when the CAS72 replacement event was widened
+to the full shot-cycled recovery chain (bank + store + switch): at 1e8
+shots everything that cycles is replaced about 8 times over plant life.
+The three load-bearing tier-2 entries are the capacitor life, the burn
+mix, and the rep rate - respectively a published target, an unsourced
+sweep endpoint, and an unsourced roadmap band. None is a record. That is
+the honest quality of the 33.9 figure.
 
 ## Consistency with the Borealis ledger
 
@@ -218,3 +244,7 @@ rather than through a lifetime knob the model ignores.
 4. A costed tritium plant scope for the D-rich fuel cycle (the 100-300 M$
    band here is an allowance, not an estimate), including its licensing
    posture.
+5. A per-shot D burnup fraction (equivalently, compression-peak density
+   and dwell time) for the reactor-scale machine. It gates dhe3_f_T = 0
+   and with it the neutron spectrum the shielding and wall accounts are
+   priced against (`scripts/tritium_burn.py`).

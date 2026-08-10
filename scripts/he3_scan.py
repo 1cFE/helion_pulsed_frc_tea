@@ -50,3 +50,15 @@ if __name__ == "__main__":
             r = next(x for x in rows if x["u_he3"] == u and x["dd_frac"] == d)
             line += f"{r['lcoe']:<9.1f}"
         print(line)
+
+    # Super-speculation floor: the tier-3 coherent 3 GWe design
+    # (coherent_min.py footer) with the He-3 price concession stacked on top.
+    fwd3 = dict(cfg["forward"])
+    for c in ("best_case.yaml", "tier2.yaml", "tier3.yaml"):
+        apply_records(fwd3, c)
+    fwd3.update(yield_per_shot_mj=200.0, chamber_length=45.0, plasma_t=1.0,
+                r_bore=1.1, fw_class="panel", net_electric_mw=3000.0)
+    print("\ntier-3 coherent 3 GWe design, He-3 price concession on top:")
+    for u in (5e5, 0.0):
+        _, d3 = run(model, dict(fwd3, u_he3=u))
+        print(f"  u_he3 {u:>8.0f} $/kg: LCOE {d3['lcoe']:.1f}")

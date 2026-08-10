@@ -30,7 +30,7 @@ wall class, yield, burn mix), not by asserting an operating point.
 
 Headline: coherent tier-3 speculation bottoms at about 16 $/MWh at 1 GWe
 and 12 at 3 GWe; the $10 target is not reached by any internally
-consistent stack. Records alone support about 87; defensible
+consistent stack. Records alone support about 105; defensible
 extrapolation about 34. See `docs/writeup.md` for the narrative results
 and `docs/ledger.md` for record-by-record sourcing, the tornado ranking,
 and the knob-by-knob consistency audit against the sister study
@@ -39,14 +39,17 @@ and the knob-by-knob consistency audit against the sister study
 ## Requirements
 
 This study depends on `costingfe` from `/mnt/c/Users/talru/1cfe/1costingfe`
-at commit `9f86c13` or later. That guarantees: linear pulsed concepts are
+at commit `ac2d1a8` or later. That guarantees: linear pulsed concepts are
 costed as cylinders with the first-wall flux audited against the declared
 `fw_class` (panel/hhf pricing on the real chamber area); pulsed `p_wall`
 counts undirected ash plus radiation plus DEC circuit waste; the
 rep-rate sizing path (`size_from_power=True`) solves f_rep and the integer
 module count off the `max_f_rep` ceiling; the primary coolant account
-scales on thermal power; and cap-bank scheduled replacement is charged to
-CAS72 with its short-life warning. The ladder regression tests in
+scales on thermal power; scheduled replacement at `cap_shot_lifetime`
+covers the full shot-cycled recovery chain (driver bank plus the
+C220109_cap/C220109_switch sub-lines) with its short-life warning; and the
+inductive-DEC store markup is sized for the physics-returned energy
+(f_pdv, 1 - f_rad). The ladder regression tests in
 `tests/test_study.py` pin the numbers at that commit and fail loudly if
 the model moves under the study.
 
@@ -66,6 +69,7 @@ python3 tornado.py         # one-at-a-time reversion from the tier-2 minimum
 python3 he3_scan.py        # He-3 price x burn-mix sweep
 python3 locus_scan.py      # (max_f_rep, yield) surface with coherence flags
 python3 module_scan.py     # module-count vs standalone-plant-size sweeps
+python3 tritium_burn.py    # in-pulse T burn vs breed rate; dhe3_f_T audit
 python3 reconciliation.py  # adders/credits the model cannot price, honest bands
 python3 -m pytest ../tests # closure, config-integrity, ladder regression
 ```

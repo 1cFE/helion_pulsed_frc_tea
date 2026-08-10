@@ -47,29 +47,38 @@ YIELDS_MJ = (101.4, 150.0, 200.0, 300.0, 500.0, 750.0, 1000.0, 1500.0, 2000.0)
 _VACUUM_T = 0.10
 
 
-def scan(tier: str):
+def tier_fwd(tier: str) -> dict:
     base_cfg = load_config("baseline.yaml")
-    model = build_model(base_cfg)
-
     fwd0 = dict(base_cfg["forward"])
     apply_records(fwd0, "best_case.yaml")
     apply_records(fwd0, "tier2.yaml")
     if tier == "tier3":
         apply_records(fwd0, "tier3.yaml")
-        yields = YIELDS_MJ
-    else:
-        yields = (fwd0.get("yield_per_shot_mj", 101.4),)
+    return fwd0
+
+
+def point_fwd(fwd0, y, length, radius, fw, branch) -> dict:
+    fwd = dict(fwd0, **branch)
+    fwd["yield_per_shot_mj"] = y
+    fwd["chamber_length"] = length
+    fwd["plasma_t"] = radius
+    fwd["r_bore"] = radius + _VACUUM_T  # coil bore tracks the chamber
+    fwd["fw_class"] = fw
+    return fwd
+
+
+def scan(tier: str):
+    base_cfg = load_config("baseline.yaml")
+    model = build_model(base_cfg)
+
+    fwd0 = tier_fwd(tier)
+    yields = YIELDS_MJ if tier == "tier3" else (fwd0.get("yield_per_shot_mj", 101.4),)
 
     rows = []
     for y, length, radius, fw, branch in itertools.product(
         yields, LENGTHS_M, RADII_M, FW_CLASSES, BURN_BRANCHES
     ):
-        fwd = dict(fwd0, **branch)
-        fwd["yield_per_shot_mj"] = y
-        fwd["chamber_length"] = length
-        fwd["plasma_t"] = radius
-        fwd["r_bore"] = radius + _VACUUM_T  # coil bore tracks the chamber
-        fwd["fw_class"] = fw
+        fwd = point_fwd(fwd0, y, length, radius, fw, branch)
         try:
             _, diag = run(model, fwd)
         except SizingInfeasible:
@@ -114,6 +123,35 @@ if __name__ == "__main__":
                 f"{r['n_mod']:>5} {r['f_rep_hz']:>6.2f} {r['q_wall_mw_m2']:>6.2f} "
                 f"{r['e_flash_mj_m2']:>6.2f}"
             )
+        if ok:
+            # The same designs sold as a 3 GWe park (same module, more of them).
+            # Sizing snaps to an integer module count, so a design that is
+            # coherent at 1 GWe can trip the wall audit at 3; take the best
+            # design that stays coherent at the larger plant.
+            model3 = build_model(load_config("baseline.yaml"))
+            best3 = None
+            for cand in ok[:20]:
+                branch = next(
+                    b for b in BURN_BRANCHES if b["dhe3_dd_frac"] == cand["dd_frac"]
+                )
+                fwd3 = point_fwd(
+                    tier_fwd(tier), cand["yield_mj"], cand["length_m"],
+                    cand["radius_m"], cand["fw_class"], branch,
+                )
+                fwd3["net_electric_mw"] = 3000.0
+                try:
+                    _, d3 = run(model3, fwd3)
+                except SizingInfeasible:
+                    continue
+                if coherence_violations(fwd3, d3, tier):
+                    continue
+                if best3 is None or d3["lcoe"] < best3[1]["lcoe"]:
+                    best3 = (cand, d3)
+            if best3 is not None:
+                cand, d3 = best3
+                print(f"  best coherent at 3 GWe: LCOE {d3['lcoe']:.1f}, "
+                      f"yield {cand['yield_mj']:.0f} MJ, L {cand['length_m']:.0f} m, "
+                      f"n_mod {d3['n_mod']}, f_rep {d3['f_rep_hz']:.2f} Hz")
     with open(OUTPUT_DIR / "coherent_min.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(all_rows[0]))
         w.writeheader()

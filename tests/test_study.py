@@ -1,7 +1,8 @@
 """Closure, config-integrity, and ladder-regression tests.
 
-Regression values are pinned at costingfe 9f86c13 (the cylinder-geometry +
-wall-audit model). If costingfe moves and a number shifts, the ladder in
+Regression values are pinned at costingfe ac2d1a8 (cylinder geometry +
+wall audit + shot-cycled CAS72 replacement scope + physics-consistent
+store markup). If costingfe moves and a number shifts, the ladder in
 docs/ledger.md must be re-based in the same change that updates the pin
 here - the red-team review's reproducibility finding is the reason this
 file exists.
@@ -106,7 +107,7 @@ def test_coherence_catches_the_withdrawn_tier2_point(model, base_cfg):
     assert "composite cap" in v
 
 
-# --- ladder regression (costingfe 9f86c13) ---------------------------------
+# --- ladder regression (costingfe ac2d1a8) ---------------------------------
 
 def _ladder_lcoe(model, base_cfg, *cfgs):
     fwd = dict(base_cfg["forward"])
@@ -118,18 +119,18 @@ def _ladder_lcoe(model, base_cfg, *cfgs):
 
 def test_baseline_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg)
-    assert diag["lcoe"] == pytest.approx(119.4, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(133.3, abs=0.2)
     assert diag["n_mod"] == 24
 
 
 def test_tier1_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg, "best_case.yaml")
-    assert diag["lcoe"] == pytest.approx(86.7, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(104.5, abs=0.2)
 
 
 def test_tier2_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg, "best_case.yaml", "tier2.yaml")
-    assert diag["lcoe"] == pytest.approx(38.3, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(38.6, abs=0.2)
     # D-rich mix carries its plant; the adder is anchored at 200 M$ for this
     # rung's own throughput (185 MW plant neutron power)
     assert diag["tritium_adder_musd"] == pytest.approx(200.0, abs=0.5)
@@ -156,7 +157,7 @@ def test_tier2_coherent_minimum(model, base_cfg):
     apply_records(fwd, "tier2.yaml")
     fwd.update(chamber_length=20.0, plasma_t=0.5, r_bore=0.6, fw_class="panel")
     _, diag = run(model, fwd)
-    assert diag["lcoe"] == pytest.approx(33.7, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(33.9, abs=0.2)
     assert not coherence_violations(fwd, diag, "tier2")
 
 
@@ -183,3 +184,13 @@ def test_tier_stacks_are_coherent(model, base_cfg):
             apply_records(f, c)
         _, diag = run(model, f)
         assert not coherence_violations(f, diag, tier), (cfgs, tier)
+
+
+def test_tritium_in_pulse_burn_anchors():
+    """The dhe3_f_T = 0 audit: reactor-class corner (1e23 m^-3, 50 keV,
+    1 ms) burns about 4% of bred tritium in-pulse; the Trenta-class
+    sub-millisecond corner stays under 1%."""
+    from tritium_burn import burn_probability
+
+    assert burn_probability(1e23, 50.0, 1e-3) == pytest.approx(0.043, abs=0.005)
+    assert burn_probability(3e22, 50.0, 3e-4) < 0.01
