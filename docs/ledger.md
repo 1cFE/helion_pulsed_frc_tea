@@ -109,6 +109,20 @@ minimum 19.0, plant neutron power rises about 5x with a dominant
 those LCOE figures are floors, because the wall/shield audit checks
 surface heat only, not the D-T-class neutron loading it would imply.
 
+`scripts/burnup_scan.py` prices the whole axis: burn_fraction swept from
+3e-4 to 0.3 with dhe3_f_T tied to the closure (thermalized branch) or
+held at zero (prompt-loss branch), at fuel_recovery 0.99 and 0.999. At
+the tier-3 minimum the headline 15.8 exists only at the high-burnup
+prompt-loss corner. If tritons thermalize, the coherent optimum shifts
+to partial burnup (0.01-0.03) at 16.6-18.4 $/MWh, carrying f_T of
+13-32% and its unpriced 14 MeV flux; the store-purist corner (f_T at or
+below 1%, burnup at or below 1e-3) costs 19.8 even at fuel_recovery
+0.999 and 63.0 at 0.99. So the fast-triton confinement question is
+worth +1 to +4 $/MWh at the floor, and fuel_recovery 0.999 is
+load-bearing everywhere below burnup 0.01. Vacuum pumping never binds
+(at most 35 M$ across the axis); the fuel recycle loss is the penalty
+that explodes at low burnup.
+
 ## Tier 1: records and published bounds
 
 | knob | baseline | value | analog class | why it applies | source | grade |

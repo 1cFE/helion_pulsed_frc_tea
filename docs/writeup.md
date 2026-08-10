@@ -117,6 +117,11 @@ basis (`scripts/tritium_burn.py`):
   this: at the tier-3 minimum the single module runs 7.1e20 D-D and
   4.6e20 D-He3 reactions per second (three quarters of the D-He3 burns
   fed by recycled bred He-3), breeding 0.30 mg of tritium per shot.
+  Sweeping the axis (`scripts/burnup_scan.py`): the 15.8 floor exists
+  only at the high-burnup prompt-triton-loss corner; thermalized tritons
+  put the coherent optimum at partial burnup (0.01-0.03, 16.6-18.4
+  $/MWh), and the store-purist corner costs 19.8 at best. The
+  fast-triton confinement question is worth +1 to +4 $/MWh at the floor.
 
 - **The store is a tonne-class tritium inventory.** Store-for-decay fixes
   the equilibrium inventory at production rate x 17.8 yr mean life: about
