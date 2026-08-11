@@ -114,14 +114,31 @@ surface heat only, not the D-T-class neutron loading it would imply.
 held at zero (prompt-loss branch), at fuel_recovery 0.99 and 0.999. At
 the tier-3 minimum the headline 15.8 exists only at the high-burnup
 prompt-loss corner. If tritons thermalize, the coherent optimum shifts
-to partial burnup (0.01-0.03) at 16.6-18.4 $/MWh, carrying f_T of
-13-32% and its unpriced 14 MeV flux; the store-purist corner (f_T at or
+to partial burnup (0.01-0.03); the store-purist corner (f_T at or
 below 1%, burnup at or below 1e-3) costs 19.8 even at fuel_recovery
-0.999 and 63.0 at 0.99. So the fast-triton confinement question is
-worth +1 to +4 $/MWh at the floor, and fuel_recovery 0.999 is
-load-bearing everywhere below burnup 0.01. Vacuum pumping never binds
-(at most 35 M$ across the axis); the fuel recycle loss is the penalty
-that explodes at low burnup.
+0.999 and 63.0 at 0.99. fuel_recovery 0.999 is load-bearing everywhere
+below burnup 0.01. Vacuum pumping never binds (at most 35 M$ across the
+axis); the fuel recycle loss is the penalty that explodes at low burnup.
+
+The scan also reprices neutron damage, which the base model cannot see
+(core_lifetime is inert for this concept): first-wall replacement is
+levelized from the 14-MeV-equivalent neutron wall load (10 dpa per
+MW yr/m^2 in Fe-based structure, 2.45 MeV D-D flux folded at 0.4) at
+two tolerances, 20 dpa (demonstrated RAFM database edge) and 50 dpa
+(DEMO design target). All-in at the tier-3 minimum: prompt-loss
+15.8-16.7 versus thermalized 23.8-31.4 at the declared burnup 0.15, so
+**keeping the tritium from burning is worth 7-15 $/MWh at the floor**;
+re-optimizing burnup on the thermalized branch (damage-aware optimum
+near 0.03) narrows it to about 5-8 at fuel_recovery 0.99 and 2-4 at
+0.999. Two couplings the damage column exposes: low burnup raises
+neutron damage as well as fuel cost (the dying recycle credit forces
+more D-D events per MWh), and the tier-2 rung's hhf wall makes
+high-f_T replacement brutal (+45 to +122 $/MWh). Shield capital
+thickening is second-order (tens of M$, under 0.5 $/MWh). The adders
+are more likely low than high: 20 dpa is fission-spectrum data, and
+14 MeV neutrons produce an order more helium per dpa, while the scan
+holds the design fixed rather than re-optimizing chamber and wall class
+under damage.
 
 ## Tier 1: records and published bounds
 

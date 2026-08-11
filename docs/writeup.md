@@ -119,9 +119,13 @@ basis (`scripts/tritium_burn.py`):
   fed by recycled bred He-3), breeding 0.30 mg of tritium per shot.
   Sweeping the axis (`scripts/burnup_scan.py`): the 15.8 floor exists
   only at the high-burnup prompt-triton-loss corner; thermalized tritons
-  put the coherent optimum at partial burnup (0.01-0.03, 16.6-18.4
-  $/MWh), and the store-purist corner costs 19.8 at best. The
-  fast-triton confinement question is worth +1 to +4 $/MWh at the floor.
+  put the coherent optimum at partial burnup (0.01-0.03), and the
+  store-purist corner costs 19.8 at best. With neutron damage repriced
+  (wall replacement at 20-50 dpa tolerance from the 14-MeV-equivalent
+  wall load) the fast-triton confinement question is worth 7-15 $/MWh
+  at the declared burnup and 2-8 after burnup re-optimization: the
+  single most valuable unmeasured plasma property in the study after
+  the recovery composite.
 
 - **The store is a tonne-class tritium inventory.** Store-for-decay fixes
   the equilibrium inventory at production rate x 17.8 yr mean life: about
