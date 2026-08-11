@@ -34,8 +34,8 @@ Design-optimized coherent minima (chamber, wall class, and burn mix chosen
 by `scripts/coherent_min.py` under the physics-consistency constraints in
 `scripts/study.py`): **tier 2: 33.9** at 1 GWe; **tier 3: 15.8** at 1 GWe,
 **12.4** at 3 GWe. Reconciliation bands around the minima (model gaps and
-conservatisms, `scripts/reconciliation.py`): tier 2 within 27.7-36.2, tier 3
-within 14.8-17.1 at 1 GWe.
+conservatisms, `scripts/reconciliation.py`): tier 2 within 27.7-38.9, tier 3
+within 14.8-17.2 at 1 GWe.
 
 ## Coherence constraints (enforced, not advisory)
 
@@ -262,9 +262,30 @@ these. The recovery-store/switch replacement gap and the over-sized
 recovery store are now inside costingfe (CAS72 replaces the shot-cycled
 C220109_cap and C220109_switch with the bank; markup_cap carries
 f_pdv (1 - f_rad)) and are priced in every number above. What remains
-outside: HVDC-class switch repricing (+1.6 tier 2 / +0.7 tier 3),
-tritium-plant band (+-0.7 / +-0.5), and a thermal-bottoming basis change
-(-5.5 / -0.5): tier 2 lands in 27.7-36.2, tier 3 in 14.8-17.1 at 1 GWe.
+outside: HVDC-class switch repricing (+1.6 tier 2 / +0.7 tier 3), the
+driver-thermalization derate (below), tritium-plant band (+-0.7 /
++-0.5), and a thermal-bottoming basis change (-5.5 / -0.5): tier 2
+lands in 27.7-38.9, tier 3 in 14.8-17.2 at 1 GWe.
+
+The driver-thermalization derate closes a disposal channel the physics
+path misses: it recovers the entire delivered driver energy at flat
+eta_dec (p_dee = eta_dec (p_driver + p_pdv) - p_driver), as if all of
+it stayed in field form, but in merging-compression the plasma-thermal
+share chi (merging kinetic energy is the heating, plus compression
+work; about half at beta of order 1) can only return through the same
+expansion channel as the fusion heat, at f_pdv. The extra recirculating
+loss eta_dec chi (1 - f_pdv) p_driver is worth +1.6/+2.6/+3.7 $/MWh at
+the tier-2 minimum for chi 0.3/0.5/0.7 (1160 MW of circulating driver
+power) and +0.1 at the tier-3 minimum; at the low-Q baseline rung it
+would be order +10. The disposal of the FUSION heat is already in the
+model: f_rad radiates to the wall, (1 - f_pdv) of the remainder is
+dumped undirected at end of pulse, and eta_th = 0 discards the lot,
+which is what drives the wall-flux audit and the bottoming credit.
+Related geometric check: adiabatic expansion caps the recoverable
+fraction at 1 - (V_i/V_f)^(2/3), so f_pdv is chamber-coupled: the
+tier-2 minimum's 20 m chamber supports about 0.82 against the claimed
+0.85, and the tier-3 45 m chamber about 0.96 against 0.947, both at
+the edge; the big chamber buys expansion ratio, not just wall area.
 
 **The observed He-3 market makes the fuel accounting first-order.** At the
 observed 19-22 M$/kg spot (he3_scan's 2e7 row) the tier-2 minimum machine

@@ -9,6 +9,15 @@ ADDERS (model gaps the red-team review identified, still open in costingfe):
   continuously is HVDC-valve class, order 100 M$/GW of commutated power.
 - Tritium-plant band: the D-rich branch carries a 200 M$ point adder in the
   stack (study.py); the band is 100-300.
+- Driver-thermalization derate: the physics path recovers the entire
+  delivered driver energy at flat eta_dec (p_dee = eta_dec*(p_driver +
+  p_pdv) - p_driver), as if it all stayed in field form. In
+  merging-compression the plasma-thermal share chi (merging kinetic ->
+  heat plus compression work; about half at beta ~ 1) returns only through
+  the expansion channel at f_pdv. Extra recirculating loss =
+  eta_dec * chi * (1 - f_pdv) * p_driver, priced as a net-output haircut
+  at chi = 0.3 / 0.5 / 0.7. A fusion-inclusive round-trip recovery
+  measurement on Polaris would pin chi together with the composite.
 
 CREDITS (model conservatisms):
 - Thermal bottoming: the machine basis discards p_th (eta_th = 0); a
@@ -110,6 +119,19 @@ def analyze(label, spec):
 
     print(f"  ADDER switch stack at HVDC class ({p_commutated_gw:.2f} GW "
           f"commutated): +{adder_switch_repricing:.2f} $/MWh")
+
+    p_driver_plant = p_driver * n_mod
+    chi_adders = {
+        chi: diag["lcoe"]
+        * (eta_dec * chi * (1.0 - f_pdv) * p_driver_plant)
+        / 1000.0
+        for chi in (0.3, 0.5, 0.7)
+    }
+    adder_driver_thermal = chi_adders[0.5]
+    print(f"  ADDER driver-thermalization derate (plant driver "
+          f"{p_driver_plant:.0f} MW, chi 0.3/0.5/0.7): "
+          + " / ".join(f"+{v:.2f}" for v in chi_adders.values())
+          + " $/MWh")
     if dd > 0.5:
         print(f"  ADDER tritium-plant band vs 200 M$ point: "
               f"{tri_lo:+.2f} / {tri_hi:+.2f} $/MWh")
@@ -121,7 +143,8 @@ def analyze(label, spec):
           f"(basis change): {credit_bottoming:+.2f} $/MWh")
 
     lo = diag["lcoe"] + tri_lo + min(credit_bottoming, 0.0)
-    hi = diag["lcoe"] + adder_switch_repricing + tri_hi
+    hi = (diag["lcoe"] + adder_switch_repricing + tri_hi
+          + adder_driver_thermal)
     print(f"  HONEST BAND: {lo:.1f} - {hi:.1f} $/MWh")
     return diag["lcoe"], lo, hi
 
