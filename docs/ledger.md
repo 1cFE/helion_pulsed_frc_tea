@@ -121,24 +121,52 @@ below burnup 0.01. Vacuum pumping never binds (at most 35 M$ across the
 axis); the fuel recycle loss is the penalty that explodes at low burnup.
 
 The scan also reprices neutron damage, which the base model cannot see
-(core_lifetime is inert for this concept): first-wall replacement is
-levelized from the 14-MeV-equivalent neutron wall load (10 dpa per
-MW yr/m^2 in Fe-based structure, 2.45 MeV D-D flux folded at 0.4) at
-two tolerances, 20 dpa (demonstrated RAFM database edge) and 50 dpa
-(DEMO design target). All-in at the tier-3 minimum: prompt-loss
-15.8-16.7 versus thermalized 23.8-31.4 at the declared burnup 0.15, so
-**keeping the tritium from burning is worth 7-15 $/MWh at the floor**;
+(core_lifetime is inert for this concept): replacement of the exposed
+package is levelized from the 14-MeV-equivalent neutron wall load
+(10 dpa per MW yr/m^2 in Fe-based structure, 2.45 MeV D-D flux folded
+at 0.4) at two tolerances, 20 dpa (demonstrated RAFM database edge) and
+50 dpa (DEMO design target). The event is C220101 + C220103: the coil
+bore sits 0.10 m behind the wall with no blanket, so the close-coupled
+copper coils see the same fluence and are replaced with the wall (they
+are the cheap part: 17 vs 109 M$ at the tier-3 minimum; ceramic
+insulation is a prerequisite, since organics die at 1e9 rad in weeks at
+these fluxes). All-in at the tier-3 minimum: prompt-loss 16.1-16.8
+versus thermalized 24.5-33.3 at the declared burnup 0.15, so **keeping
+the tritium from burning is worth 8-17 $/MWh at the floor**;
 re-optimizing burnup on the thermalized branch (damage-aware optimum
-near 0.03) narrows it to about 5-8 at fuel_recovery 0.99 and 2-4 at
+near 0.03) narrows it to about 5-9 at fuel_recovery 0.99 and 2-5 at
 0.999. Two couplings the damage column exposes: low burnup raises
 neutron damage as well as fuel cost (the dying recycle credit forces
 more D-D events per MWh), and the tier-2 rung's hhf wall makes
-high-f_T replacement brutal (+45 to +122 $/MWh). Shield capital
-thickening is second-order (tens of M$, under 0.5 $/MWh). The adders
-are more likely low than high: 20 dpa is fission-spectrum data, and
-14 MeV neutrons produce an order more helium per dpa, while the scan
-holds the design fixed rather than re-optimizing chamber and wall class
-under damage.
+high-f_T replacement brutal (+45 to +122 $/MWh).
+
+**Why the blanket escape is closed for the compression section.** A
+pulsed inductive machine pays per pulse for every cubic meter of flux
+volume between coil and plasma: W = (B^2 / 2 mu0) x annulus volume,
+recovered only at the composite efficiency. The 50 MJ driver at 10 T
+implies about 1.2 m^3 of compression-section flux volume (bore around
+0.3 m); a 0.4 m shield under the compression coil multiplies the swept
+annulus about 5x, so the store grows to roughly 270 MJ/pulse
+(C220107 and its CAS72 schedule scale with it), and the extra
+220 MJ/pulse cycled at composite 0.90 dissipates about 20 MJ/pulse:
+order 100 MW of recirculating loss at the tier-3 rep rate, and more
+than the module's output at the tier-2 composite 0.765. Eddy screening
+is the lesser problem (steel skin depth is about 16 mm at ms rise
+times, so structure must be laminated; FLiBe at 200 S/m is
+magnetically transparent); the irreducible cost is the magnetized
+volume itself. A shield is energetically cheap only around the
+low-field expansion chamber (W scales as B^2: MJ-class per pulse at
+0.5 T and below). The emerging neutron architecture is therefore
+sacrificial ceramic-insulated throat coils on the wall-replacement
+schedule plus a shielded expander, and it sharpens the tritium
+argument: the unshieldable throat is exactly where a 14 MeV spectrum
+hurts most. Honesty note the other way: the scan spreads neutrons
+uniformly over the cylinder, but the burn is localized near the
+compression section, whose wall and coils see several times the
+average load on 15-20% of the event value; a localized audit would
+raise the damage adders by very roughly 2x. Together with the
+fission-spectrum 20 dpa edge and the 10x helium-per-dpa of 14 MeV
+neutrons, the adders are more likely low than high.
 
 ## Tier 1: records and published bounds
 

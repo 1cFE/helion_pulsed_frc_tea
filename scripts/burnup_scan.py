@@ -58,7 +58,13 @@ def wall_damage_adder(result, f_t, fwd, mwh):
     p_n_dt_mw = f_t * 0.5 * rr["dd"] * E_N_DT_MEV * MEV / 1e6
     gamma_eq = (p_n_dt_mw + DPA_REL_DD * p_n_dd_mw) / area  # 14 MeV-equiv MW/m^2
     dpa_per_fpy = DPA_PER_MWY_M2_14MEV * gamma_eq
-    event = float(result.cas22_detail["C220101"]) * n_mod
+    # The coil bore sits 0.10 m behind the wall (r_bore = plasma_t + vacuum_t,
+    # no blanket), so the close-coupled copper coils see the same fluence and
+    # cannot outlive the wall: the replacement event carries both accounts.
+    event = (
+        float(result.cas22_detail["C220101"])
+        + float(result.cas22_detail["C220103"])
+    ) * n_mod
     i, n = fwd["interest_rate"], fwd["lifetime_yr"]
     avail = fwd["availability"]
     out = {}

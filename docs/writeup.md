@@ -121,11 +121,13 @@ basis (`scripts/tritium_burn.py`):
   only at the high-burnup prompt-triton-loss corner; thermalized tritons
   put the coherent optimum at partial burnup (0.01-0.03), and the
   store-purist corner costs 19.8 at best. With neutron damage repriced
-  (wall replacement at 20-50 dpa tolerance from the 14-MeV-equivalent
-  wall load) the fast-triton confinement question is worth 7-15 $/MWh
-  at the declared burnup and 2-8 after burnup re-optimization: the
-  single most valuable unmeasured plasma property in the study after
-  the recovery composite.
+  (wall plus close-coupled coil replacement at 20-50 dpa tolerance from
+  the 14-MeV-equivalent wall load; the coil bore sits 0.10 m behind the
+  wall, and shielding the compression coils is excluded by the per-pulse
+  magnetization energy of the added flux volume) the fast-triton
+  confinement question is worth 8-17 $/MWh at the declared burnup and
+  2-9 after burnup re-optimization: the single most valuable unmeasured
+  plasma property in the study after the recovery composite.
 
 - **The store is a tonne-class tritium inventory.** Store-for-decay fixes
   the equilibrium inventory at production rate x 17.8 yr mean life: about
