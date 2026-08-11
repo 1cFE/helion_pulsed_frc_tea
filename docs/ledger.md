@@ -168,6 +168,27 @@ raise the damage adders by very roughly 2x. Together with the
 fission-spectrum 20 dpa edge and the 10x helium-per-dpa of 14 MeV
 neutrons, the adders are more likely low than high.
 
+**When replacement becomes rebuilding.** The exposed package (wall +
+coils + vessel shell, 159 of 294 M$ per-module reactor hardware at the
+tier-3 minimum) crosses from maintenance into machine-replacement when
+its interval falls below event / (CRF x module hardware), about 12
+years: under that, the reactor line is replacement-dominated and the
+machine is opex. Prompt-loss at 50 dpa (28 yr interval) is a capital
+asset; prompt-loss at 20 dpa (11 yr) sits on the line; thermalized at
+the declared burnup (1.1-2.6 yr) is a consumable core, with 54% of
+module value swapped roughly annually, outspending the module's own
+capital service by an order of magnitude. In that regime the honest
+design is Helion's factory logic taken to its conclusion: a swappable
+irradiated cartridge with hot-spare bays (a single-module 1 GWe plant
+cannot hold availability 0.95 through annual month-scale swaps; a
+multi-module park can, at roughly one spare module of extra capital), a
+refurbishment line, and a few hundred tonnes per year of activated
+steel and copper that neither the CAS50 decommissioning provision
+(140 M$) nor C220110 remote handling (16 M$) is scoped for. Consumable-
+core economics are marginal-manufacturing economics, which is where the
+missing fleet-learning term (gap 1 of the alignment note) would finally
+bind on something real.
+
 ## Tier 1: records and published bounds
 
 | knob | baseline | value | analog class | why it applies | source | grade |
