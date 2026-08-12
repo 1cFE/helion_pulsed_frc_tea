@@ -20,7 +20,7 @@ from study import (
 
 # The tier-3 rung keeps the concept-YAML chamber (0.5 m x 10 m, coherent
 # under the tier-2 hhf wall at the solved rep rate); the resized-chamber
-# optimum (yield 300 MJ, 45 m x 1.0 m, panel wall, 16.1 at 1 GWe) is owned
+# optimum (yield 300 MJ, 45 m x 1.0 m, panel wall, 17.0 at 1 GWe) is owned
 # and reported by scripts/coherent_min.py. Override here only to make the
 # ladder itself quote a different tier-3 design.
 TIER3_GEOMETRY = {}

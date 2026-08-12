@@ -63,11 +63,17 @@ def fig1_ladder(model, cfg):
         ("tier 3: speculation", TIERS[2]),
         ("tier 3 minimum (design-optimized)", TIERS[2]),
     ]
-    overs = [{}, {}, {}, TIER2_MIN, {}, TIER3_MIN]
+    # The tier-3 minimum design is power-dependent: the 300 MJ single-module
+    # machine trips the wall audit at 3 GWe when the module count snaps, so
+    # the 3 GWe bar uses the coherent 200 MJ design (coherent_min.py footer).
+    TIER3_MIN_3GWE = dict(TIER3_MIN, yield_per_shot_mj=200.0)
+    overs = {1000.0: [{}, {}, {}, TIER2_MIN, {}, TIER3_MIN],
+             3000.0: [{}, {}, {}, TIER2_MIN, {}, TIER3_MIN_3GWE]}
     vals = {1000.0: [], 3000.0: []}
-    for (label, cfgs), over in zip(rows, overs):
+    for i, (label, cfgs) in enumerate(rows):
         for p in vals:
-            _, d = run(model, stack(cfg, *cfgs, net_electric_mw=p, **over))
+            _, d = run(model, stack(cfg, *cfgs, net_electric_mw=p,
+                                    **overs[p][i]))
             vals[p].append(d["lcoe"])
     labels = [r[0] for r in rows]
     y = np.arange(len(labels))[::-1]

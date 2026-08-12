@@ -63,8 +63,8 @@ Q_LIM = {"panel": 2.0, "hhf": 10.0, "beam_dump": 20.0}
 # Tritium-plant capital [M$, plant-level] charged when the burn mix is D-rich
 # enough to make the machine a bulk tritium facility (tens of kg/yr bred).
 # Red-team band 100-300 M$ (allowance, not an estimate) anchored at this
-# study's tier-2 reference machine: 1 GWe, dd_frac 0.85, about 185 MW of
-# plant-level neutron power and about 73 kg/yr of bred tritium; mid-band
+# study's tier-2 reference machine: 1 GWe, dd_frac 0.85, about 228 MW of
+# plant-level neutron power and about 87 kg/yr of bred tritium; mid-band
 # point, swept in reconciliation.py. The plant splits into a fixed core
 # (isotope separation, safety envelope, getter-bed decay store) and a
 # throughput-scaled balance, so a small plant is not charged the full

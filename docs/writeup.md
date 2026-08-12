@@ -16,7 +16,7 @@ vendor's own implied point, because the fuel cycle's recovery claim has
 no record and its reversion outweighs every finance record; defensible
 extrapolation supports about 40 \$/MWh.
 The \$10/MWh target is not reached by any coherent stack, including He-3
-at zero price (11.0 \$/MWh at 3 GWe). The floor is carried by site
+at zero price (10.9 \$/MWh at 3 GWe). The floor is carried by site
 and support infrastructure (buildings, heat rejection, staffing,
 decommissioning) and by the tritium fuel cycle, not by the capacitor
 driver; the machine has no turbine island at all. The
@@ -37,15 +37,11 @@ recovery is graded, not assumed: the JET-ILW retention record supports
 three nines (tier 1), the patent-implied fourth nine enters as a
 labelled extrapolation (tier 2), and it ties capacitor life as the
 largest single lever under the extrapolation-tier minimum
-(+39.8 \$/MWh if reverted). A
+(+44.5 \$/MWh if reverted). A
 second finding is a recovery-accounting gap: the plasma-thermal share
 of the driver energy, fixed by the FRC equilibrium at 0.30-0.71 of the
 delivered energy, can only return through the expansion channel, worth
-+1.8 to +4.2 \$/MWh at the extrapolation-tier minimum. A second
-finding is a recovery-accounting gap: the plasma-thermal share of the
-driver energy, fixed by the FRC equilibrium at 0.30-0.71 of the
-delivered energy, can only return through the expansion channel, worth
-+1.8 to +4.2 \$/MWh at the extrapolation-tier minimum. All numbers are
++3.3 to +7.8 \$/MWh at the extrapolation-tier minimum. All numbers are
 reproducible from configuration files and scripts pinned by regression
 tests (see Reproducibility).
 
@@ -103,7 +99,7 @@ the load-bearing subsystem of the concept in the tritium fuel cycle
 that carry order-10 \$/MWh each, and specifies the measurement protocol
 on the developer's own next machine that would resolve them. Everything
 here is reproducible: the tier stacks are YAML configuration files, each
-figure is produced by a named script, and seventeen regression tests pin
+figure is produced by a named script, and eighteen regression tests pin
 the ladder to a fixed revision of the cost model (see Reproducibility).
 
 ## 2. Machine basis
@@ -294,7 +290,7 @@ infrastructure and the fuel cycle dominate.*
 
 At the tier-3 minimum the single module runs 7.8e20 D-D and 4.5e20
 D-He3 reactions per second; only 1.4e20/s of the D-He3 burns are fed by
-purchased He-3, the rest by recycled bred He-3 (per-pass survival
+purchased He-3, the rest by recycled bred He-3 (cumulative fusion probability
 0.80). The module breeds tritium at half the D-D rate: 0.33 mg per
 shot, 59 kg/yr. The tier-2 reference machine carries 228 MW of plant
 neutron power and breeds about 87 kg/yr. Store-for-decay fixes the
@@ -314,8 +310,9 @@ tritium-plant allowance as more likely low than high.
 The store-and-decay idealization (dhe3_f_T = 0: no bred triton burns
 in-plasma) is not a free choice; it is a claim about pulse kinetics. A
 triton born mid-pulse sits in a deuterium-rich plasma at fusion
-temperature for the remaining dwell, and D-T reactivity is 14-43x D-D
-at 70-20 keV (Bosch and Hale 1992). The per-pulse deuterium burnup pins
+temperature for the remaining dwell, and D-T reactivity is 27-87x D-D
+at 70-20 keV (Bosch and Hale 1992), so each unit of D burnup burns
+14-43x as much of the bred tritium (the birth-averaged half-ratio). The per-pulse deuterium burnup pins
 the integrated exposure x_DD = -ln(1 - f_D) = n_D <sigma v>_DD tau
 without requiring density or dwell separately; tritons are born
 uniformly in cumulated exposure (their production rate is proportional
@@ -324,8 +321,9 @@ births gives the thermalized-limit in-pulse tritium burn
 
     f_T = 1 - (1 - e^-x)/x,  x = (sv_DT / sv_DD) x_DD,
 
-exact for any density and pulse-shape history at fixed temperature:
-the reactivity ratio is the only physics input. Two caveats bracket
+exact for any pulse-shape history at fixed density and temperature
+(a varying density reweights triton births; immaterial at the basis
+burnup): the reactivity ratio is the only physics input. Two caveats bracket
 it: a slowing 1 MeV triton passes through the D-T cross-section
 resonance, so beam-target burn can only add to the estimate, while
 prompt orbit loss from the small-s plasmoid (the triton's gyroradius
@@ -349,8 +347,8 @@ dhe3_f_T = 0 satisfies its floor with two orders of margin. Fuel
 therefore resides in the machine for of order a thousand pulses before
 burning, and the model carries the per-pulse pair burn_fraction =
 1.2e-4 and burn_fraction_he3 = 4.1e-4 (He-3 burns 3.3x faster per
-pass, so the expensive species recycles at 0.80 survival while
-deuterium leaks), with species-resolved recycle losses in the fuel
+pass, so its cumulative fusion probability is 0.80 while deuterium
+mostly leaks), with species-resolved recycle losses in the fuel
 account. The costs of that residence are the fuel cycle's load-bearing
 claims: with per-pulse reprocessing the unburned-fuel multiplier is
 83x at per-pass recovery 0.99, 9.2x at 0.999, and 1.8x at 0.9999, so
@@ -573,8 +571,8 @@ plant size is expensive**:
 | plant | LCOE (\$/MWh) | \$/kW | dominant penalties |
 |---|---|---|---|
 | 1 GWe | 17.0 | 1475 | - |
-| 250 MWe | 27.3 | 2285 | fixed site buildings, staffing^0.5 |
-| 50 MWe | 64.1 | 6464 | O&M 27 \$/MWh (staffing law), 141 M\$ of buildings, tritium-plant fixed core |
+| 250 MWe | 27.2 | 2272 | fixed site buildings, staffing^0.5 |
+| 50 MWe | 64.0 | 6450 | O&M 27 \$/MWh (staffing law), 141 M\$ of buildings, tritium-plant fixed core |
 
 ![Module size, park vs standalone](figures/fig5_plant_size.svg)
 
@@ -597,7 +595,7 @@ economics live in power parks, many modules sharing one site, one
 staff, one balance of plant. The physics is nearly indifferent to
 module size above 100 MWe, so a 50 MWe module is a manufacturing
 choice the model neither rewards nor punishes at park scale; sold as a
-standalone distributed plant it is a 64 \$/MWh machine on the full
+standalone distributed plant it is a 64.0 \$/MWh machine on the full
 speculative stack.
 
 ## 8. What would have to be true to reach \$10/MWh
@@ -605,7 +603,7 @@ speculative stack.
 On top of the full tier-3 stack at 3 GWe (13.6 \$/MWh), in decreasing order of
 plausibility:
 
-- **He-3 at effectively zero cost** (11.0 \$/MWh): a mature breeding
+- **He-3 at effectively zero cost** (10.9 \$/MWh): a mature breeding
   economy or
   an external supply two orders below the observed market. Even this
   does not break 10 \$/MWh, because the tritium plant scales with the breeding
@@ -641,7 +639,7 @@ and coherent speculation bottoms at 17 \$/MWh (1 GWe) / 14 \$/MWh
 - Model gaps priced in the bands but excluded from the headline:
   HVDC-class switch duty, tritium-plant scope, driver thermalization.
   The main conservatism cuts the other way (no thermal bottoming in the
-  basis, worth -5.5 \$/MWh at the tier-2 minimum).
+  basis, worth -8.7 \$/MWh at the tier-2 minimum).
 
 ## 10. Relation to the Borealis mirror study
 
@@ -703,7 +701,7 @@ text from the configuration files in `config/`, against the `costingfe`
 cost model at commit `7042946` (which guarantees the cylinder wall
 audit, rep-rate sizing, shot-cycled replacement scope,
 physics-consistent recovery-store markup, and per-pulse fuel-cycle
-semantics this study relies on). Seventeen regression tests in
+semantics this study relies on). Eighteen regression tests in
 `tests/test_study.py` pin every ladder rung, both coherent minima, the
 tritium-burn closure, and the chi(x_s) equilibrium anchors, and fail
 loudly if the model moves under the study.

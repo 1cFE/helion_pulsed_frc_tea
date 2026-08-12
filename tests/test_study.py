@@ -132,7 +132,7 @@ def test_tier2_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg, "best_case.yaml", "tier2.yaml")
     assert diag["lcoe"] == pytest.approx(45.5, abs=0.2)
     # D-rich mix carries its plant; the adder is anchored at 200 M$ for this
-    # rung's own throughput (185 MW plant neutron power)
+    # rung's own throughput (228 MW plant neutron power)
     assert diag["tritium_adder_musd"] == pytest.approx(200.0, abs=0.5)
 
 

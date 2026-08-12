@@ -89,8 +89,8 @@ the output of every script rather than reported:
 The store-and-decay idealization itself (dhe3_f_T = 0: no bred triton
 burns in-plasma) is checked in `scripts/tritium_burn.py`. A triton born
 mid-pulse burns before the pulse ends with probability
-(1/2) n_D <sigma v>_DT tau, and because D-T reactivity is 14-43x D-D at
-20-70 keV, each percent of per-shot D burnup burns 14-43% of the bred
+(1/2) n_D <sigma v>_DT tau, and because D-T reactivity is 27-87x D-D at
+70-20 keV (each unit of D burnup burns 14-43x as much bred tritium), each percent of per-shot D burnup burns 14-43% of the bred
 tritium in-plasma; the fuel cycle is only self-consistent with low
 per-shot burnup bought back by rep rate. At Helion's stated
 sub-millisecond dwell (helionenergy.com/faq) and Trenta-class densities
@@ -137,7 +137,7 @@ burnup 1.2-2.5e-4 and in-pulse tritium burn 0.2-0.3%, validating
 dhe3_f_T = 0. The study's burn_fraction 0.15 is therefore a cumulative
 single-pass figure (of order a thousand pulses of fuel residence)
 misapplied as per-pulse exposure; with per-pulse reprocessing the
-unburned-fuel multiplier is 83x at per-pass recovery 0.99, 9.2x at
+unburned-fuel multiplier is 84x at per-pass recovery 0.99, 9.3x at
 0.999, 1.8x at 0.9999, so the published fuel cycle's load-bearing
 claims are four-nines per-pulse fuel recovery and hertz-rate isotope
 separation. These are now the model basis (burn_fraction 1.2e-4,
@@ -195,7 +195,7 @@ annulus about 5x, so the store grows to roughly 270 MJ/pulse
 (C220107 and its CAS72 schedule scale with it), and the extra
 220 MJ/pulse cycled at composite 0.90 dissipates about 20 MJ/pulse:
 order 100 MW of recirculating loss at the tier-3 rep rate, and more
-than the module's output at the tier-2 composite 0.765. Eddy screening
+than the module's output at the tier-2 composite 0.693. Eddy screening
 is the lesser problem (steel skin depth is about 16 mm at ms rise
 times, so structure must be laminated; FLiBe at 200 S/m is
 magnetically transparent); the irreducible cost is the magnetized
@@ -259,7 +259,7 @@ bind on something real.
 | knob | baseline | value | basis | grade |
 |------|----------|-------|-------|-------|
 | cap_shot_lifetime | 1e8 | 1e9 | Pacific Fusion AMPS sec. 4.1: 100 to 35 kV derating projected to reach about 1e9 shots at about 9x lower energy density; GA Series DE cross-check (3e7-3e9 at 20% reversal). At the tier-2 point the plant fires 2.7e9 shots, so the bank is still replaced about 1.7x (charged to CAS72 by the model); the "1e9 outlives the plant" argument holds only below about 1.1 Hz. | published target |
-| fuel_recovery | 0.999 (tier-1 record) | 0.9999 | One nine beyond the JET-ILW retention record: the patent closed fuel cycle (US 2017/0011811) implies four-nines per-pulse recovery for the He-3 economy to close, and the physical argument (saturated walls, helium-dominated exhaust, direct re-injection without full reprocessing) points the right direction. No demonstration at any scale. Ties capacitor life as the largest lever under the tier-2 minimum (+39.8 $/MWh if reverted). | patent-implied extrapolation |
+| fuel_recovery | 0.999 (tier-1 record) | 0.9999 | One nine beyond the JET-ILW retention record: the patent closed fuel cycle (US 2017/0011811) implies four-nines per-pulse recovery for the He-3 economy to close, and the physical argument (saturated walls, helium-dominated exhaust, direct re-injection without full reprocessing) points the right direction. No demonstration at any scale. Ties capacitor life as the largest lever under the tier-2 minimum (+44.5 $/MWh if reverted). | patent-implied extrapolation |
 | eta_dec | 0.85 | 0.90 | Bottom of the patent band, circuit-only, no fusion-inclusive measurement. Paired with f_pdv under the composite cap (0.90 x 0.77 = 0.693 <= 0.80). | weak-moderate |
 | f_pdv | 0.80 | 0.77 | Radial-only recovery bound: the 18x adiabatic expansion supports 0.85 of total boundary work, but FRC adiabatic scalings put about 1/5 of that work in axial elongation, captured only if the end circuits are switched for recovery during the stroke, which no publication claims. A mild anti-record against the concept-YAML 0.80; the axial-capture claim is priced at tier 3 (f_pdv 0.947 requires it). | physics bound |
 | eta_pin | 0.95 | 0.98 | Solid-state pulsed-power wall-plug efficiency; plausible for modern semiconductor switching, no datasheet or Helion statement located. | UNSOURCED |
@@ -300,9 +300,9 @@ constraints, at each evidence level:
 
 | evidence level | minimum | design at the minimum |
 |---|---|---|
-| tier 2, 1 GWe | **33.9** | cited shot (101.4 MJ), 8 modules at 2.9 Hz, 20 m x 0.5 m chambers, panel wall at 1.8 MW/m^2, D-rich mix with tritium plant |
-| tier 3, 1 GWe | **15.8** | 300 MJ shots (Q about 6), single module at 5.9 Hz, 45 m x 1.0 m chamber, panel wall at 1.9 MW/m^2 (a 200-750 MJ plateau ties within 0.1) |
-| tier 3, 3 GWe | **12.4** | 3 modules of the 200 MJ / 45 m design at 8.9 Hz (larger shots trip the wall audit once the integer module count snaps down) |
+| tier 2, 1 GWe | **40.3** | cited shot (101.4 MJ), 9 modules at 2.9 Hz, 20 m x 0.5 m chambers, panel wall, D-rich mix with tritium plant |
+| tier 3, 1 GWe | **17.0** | 300 MJ shots (Q about 6), single module at 5.9 Hz, 45 m x 1.0 m chamber, panel wall (a 200-750 MJ plateau ties within 0.1; the scan argmin is 16.9 at 500 MJ) |
+| tier 3, 3 GWe | **13.6** | 3 modules of the 200 MJ / 45 m design at 9.0 Hz (larger shots trip the wall audit once the integer module count snaps down) |
 
 Reconciliation (`scripts/reconciliation.py`) puts honest bands around
 these. The recovery-store/switch replacement gap and the over-sized
@@ -311,7 +311,7 @@ C220109_cap and C220109_switch with the bank; markup_cap carries
 f_pdv (1 - f_rad)) and are priced in every number above. What remains
 outside: HVDC-class switch repricing (+1.6 tier 2 / +0.7 tier 3), the
 driver-thermalization derate (below), tritium-plant band (+-0.7 /
-+-0.5), and a thermal-bottoming basis change (-5.5 / -0.5): tier 2
++-0.5), and a thermal-bottoming basis change (-8.7 / -0.7): tier 2
 lands in 27.7-39.0, tier 3 in 14.8-17.2 at 1 GWe.
 
 The driver-thermalization derate closes a disposal channel the physics
@@ -351,7 +351,7 @@ changes flux linkage through the END coils and is captured only if
 those circuits are switched for recovery during the stroke; parallel
 particle streaming through the exhaust is captured by nothing. A
 radial-only-recovery design caps f_pdv near 0.77, i.e. the tier-2
-composite: the tier-2 to tier-3 recovery step (0.765 -> 0.90) is
+composite: the tier-2 to tier-3 recovery step (0.693 -> 0.90) is
 equivalent to claiming capture of the axial channel, and the Polaris
 shot triplet resolves it.
 
@@ -367,7 +367,7 @@ netted against the purchased 1 - dd_frac per event. Without the decay
 return the machine imports about 45 kg/yr; crediting it flips the
 plant to a net exporter. The u_he3 = 0 row (28.0 $/MWh) is the full
 steady-state self-supply limit. The distance between
-those two readings, 25.5 vs 110 at the same machine, is the value of an
+those two readings, 28.0 vs 151 at the same machine, is the value of an
 open accounting question: the study prices the decay store's capital,
 inventory, and licensing consequences but does not credit its product,
 which is conservative-incoherent in the same sense constraint 4 forbids
@@ -375,7 +375,7 @@ optimistic-incoherence. Worth about 8 $/MWh at the study's u_he3 and
 80+ at the observed spot; item 6 below.
 
 **The $10/MWh target is not reached by any coherent stack in this study.**
-The closest approaches: 12.4 at 3 GWe on full tier-3 speculation, and 10.4
+The closest approaches: 13.6 at 3 GWe on full tier-3 speculation, and 10.9
 if He-3 is additionally free (u_he3 = 0, `scripts/he3_scan.py` footer),
 one more speculation than tier 3
 already carries - and even that no longer breaks 10 once the tritium plant
