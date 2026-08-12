@@ -7,7 +7,7 @@ electricity (LCOE) can be pushed while remaining internally consistent,
 against the developer's public 10 \$/MWh ambition. Optimism is
 disciplined three ways: every input is placed on an evidence ladder
 (records, labelled extrapolations, labelled speculation); four physics
-couplings from an adversarial review are enforced on every quoted point;
+couplings are enforced on every quoted point;
 and the operating point at each evidence level is found by a constrained
 design-space search rather than asserted. The coherent floor is
 17.0 \$/MWh at 1 GWe and 13.6 \$/MWh at 3 GWe on full speculation;
@@ -45,7 +45,7 @@ driver energy, fixed by the FRC equilibrium at 0.30-0.71 of the
 delivered energy, can only return through the expansion channel, worth
 +1.8 to +4.2 \$/MWh at the extrapolation-tier minimum. All numbers are
 reproducible from configuration files and scripts pinned by regression
-tests at `costingfe` commit `7042946`.
+tests (see Reproducibility).
 
 ## 1. Introduction
 
@@ -79,12 +79,12 @@ is not one number but a ladder of numbers, each labelled with the
 evidence it stands on.
 
 Three disciplines keep the ladder honest. First, an **evidence-tier
-ladder** in the convention of the companion Borealis mirror study: tier 1
+ladder**: tier 1
 admits only citable records and published bounds; tier 2 admits labelled
 extrapolations from stated roadmaps or physical arguments; tier 3 admits
 labelled speculation, kept but never laundered into a lower tier.
-Second, **enforced coherence**: four physics couplings identified by an
-adversarial red-team review are checked programmatically on every quoted
+Second, **enforced coherence**: four physics couplings are checked
+programmatically on every quoted
 point, so that a fuel credit cannot be claimed without its radiation and
 tritium consequences, a recovery efficiency cannot be double-booked, and
 a shot cannot be costed in a chamber it would melt. Third, **design
@@ -102,11 +102,12 @@ that carry order-10 \$/MWh each, and specifies the measurement protocol
 on the developer's own next machine that would resolve them. Everything
 here is reproducible: the tier stacks are YAML configuration files, each
 figure is produced by a named script, and seventeen regression tests pin
-the ladder to `costingfe` commit `7042946`.
+the ladder to a fixed revision of the cost model (see Reproducibility).
 
 ## 2. Machine basis
 
-The machine follows Helion's published architecture at face value. Two
+The machine follows Helion's published architecture at face value
+(Helion Energy technology and FAQ pages; Kirtley and Milroy 2023). Two
 FRC plasmoids are formed by theta-pinch field reversal in opposed
 formation sections, accelerated electromagnetically, and merged in a
 central compression section, where the collision converts their directed
@@ -129,7 +130,7 @@ than any disclosed measurement. A 1 GWe plant is built as an integer
 number of Helion-class modules, with the repetition rate and module
 count solved jointly from the net-power target under a rep-rate ceiling.
 
-The fuel cycle is Helion's stated one. Running deuterium-rich
+The fuel cycle is Helion's stated one (US patent 2017/0011811). Running deuterium-rich
 (dd_frac = 0.85 at the extrapolation tier and above), half the D-D
 reactions breed tritium. None of it is recycled into the burn
 (dhe3_f_T = 0 in the basis): the exhaust is pumped, isotope-separated,
@@ -157,13 +158,13 @@ stack) with a loud warning whenever the chain does not outlive the
 plant.
 
 **Evidence ladder.** Tier 1 (records): financing at 4.25% from a
-sovereign-backed generation precedent, 2.5-year construction, 8%
-indirects, availability 0.95 (held below the sister study's 0.98
-because the shot-cycled bank forces swap outages), and per-pulse fuel
+sovereign-backed generation precedent (Apostoleris et al. 2021), 2.5-year construction (Siemens Energy CCGT block precedent), 8%
+indirects (US DOE/NETL QGESS), availability 0.95 (US DOE geothermal
+fleet data, derated for bank-swap outages), and per-pulse fuel
 recovery reverted from the vendor-implied 0.9999 to 0.999, the value
-the JET-ILW retention record supports. Tier 2 (labelled
-extrapolations): capacitor life 1e9 shots (a published derating
-target), recovery composite 0.765, 3 Hz on a purchased divertor-class
+the JET-ILW retention record supports (Brezinsek et al. 2013). Tier 2 (labelled
+extrapolations): capacitor life 1e9 shots (the Pacific Fusion AMPS
+derating target; Langtry et al. 2025), recovery composite 0.765, 3 Hz on a purchased divertor-class
 wall, the D-rich burn mix with its tritium plant, and fuel recovery
 0.9999 (the patent-implied fourth nine). Tier 3 (labelled
 speculation): 10 Hz, composite 0.90 (the theory optimum with zero
@@ -285,7 +286,7 @@ The store-and-decay idealization (dhe3_f_T = 0: no bred triton burns
 in-plasma) is not a free choice; it is a claim about pulse kinetics. A
 triton born mid-pulse sits in a deuterium-rich plasma at fusion
 temperature for the remaining dwell, and D-T reactivity is 14-43x D-D
-at 70-20 keV. The per-shot deuterium burnup pins the integrated
+at 70-20 keV (Bosch and Hale 1992). The per-shot deuterium burnup pins the integrated
 exposure x_DD = -ln(1 - f_D) = n_D <sigma v>_DD tau without requiring
 density or dwell separately, and averaging triton births over the pulse
 gives the in-pulse tritium burn probability
@@ -435,8 +436,10 @@ it leaks). What it never credits is the decay store's He-3 return,
 the machine imports about 45 kg/yr of He-3; crediting it flips the
 plant to a net exporter. The question is not academic,
 because the only observed He-3 transactions (2024-2026: spot near
-\$2,500/L, lunar-extraction agreements priced "at today's commercial
-market price", an unpriced lunar supply option) sit at 19-22 M\$/kg on
+\$2,500/L per the Edelgas Group; Interlune's DOE Isotope Program and
+Maybell Quantum agreements priced "at today's commercial market
+price"; TAE's unpriced Black Moon lunar supply option) sit at
+19-22 M\$/kg on
 gram-to-kilogram volumes, 10x above the study's baseline price and 40x
 above its tier-3 entry, with every new entrant building toward the high
 price. At the observed spot the tier-2 minimum reads 136 \$/MWh at the
@@ -462,8 +465,8 @@ in field form. The plasma-thermal share chi can only return through the
 same expansion channel as the fusion heat, at f_pdv, on an adiabat
 already degraded by the deliberately irreversible merging. chi is not a
 free parameter: at peak compression, radial equilibrium and the FRC
-average-beta theorem (<beta> = 1 - x_s^2/2) fix it as a function of the
-separatrix-to-coil radius ratio alone,
+average-beta theorem (<beta> = 1 - x_s^2/2; Tuszewski 1988) fix it as
+a function of the separatrix-to-coil radius ratio alone,
 
     chi(x_s) = 1.5 <beta> x_s^2 / (1.5 <beta> x_s^2 + 1 - x_s^2),
 
@@ -483,6 +486,24 @@ about 0.82 against its claimed 0.85, and the tier-3 45 m chamber about
 0.96 against 0.947. Both sit at the geometric edge: the large chamber
 buys expansion ratio, not merely wall area, and claimed recovery
 fractions cannot be improved without more chamber.
+
+**The parallel channel.** The expansion work is not all radial, and the
+components couple to the circuit differently. Radial expansion
+compresses flux against the main coil: the cleanly captured channel.
+Axial elongation pushes the diamagnetic plasmoid against the end-field
+gradient, changing flux linkage through the end and adjacent coils:
+capturable only if those circuits are switched for recovery during the
+stroke, a design choice. Parallel particle streaming along open field
+lines (the exhaust) couples to nothing and lands in the undirected
+residual. FRC adiabatic scalings (r_s proportional to B^-2/5, length
+to B^-1/5; Tuszewski 1988, Kirtley and Milroy 2023) put the axial
+share of the boundary work near 1/5, and a self-similar cylinder
+bounds it at 1/3, so a machine that recovers only the radial channel
+caps f_pdv at roughly 0.67-0.8 of the adiabatic bound, about 0.77 at
+the tier-3 chamber. The tier-2 to tier-3 recovery step (composite
+0.765 to 0.90) is therefore equivalent to claiming capture of the
+axial expansion channel; the claim is priced, and it is measurable on
+the same shot sequence below.
 
 **Measurement protocol.** A three-shot sequence on Polaris separates
 the whole chain: a vacuum shot measures eta_dec alone; a plasma no-burn
@@ -512,8 +533,9 @@ plant size is expensive**:
 The penalty decomposes into three mechanisms: about 138 M\$ of fixed
 site buildings calibrated on fission-class analogs (an analog-class
 question for a factory-shipped unit on an industrial pad); the P^0.5
-staffing law (no documented record yet supports remote fleet
-operation of a fusion-class plant, so it stays); and the absence of any
+staffing law (INL sodium-fast-reactor staffing basis; no documented
+record yet supports remote fleet operation of a fusion-class plant, so
+it stays); and the absence of any
 fleet-learning term on equipment, the one mechanism that could make
 mass-produced small units positively cheaper, which must be anchored
 beyond the fleet size the NOAK constants already assume or it double
@@ -620,3 +642,57 @@ deployment, swappable cores) is well matched to the failure modes the
 physics imposes, and the measurements that would move its ladder rungs
 from speculation to evidence are all available on hardware the
 developer is already building.
+
+## Reproducibility
+
+All quantities in this paper are produced by the scripts named in the
+text from the configuration files in `config/`, against the `costingfe`
+cost model at commit `7042946` (which guarantees the cylinder wall
+audit, rep-rate sizing, shot-cycled replacement scope,
+physics-consistent recovery-store markup, and per-pulse fuel-cycle
+semantics this study relies on). Seventeen regression tests in
+`tests/test_study.py` pin every ladder rung, both coherent minima, the
+tritium-burn closure, and the chi(x_s) equilibrium anchors, and fail
+loudly if the model moves under the study.
+
+## References
+
+- Apostoleris, H., et al. (2021). "The view from the sun: revisiting
+  record-low solar PPA prices." Progress in Photovoltaics 29.
+- Bosch, H.-S., and Hale, G. M. (1992). "Improved formulas for fusion
+  cross-sections and thermal reactivities." Nuclear Fusion 32, 611.
+- Brezinsek, S., et al. (2013). "Fuel retention studies with the ITER-
+  Like Wall in JET." Nuclear Fusion 53, 083023.
+- Helion Energy. Technology and FAQ pages (helionenergy.com/technology,
+  /faq); Microsoft power purchase agreement announcement (2023); Nucor
+  500 MW facility announcement (2024).
+- Helion Energy (Slough, J., et al.). US patent application
+  2017/0011811, "Advanced fuel cycle and fusion reactors utilizing the
+  same" (the breed-extract-store-decay fuel cycle and its operating
+  table).
+- Helion Energy. US patent application 2024/0275198 (inductive
+  recovery circuit band cited for eta_dec).
+- Kirtley, D., and Milroy, R. (2023). "Fundamental scaling of
+  adiabatic compression of field reversed configuration thermonuclear
+  fusion plasmas." Journal of Fusion Energy 42, 30.
+- Langtry, A., et al. (2025). "Affordable, manageable, practical
+  Z-pinch driver (AMPS)." arXiv:2504.10680 (capacitor derating and
+  shot-life target; MagLIF burn fraction).
+- Rubin, T. (2026). costingfe: a bottom-up fusion power plant cost
+  model. Repository at commit `7042946`.
+- Tuszewski, M. (1988). "Field reversed configurations." Nuclear
+  Fusion 28, 2033 (FRC equilibrium, average-beta theorem, adiabatic
+  scalings).
+- US DOE/NETL. Quality Guidelines for Energy System Studies: EPCM
+  indirect-cost basis.
+- US DOE Geothermal Technologies Office. Geothermal FAQ (fleet
+  availability).
+- Edelgas Group (2024). Helium-3 market pricing, as reported in
+  SpaceNews and Newsweek coverage of the Interlune agreements (2025);
+  Interlune-DOE Isotope Program and Interlune-Maybell Quantum
+  agreements (2025); TAE Technologies and Black Moon Energy Corporation
+  helium-3 supply option (2026).
+- Sethian, J., et al.; Moses, E., et al. (laser-IFE reactor burn
+  fractions, cited via the cost model's per-concept appendix).
+- Idaho National Laboratory. Advanced-reactor staffing studies (the
+  P^0.5 O&M scaling basis).
