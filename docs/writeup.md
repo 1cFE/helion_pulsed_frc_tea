@@ -29,7 +29,7 @@ tests pin the ladder in `tests/test_study.py`.
 Design optimization under the same evidence (chamber size, wall class, and
 yield chosen rather than inherited) improves the last two rungs to **33.9**
 (tier 2, 1 GWe) and **15.8 / 12.4** (tier 3, 1 / 3 GWe). Reconciliation
-bands (model gaps vs conservatisms): tier 2 in 27.7-38.9, tier 3 in
+bands (model gaps vs conservatisms): tier 2 in 27.7-39.0, tier 3 in
 14.8-17.2 at 1 GWe. The baseline and tier-1 rungs are dominated by
 scheduled replacement: the whole shot-cycled recovery chain (driver bank,
 recovery store, switch stack) is replaced on the capacitor-life schedule,

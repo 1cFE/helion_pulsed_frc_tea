@@ -205,3 +205,13 @@ def test_burnup_closure_contradicts_store_and_decay():
     assert f_t_from_burnup(0.15, 70.0) == pytest.approx(0.78, abs=0.02)
     assert f_t_from_burnup(0.15, 20.0) == pytest.approx(0.93, abs=0.02)
     assert f_t_from_burnup(7.3e-4, 70.0) < 0.011
+
+
+def test_chi_from_xs_equilibrium_anchors():
+    """FRC average-beta theorem pins the driver-thermalization share:
+    x_s 0.5/0.7/0.85 -> chi 0.30/0.52/0.71."""
+    from reconciliation import chi_from_xs
+
+    assert chi_from_xs(0.5) == pytest.approx(0.304, abs=0.01)
+    assert chi_from_xs(0.7) == pytest.approx(0.52, abs=0.01)
+    assert chi_from_xs(0.85) == pytest.approx(0.71, abs=0.01)

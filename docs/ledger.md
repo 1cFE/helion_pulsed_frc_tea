@@ -34,7 +34,7 @@ Design-optimized coherent minima (chamber, wall class, and burn mix chosen
 by `scripts/coherent_min.py` under the physics-consistency constraints in
 `scripts/study.py`): **tier 2: 33.9** at 1 GWe; **tier 3: 15.8** at 1 GWe,
 **12.4** at 3 GWe. Reconciliation bands around the minima (model gaps and
-conservatisms, `scripts/reconciliation.py`): tier 2 within 27.7-38.9, tier 3
+conservatisms, `scripts/reconciliation.py`): tier 2 within 27.7-39.0, tier 3
 within 14.8-17.2 at 1 GWe.
 
 ## Coherence constraints (enforced, not advisory)
@@ -265,19 +265,28 @@ f_pdv (1 - f_rad)) and are priced in every number above. What remains
 outside: HVDC-class switch repricing (+1.6 tier 2 / +0.7 tier 3), the
 driver-thermalization derate (below), tritium-plant band (+-0.7 /
 +-0.5), and a thermal-bottoming basis change (-5.5 / -0.5): tier 2
-lands in 27.7-38.9, tier 3 in 14.8-17.2 at 1 GWe.
+lands in 27.7-39.0, tier 3 in 14.8-17.2 at 1 GWe.
 
 The driver-thermalization derate closes a disposal channel the physics
 path misses: it recovers the entire delivered driver energy at flat
 eta_dec (p_dee = eta_dec (p_driver + p_pdv) - p_driver), as if all of
-it stayed in field form, but in merging-compression the plasma-thermal
-share chi (merging kinetic energy is the heating, plus compression
-work; about half at beta of order 1) can only return through the same
-expansion channel as the fusion heat, at f_pdv. The extra recirculating
-loss eta_dec chi (1 - f_pdv) p_driver is worth +1.6/+2.6/+3.7 $/MWh at
-the tier-2 minimum for chi 0.3/0.5/0.7 (1160 MW of circulating driver
+it stayed in field form, but the machine has no auxiliary heating
+(merging shock plus compression work ARE the heating, all driver-fed),
+so the plasma-thermal share chi can only return through the same
+expansion channel as the fusion heat, at f_pdv. chi is not a free
+parameter: at peak compression the FRC equilibrium pins it through the
+average-beta theorem (<beta> = 1 - x_s^2/2), giving
+chi = 1.5 <beta> x_s^2 / (1.5 <beta> x_s^2 + 1 - x_s^2), a function of
+the separatrix-to-coil radius ratio alone: x_s 0.5/0.7/0.85 maps to
+chi 0.30/0.52/0.71, so fat FRCs are high-chi machines and good FRC
+confinement physics pushes the derate up. The extra recirculating loss
+eta_dec chi (1 - f_pdv) p_driver is worth +1.6/+2.8/+3.8 $/MWh at the
+tier-2 minimum across that x_s span (1160 MW of circulating driver
 power) and +0.1 at the tier-3 minimum; at the low-Q baseline rung it
-would be order +10. The disposal of the FUSION heat is already in the
+would be order +10. The Polaris shot triplet (vacuum / plasma no-burn /
+burning) separates eta_dec, chi (1 - f_pdv), and the fusion composite,
+so the study's most-wanted measurement delivers chi as a by-product;
+until then, published excluded-flux radii (x_s) pin it per shot. The disposal of the FUSION heat is already in the
 model: f_rad radiates to the wall, (1 - f_pdv) of the remainder is
 dumped undirected at end of pulse, and eta_th = 0 discards the lot,
 which is what drives the wall-flux audit and the bottoming credit.

@@ -12,12 +12,16 @@ ADDERS (model gaps the red-team review identified, still open in costingfe):
 - Driver-thermalization derate: the physics path recovers the entire
   delivered driver energy at flat eta_dec (p_dee = eta_dec*(p_driver +
   p_pdv) - p_driver), as if it all stayed in field form. In
-  merging-compression the plasma-thermal share chi (merging kinetic ->
-  heat plus compression work; about half at beta ~ 1) returns only through
-  the expansion channel at f_pdv. Extra recirculating loss =
-  eta_dec * chi * (1 - f_pdv) * p_driver, priced as a net-output haircut
-  at chi = 0.3 / 0.5 / 0.7. A fusion-inclusive round-trip recovery
-  measurement on Polaris would pin chi together with the composite.
+  merging-compression the plasma-thermal share chi returns only through
+  the expansion channel at f_pdv. chi is not free: at peak compression
+  the FRC equilibrium pins it via the average-beta theorem
+  (<beta> = 1 - x_s^2/2), giving chi(x_s) = 1.5<beta>x_s^2 /
+  (1.5<beta>x_s^2 + 1 - x_s^2); the priced band chi = 0.3/0.5/0.7 is
+  x_s = 0.5/0.7/0.85, bracketing the realistic separatrix-to-coil
+  ratios (fat FRCs are high-chi machines). Extra recirculating loss =
+  eta_dec * chi * (1 - f_pdv) * p_driver, priced as a net-output
+  haircut. The Polaris shot triplet (vacuum / plasma no-burn / burn)
+  separates eta_dec, chi*(1 - f_pdv), and the fusion composite.
 
 CREDITS (model conservatisms):
 - Thermal bottoming: the machine basis discards p_th (eta_th = 0); a
@@ -63,6 +67,19 @@ ETA_TH_BOTTOMING = 0.30
 
 def crf(i, n):
     return i * (1 + i) ** n / ((1 + i) ** n - 1)
+
+
+def chi_from_xs(x_s: float) -> float:
+    """Plasma-thermal share of the in-tank driver energy at peak compression.
+
+    FRC radial equilibrium with the average-beta theorem <beta> = 1 - x_s^2/2
+    (x_s = separatrix/coil radius ratio): plasma internal energy
+    1.5 <beta> (B^2/2mu0) V_s against annulus field energy
+    (B^2/2mu0)(V_c - V_s). End-region field and coil overhang lower this;
+    profile and kinetic corrections are tens of percent."""
+    beta = 1.0 - 0.5 * x_s**2
+    u_p = 1.5 * beta * x_s**2
+    return u_p / (u_p + 1.0 - x_s**2)
 
 
 def analyze(label, spec):
@@ -122,14 +139,15 @@ def analyze(label, spec):
 
     p_driver_plant = p_driver * n_mod
     chi_adders = {
-        chi: diag["lcoe"]
-        * (eta_dec * chi * (1.0 - f_pdv) * p_driver_plant)
+        round(chi_from_xs(xs), 2): diag["lcoe"]
+        * (eta_dec * chi_from_xs(xs) * (1.0 - f_pdv) * p_driver_plant)
         / 1000.0
-        for chi in (0.3, 0.5, 0.7)
+        for xs in (0.5, 0.7, 0.85)
     }
-    adder_driver_thermal = chi_adders[0.5]
+    adder_driver_thermal = chi_adders[round(chi_from_xs(0.7), 2)]
     print(f"  ADDER driver-thermalization derate (plant driver "
-          f"{p_driver_plant:.0f} MW, chi 0.3/0.5/0.7): "
+          f"{p_driver_plant:.0f} MW; chi(x_s 0.5/0.7/0.85) = "
+          + "/".join(f"{c:.2f}" for c in chi_adders) + "): "
           + " / ".join(f"+{v:.2f}" for v in chi_adders.values())
           + " $/MWh")
     if dd > 0.5:
