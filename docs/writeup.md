@@ -11,8 +11,10 @@ couplings from an adversarial review are enforced on every quoted point;
 and the operating point at each evidence level is found by a constrained
 design-space search rather than asserted. The coherent floor is
 17.0 \$/MWh at 1 GWe and 13.6 \$/MWh at 3 GWe on full speculation;
-records alone support about 112 \$/MWh and defensible extrapolation
-about 38 \$/MWh.
+the record-supported rung sits at about 191 \$/MWh, above the
+vendor's own implied point, because the fuel cycle's recovery claim has
+no record and its reversion outweighs every finance record; defensible
+extrapolation supports about 38 \$/MWh.
 The \$10/MWh target is not reached by any coherent stack, including He-3
 at zero price (11.0 \$/MWh at 3 GWe). The floor is carried by site
 and support infrastructure (buildings, heat rejection, staffing,
@@ -27,9 +29,13 @@ store-and-decay He-3 self-supply idealization (dhe3_f_T = 0) holds.
 The price of that coherence is the fuel cycle itself: fuel transits the
 exhaust loop of order 1e3-1e4 times before burning, so per-pulse
 isotope separation at the repetition rate and per-pass fuel recovery of
-0.9999 are the load-bearing engineering claims (the fourth nine is
-worth 10 \$/MWh at the floor, the third 120 \$/MWh), and per-pulse
-exhaust pumping becomes a first-order account (79 M\$ at the floor). A
+0.9999 are the load-bearing engineering claims, and per-pulse exhaust
+pumping becomes a first-order account (79 M\$ at the floor). The
+recovery is graded, not assumed: the JET-ILW retention record supports
+three nines (tier 1), the patent-implied fourth nine enters as a
+labelled extrapolation (tier 2), and it ties capacitor life as the
+largest single lever under the extrapolation-tier minimum
+(+39.8 \$/MWh if reverted). A
 second finding is a recovery-accounting gap: the plasma-thermal share
 of the driver energy, fixed by the FRC equilibrium at 0.30-0.71 of the
 delivered energy, can only return through the expansion channel, worth
@@ -153,10 +159,13 @@ plant.
 **Evidence ladder.** Tier 1 (records): financing at 4.25% from a
 sovereign-backed generation precedent, 2.5-year construction, 8%
 indirects, availability 0.95 (held below the sister study's 0.98
-because the shot-cycled bank forces swap outages). Tier 2 (labelled
+because the shot-cycled bank forces swap outages), and per-pulse fuel
+recovery reverted from the vendor-implied 0.9999 to 0.999, the value
+the JET-ILW retention record supports. Tier 2 (labelled
 extrapolations): capacitor life 1e9 shots (a published derating
 target), recovery composite 0.765, 3 Hz on a purchased divertor-class
-wall, and the D-rich burn mix with its tritium plant. Tier 3 (labelled
+wall, the D-rich burn mix with its tritium plant, and fuel recovery
+0.9999 (the patent-implied fourth nine). Tier 3 (labelled
 speculation): 10 Hz, composite 0.90 (the theory optimum with zero
 margin), capacitor capital at 0.1 \$/J, shot life 1e10, He-3 at
 0.5 M\$/kg, 80-year plant life. Every entry carries a source and grade
@@ -190,8 +199,8 @@ bottoming), yielding an honest band rather than a point.
 | rung | 1 GWe (\$/MWh) | 3 GWe (\$/MWh) | contents |
 |---|---|---|---|
 | design baseline | 142.6 | 137.9 | Helion's implied point: 50 MJ driver, 101.4 MJ yield, 1 Hz, D-rich mix at its bremsstrahlung floor |
-| tier 1: records | 112.1 | 109.1 | finance (4.25%), 2.5 yr construction, 8% indirects, availability 0.95 |
-| tier 2: extrapolations | 42.1 | 38.8 | cap life 1e9, composite 0.765, 3 Hz on a divertor-class wall, D-rich mix with tritium plant |
+| tier 1: records | 191.4 | 188.4 | finance (4.25%), 2.5 yr construction, 8% indirects, availability 0.95, fuel recovery reverted to the JET-class 0.999 |
+| tier 2: extrapolations | 42.1 | 38.8 | cap life 1e9, composite 0.765, 3 Hz on a divertor-class wall, D-rich mix with tritium plant, fuel recovery 0.9999 (patent-implied) |
 | tier 3: speculation | 17.9 | 14.4 | 10 Hz, composite 0.90, cap \$/J 0.1, cap life 1e10, He-3 at 0.5 M\$/kg, 80 yr |
 
 Design optimization improves the last two rungs to **37.5 \$/MWh** (tier 2,
@@ -201,13 +210,20 @@ at 2.9 Hz) and **17.0 / 13.6 \$/MWh** (tier 3, 1 / 3 GWe: 200-750 MJ shots in
 tier 2 within 30.3-42.9 \$/MWh, tier 3 within 15.8-18.4 \$/MWh at
 1 GWe.
 
-The baseline and record rungs are dominated by scheduled replacement:
-the entire shot-cycled recovery chain is replaced on the capacitor-life
-schedule, about eight times over plant life at the 1e8-shot record life.
+The record rung sits above the design baseline: reverting the vendor's
+per-pulse fuel recovery to the JET-class record (0.999) costs
++79 \$/MWh on the lean mix's purchased He-3, more than every finance
+record saves. On evidence alone, the vendor's fuel cycle is uneconomic;
+the descent begins only when the recovery extrapolation is granted at
+tier 2. The baseline and record rungs are also dominated by scheduled
+replacement: the entire shot-cycled recovery chain is replaced on the
+capacitor-life schedule, about eight times over plant life at the
+1e8-shot record life.
 One-at-a-time reversion from the tier-2 minimum ranks the levers:
 
 | knob reverted | LCOE (\$/MWh) | delta (\$/MWh) |
 |---|---|---|
+| fuel_recovery -> 0.999 (JET-class record) | 77.3 | +39.8 |
 | cap_shot_lifetime -> 1e8 | 76.7 | +39.3 |
 | dhe3_dd_frac -> 0.314 (with its f_rad) | 52.7 | +15.2 |
 | max_f_rep -> 1 Hz | 49.0 | +11.5 |
@@ -216,8 +232,10 @@ One-at-a-time reversion from the tier-2 minimum ranks the levers:
 | f_pdv -> 0.80 | 39.6 | +2.2 |
 | eta_pin -> 0.95 | 39.5 | +2.0 |
 
-Capacitor cycle life is the dominant lever by a factor of three; the
-burn-mix package and the rep rate follow; the conversion efficiencies,
+Two levers co-dominate at about +40 \$/MWh each: the per-pulse fuel
+recovery (an extrapolated nine beyond the JET retention record) and the
+capacitor cycle life (a published derating target); the burn-mix
+package and the rep rate follow; the conversion efficiencies,
 once capped as a composite, are worth little at the margin (an
 incoherent double-booking of eta_dec = 0.97 with f_pdv = 0.95 would
 claim tens of \$/MWh and is excluded by construction).
@@ -322,8 +340,11 @@ are the load-bearing engineering claims of the published fuel cycle,
 and the tritium plant is their price. These are the model's basis:
 burn_fraction = 1.2e-4 and burn_fraction_he3 = 4.1e-4 per pulse (He-3
 burns 3.3x faster per pass, so the expensive species recycles at 0.80
-survival while deuterium leaks), fuel_recovery = 0.9999 per pulse, with
-species-resolved recycle losses in the fuel account.
+survival while deuterium leaks), with species-resolved recycle losses
+in the fuel account. The recovery itself is laddered: the vendor-implied
+0.9999 stays in the design basis, tier 1 reverts it to the JET-ILW
+retention record (0.999), and tier 2 re-grants the fourth nine as a
+labelled extrapolation.
 
 ### 5.3 The burnup axis
 
@@ -522,9 +543,10 @@ plausibility:
   small-unit strategy at all.
 
 None of these is in the evidence base at any tier. Within what the
-study can defend: records support about 112 \$/MWh, defensible
-extrapolation about 38 \$/MWh, and coherent speculation bottoms at
-17 \$/MWh (1 GWe) / 14 \$/MWh (3 GWe).
+study can defend: records alone price the concept at about 191 \$/MWh (above its own
+design baseline), defensible extrapolation supports about 38 \$/MWh,
+and coherent speculation bottoms at 17 \$/MWh (1 GWe) / 14 \$/MWh
+(3 GWe).
 
 ## 9. Caveats that survive into the headline
 

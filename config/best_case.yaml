@@ -28,3 +28,6 @@ records:
   availability:
     value: 0.95
     source: "Geothermal baseload analog (US DOE, 97-98%) DERATED for shot-cycled hardware the analog does not have: at tier-2 rep rates each module swaps a multi-thousand-unit capacitor bank every few years, plausibly 0.5-1.5% of availability staggered. DIVERGES from Borealis (0.98) with this stated technology reason (red-team Finding 9)."
+  fuel_recovery:
+    value: 0.999
+    source: "Anti-record reversion from the vendor-implied 0.9999 basis: the per-pulse loss channel is wall retention plus pump slip in a sealed recirculation loop, and the measured analog is JET-ILW gas-balance long-term fuel retention, 0.1-0.3% of injected throughput (Brezinsek et al., JET-ILW fuel retention studies), i.e. per-pass recovery about 0.997-0.999 with helium retaining less than hydrogen. Records support three nines, not four."

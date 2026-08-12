@@ -125,7 +125,7 @@ def test_baseline_rung(model, base_cfg):
 
 def test_tier1_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg, "best_case.yaml")
-    assert diag["lcoe"] == pytest.approx(112.1, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(191.4, abs=0.2)
 
 
 def test_tier2_rung(model, base_cfg):

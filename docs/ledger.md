@@ -27,9 +27,15 @@ Ladder at 1 GWe / 3 GWe (config stacks, concept-YAML chamber):
 | rung | 1 GWe | 3 GWe |
 |---|---|---|
 | design baseline (Helion's implied point) | 142.6 | 137.9 |
-| tier 1 records | 112.1 | 109.1 |
+| tier 1 records | 191.4 | 188.4 |
 | tier 2 extrapolations | 42.1 | 38.8 |
 | tier 3 speculation | 17.9 | 14.4 |
+
+The tier-1 rung sits above the design baseline: reverting the vendor's
+per-pulse fuel recovery to the JET-class record costs more than every
+finance record saves, so on evidence alone the fuel cycle is uneconomic
+and the descent begins when the recovery extrapolation is granted at
+tier 2.
 
 Design-optimized coherent minima (chamber, wall class, and burn mix chosen
 by `scripts/coherent_min.py` under the physics-consistency constraints in
@@ -226,6 +232,7 @@ bind on something real.
 | construction_time_yr | 6.0 | 2.5 | Large single-block CCGT | Applies more strongly here than to the mirror: the plant is an integer count of factory-built modules, closer to CCGT block construction than to a single large bespoke machine. | Siemens Energy, 1200 MW CCGT block in about 30 months. | strong |
 | indirect_fraction | 0.20 | 0.08 | Large industrial/power-plant EPC | Same cost-basis scope as NETL's EPCM line (fraction of total direct cost); 0.08 is the low end of the cited 8-10% band. | US DOE/NETL QGESS. | strong |
 | availability | 0.85 | 0.95 | Geothermal baseload, derated for shot-cycled hardware | Geothermal's 97-98% has no analogue for a machine that swaps a multi-thousand-unit capacitor bank every few years (2.7e9 shots fired at the tier-2 point against a 1e9-shot bank). Staggered bank swaps plausibly cost 0.5-1.5%: 0.95 is the defensible figure. DIVERGES from Borealis's 0.98 with this stated technology reason. | US DOE Geothermal FAQs, derated per red-team Finding 9. | moderate |
+| fuel_recovery | 0.9999 (vendor basis) | 0.999 | Machine-scale recirculating-wall fuel retention | ANTI-RECORD REVERSION, same pattern as lifetime_yr: the vendor-implied four nines is a concept-viability requirement (the He-3 economy fails without it), which the hard-NOAK rule forbids as a basis value. The per-pulse loss channel is wall retention plus pump slip in a sealed loop; the measured analog is JET-ILW gas-balance long-term fuel retention at 0.1-0.3% of injected throughput, supporting three nines (helium retains less than hydrogen, so this is conservative for the He-3 stream). Costs +79 $/MWh at the tier-1 rung on the lean mix's purchased He-3: on records alone, the fuel cycle is uneconomic. | JET-ILW gas-balance retention studies (Brezinsek et al.). | analog record |
 
 **Held at baseline in tier 1:**
 
@@ -241,6 +248,7 @@ bind on something real.
 | knob | baseline | value | basis | grade |
 |------|----------|-------|-------|-------|
 | cap_shot_lifetime | 1e8 | 1e9 | Pacific Fusion AMPS sec. 4.1: 100 to 35 kV derating projected to reach about 1e9 shots at about 9x lower energy density; GA Series DE cross-check (3e7-3e9 at 20% reversal). At the tier-2 point the plant fires 2.7e9 shots, so the bank is still replaced about 1.7x (charged to CAS72 by the model); the "1e9 outlives the plant" argument holds only below about 1.1 Hz. | published target |
+| fuel_recovery | 0.999 (tier-1 record) | 0.9999 | One nine beyond the JET-ILW retention record: the patent closed fuel cycle (US 2017/0011811) implies four-nines per-pulse recovery for the He-3 economy to close, and the physical argument (saturated walls, helium-dominated exhaust, direct re-injection without full reprocessing) points the right direction. No demonstration at any scale. Ties capacitor life as the largest lever under the tier-2 minimum (+39.8 $/MWh if reverted). | patent-implied extrapolation |
 | eta_dec | 0.85 | 0.90 | Bottom of the patent band, circuit-only, no fusion-inclusive measurement. Paired with f_pdv under the composite cap (0.90 x 0.85 = 0.765 <= 0.80). | weak-moderate |
 | f_pdv | 0.80 | 0.85 | Consistent with an about 18x adiabatic volume expansion, 1 - (V0/V1)^(2/3); leaves margin for incomplete fusion-product thermalization (14.7 MeV proton slowing time is ms-class at these conditions) and expansion-phase transport. | argued |
 | eta_pin | 0.95 | 0.98 | Solid-state pulsed-power wall-plug efficiency; plausible for modern semiconductor switching, no datasheet or Helion statement located. | UNSOURCED |
@@ -362,6 +370,7 @@ One-at-a-time reversion from the 37.5 point (`scripts/tornado.py`):
 
 | knob reverted | LCOE | delta |
 |---|---|---|
+| fuel_recovery -> 0.999 (JET-class record) | 77.3 | +39.8 |
 | cap_shot_lifetime -> 1e8 | 76.7 | +39.3 |
 | dhe3_dd_frac -> 0.314 (with its f_rad) | 52.7 | +15.2 |
 | max_f_rep -> 1 Hz | 49.0 | +11.5 |
@@ -373,10 +382,12 @@ One-at-a-time reversion from the 37.5 point (`scripts/tornado.py`):
 The cap-life lever doubled when the CAS72 replacement event was widened
 to the full shot-cycled recovery chain (bank + store + switch): at 1e8
 shots everything that cycles is replaced about 8 times over plant life.
-The three load-bearing tier-2 entries are the capacitor life, the burn
-mix, and the rep rate - respectively a published target, an unsourced
-sweep endpoint, and an unsourced roadmap band. None is a record. That is
-the honest quality of the 37.5 figure.
+Four tier-2 entries carry the number: the per-pulse fuel recovery and
+the capacitor life co-dominate at about +40 $/MWh each (an extrapolated
+nine beyond the JET retention record, and a published derating target),
+followed by the burn mix and the rep rate (an unsourced sweep endpoint
+and an unsourced roadmap band). None is a record. That is the honest
+quality of the 37.5 figure.
 
 ## Consistency with the Borealis ledger
 
