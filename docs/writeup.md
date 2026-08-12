@@ -14,7 +14,7 @@ design-space search rather than asserted. The coherent floor is
 the record-supported rung sits at about 191 \$/MWh, above the
 vendor's own implied point, because the fuel cycle's recovery claim has
 no record and its reversion outweighs every finance record; defensible
-extrapolation supports about 38 \$/MWh.
+extrapolation supports about 40 \$/MWh.
 The \$10/MWh target is not reached by any coherent stack, including He-3
 at zero price (11.0 \$/MWh at 3 GWe). The floor is carried by site
 and support infrastructure (buildings, heat rejection, staffing,
@@ -164,9 +164,10 @@ fleet data, derated for bank-swap outages), and per-pulse fuel
 recovery reverted from the vendor-implied 0.9999 to 0.999, the value
 the JET-ILW retention record supports (Brezinsek et al. 2013). Tier 2 (labelled
 extrapolations): capacitor life 1e9 shots (the Pacific Fusion AMPS
-derating target; Langtry et al. 2025), recovery composite 0.765, 3 Hz on a purchased divertor-class
-wall, the D-rich burn mix with its tritium plant, and fuel recovery
-0.9999 (the patent-implied fourth nine). Tier 3 (labelled
+derating target; Langtry et al. 2025), recovery composite 0.693 with
+f_pdv held at the radial-only bound 0.77 (Section 6), 3 Hz on a
+purchased divertor-class wall, the D-rich burn mix with its tritium
+plant, and fuel recovery 0.9999 (the patent-implied fourth nine). Tier 3 (labelled
 speculation): 10 Hz, composite 0.90 (the theory optimum with zero
 margin), capacitor capital at 0.1 \$/J, shot life 1e10, He-3 at
 0.5 M\$/kg, 80-year plant life. Every entry carries a source and grade
@@ -201,14 +202,14 @@ bottoming), yielding an honest band rather than a point.
 |---|---|---|---|
 | design baseline | 142.6 | 137.9 | Helion's implied point: 50 MJ driver, 101.4 MJ yield, 1 Hz, D-rich mix at its bremsstrahlung floor |
 | tier 1: records | 191.4 | 188.4 | finance (4.25%), 2.5 yr construction, 8% indirects, availability 0.95, fuel recovery reverted to the JET-class 0.999 |
-| tier 2: extrapolations | 42.1 | 38.8 | cap life 1e9, composite 0.765, 3 Hz on a divertor-class wall, D-rich mix with tritium plant, fuel recovery 0.9999 (patent-implied) |
+| tier 2: extrapolations | 45.5 | 42.2 | cap life 1e9, composite 0.693 (radial-only recovery), 3 Hz on a divertor-class wall, D-rich mix with tritium plant, fuel recovery 0.9999 (patent-implied) |
 | tier 3: speculation | 17.9 | 14.4 | 10 Hz, composite 0.90, cap \$/J 0.1, cap life 1e10, He-3 at 0.5 M\$/kg, 80 yr |
 
-Design optimization improves the last two rungs to **37.5 \$/MWh** (tier 2,
-1 GWe: the cited 101.4 MJ shot in eight 20 m x 0.5 m panel-wall modules
+Design optimization improves the last two rungs to **40.3 \$/MWh** (tier 2,
+1 GWe: the cited 101.4 MJ shot in nine 20 m x 0.5 m panel-wall modules
 at 2.9 Hz) and **17.0 / 13.6 \$/MWh** (tier 3, 1 / 3 GWe: 200-750 MJ shots in
 45 m x 1.0 m chambers, a broad plateau in yield). Reconciliation bands:
-tier 2 within 30.3-42.9 \$/MWh, tier 3 within 15.8-18.4 \$/MWh at
+tier 2 within 30.8-48.4 \$/MWh, tier 3 within 15.7-18.3 \$/MWh at
 1 GWe.
 
 The record rung sits above the design baseline: reverting the vendor's
@@ -224,19 +225,20 @@ One-at-a-time reversion from the tier-2 minimum ranks the levers:
 
 | knob reverted | LCOE (\$/MWh) | delta (\$/MWh) |
 |---|---|---|
-| fuel_recovery -> 0.999 (JET-class record) | 77.3 | +39.8 |
-| cap_shot_lifetime -> 1e8 | 76.7 | +39.3 |
-| dhe3_dd_frac -> 0.314 (with its f_rad) | 52.7 | +15.2 |
-| max_f_rep -> 1 Hz | 49.0 | +11.5 |
-| f_rad -> 0.163 (incoherent) | 34.0 | -3.5 |
-| eta_dec -> 0.85 | 40.6 | +3.2 |
-| f_pdv -> 0.80 | 39.6 | +2.2 |
-| eta_pin -> 0.95 | 39.5 | +2.0 |
+| fuel_recovery -> 0.999 (JET-class record) | 84.8 | +44.5 |
+| cap_shot_lifetime -> 1e8 | 82.2 | +42.0 |
+| dhe3_dd_frac -> 0.314 (with its f_rad) | 56.5 | +16.2 |
+| max_f_rep -> 1 Hz | 52.9 | +12.7 |
+| eta_dec -> 0.85 | 44.8 | +4.6 |
+| f_rad -> 0.163 (incoherent) | 36.4 | -3.8 |
+| eta_pin -> 0.95 | 42.5 | +2.2 |
+| f_pdv -> 0.80 (baseline exceeds the radial-only bound) | 39.5 | -0.8 |
 
-Two levers co-dominate at about +40 \$/MWh each: the per-pulse fuel
+Two levers co-dominate at +42 to +45 \$/MWh each: the per-pulse fuel
 recovery (an extrapolated nine beyond the JET retention record) and the
 capacitor cycle life (a published derating target); the burn-mix
-package and the rep rate follow; the conversion efficiencies,
+package and the rep rate follow; reverting f_pdv to the baseline 0.80
+is mildly favorable, the signature of an anti-record; the conversion efficiencies,
 once capped as a composite, are worth little at the margin (an
 incoherent double-booking of eta_dec = 0.97 with f_pdv = 0.95 would
 claim tens of \$/MWh and is excluded by construction).
@@ -267,11 +269,11 @@ At the tier-3 minimum the single module runs 7.8e20 D-D and 4.5e20
 D-He3 reactions per second; only 1.4e20/s of the D-He3 burns are fed by
 purchased He-3, the rest by recycled bred He-3 (per-pass survival
 0.80). The module breeds tritium at half the D-D rate: 0.33 mg per
-shot, 59 kg/yr. The tier-2 reference machine carries 203 MW of plant
-neutron power and breeds about 78 kg/yr. Store-for-decay fixes the
+shot, 59 kg/yr. The tier-2 reference machine carries 228 MW of plant
+neutron power and breeds about 87 kg/yr. Store-for-decay fixes the
 equilibrium inventory at production rate times the 17.8 yr mean life:
-about 1.4 tonnes of tritium, which is 1.3e10 Ci, about 450 kW of
-continuous decay heat, roughly 350x ITER's site authorization and 50x
+about 1.55 tonnes of tritium, which is 1.5e10 Ci, about 500 kW of
+continuous decay heat, roughly 390x ITER's site authorization and 55x
 the world's civilian tritium stock. The
 inventory is intrinsic to He-3 self-supply at this scale; shipping it to
 a central fuel facility relocates it (and can hold the reactor site near
@@ -314,7 +316,7 @@ none free:
   about 1 MeV per breeding event to the undirected channel, and it is
   measurable on Polaris.
 - **Accept the burn** (dhe3_f_T = 0.78): the tier-2 rung rises to
-  54.5 \$/MWh and the tier-3 minimum to 20.4 \$/MWh, plant neutron
+  58.1 \$/MWh and the tier-3 minimum to 20.0 \$/MWh, plant neutron
   power rises about 5x with a dominant 14.1 MeV component, and the
   decay store shrinks to 0.2-0.3 t; these are floors, because the base
   wall audit checks surface heat only.
@@ -382,8 +384,8 @@ high-burnup counterfactuals: if the reactor-point density pushes
 per-pulse burnup toward the 0.1 regime with thermalized tritons, the
 all-in gap between prompt-loss and thermalized reaches 8-17 \$/MWh,
 and at the tier-2 rung, whose wall is divertor-class at 2.5 M\$/m^2,
-thermalized high-burnup replacement is prohibitive (+45 to
-+122 \$/MWh). Keeping the tritium out of the burn is therefore free
+thermalized high-burnup replacement is prohibitive (+61 to
++182 \$/MWh). Keeping the tritium out of the burn is therefore free
 insurance at the basis and worth double digits off it.
 
 Shielding cannot buy the machine out of this, because a pulsed
@@ -442,9 +444,9 @@ price"; TAE's unpriced Black Moon lunar supply option) sit at
 19-22 M\$/kg on
 gram-to-kilogram volumes, 10x above the study's baseline price and 40x
 above its tier-3 entry, with every new entrant building toward the high
-price. At the observed spot the tier-2 minimum reads 136 \$/MWh at the
-D-rich mix and 345 \$/MWh lean under the model's accounting, against
-26.5 \$/MWh at the full self-supply limit; the distance between those two numbers is
+price. At the observed spot the tier-2 minimum reads 151 \$/MWh at the
+D-rich mix and 385 \$/MWh lean under the model's accounting, against
+28.0 \$/MWh at the full self-supply limit; the distance between those two numbers is
 the value of the crediting decision, coupled to Section 5.2 because the
 decay return exists only if the tritium survives the pulse. A
 by-product observation: at these prices a kilogram of He-3 burned at
@@ -473,8 +475,9 @@ a function of the separatrix-to-coil radius ratio alone,
 giving chi = 0.30 / 0.52 / 0.71 at x_s = 0.5 / 0.7 / 0.85. Fat FRCs
 are high-chi machines: good confinement physics pushes the derate up.
 The extra recirculating loss eta_dec chi (1 - f_pdv) p_driver is worth
-+1.8/+3.1/+4.2 \$/MWh at the tier-2 minimum across that x_s span (the
-Q of order 2 machine circulates 1170 MW of driver power),
++3.3/+5.7/+7.8 \$/MWh at the tier-2 minimum across that x_s span (the
+Q of order 2 machine circulates 1310 MW of driver power, and the
+radial-only f_pdv widens the uncaptured channel),
 +0.1 \$/MWh at the tier-3 minimum, and order +10 \$/MWh at the low-Q
 baseline rung. It is carried
 as a reconciliation adder pending a model-level treatment.
@@ -501,7 +504,7 @@ share of the boundary work near 1/5, and a self-similar cylinder
 bounds it at 1/3, so a machine that recovers only the radial channel
 caps f_pdv at roughly 0.67-0.8 of the adiabatic bound, about 0.77 at
 the tier-3 chamber. The tier-2 to tier-3 recovery step (composite
-0.765 to 0.90) is therefore equivalent to claiming capture of the
+0.693 to 0.90) is therefore equivalent to claiming capture of the
 axial expansion channel; the claim is priced, and it is measurable on
 the same shot sequence below.
 
@@ -566,7 +569,7 @@ plausibility:
 
 None of these is in the evidence base at any tier. Within what the
 study can defend: records alone price the concept at about 191 \$/MWh (above its own
-design baseline), defensible extrapolation supports about 38 \$/MWh,
+design baseline), defensible extrapolation supports about 40 \$/MWh,
 and coherent speculation bottoms at 17 \$/MWh (1 GWe) / 14 \$/MWh
 (3 GWe).
 
@@ -597,7 +600,7 @@ the other (knob-by-knob divergence table in `docs/ledger.md`; every
 divergence carries a stated physics or technology reason). At the
 speculation tier the mirror is 2.5 \$/MWh cheaper at 3 GWe (Borealis
 11.1 \$/MWh, this study 13.6 \$/MWh). At the extrapolation tier it is
-materially cheaper (16.9 against 37.5 \$/MWh), chiefly because it needs no
+materially cheaper (16.9 against 40.3 \$/MWh), chiefly because it needs no
 capacitor-life breakthrough, no tritium plant, and no rep-rate roadmap:
 its levers already sit in the evidence tiers. On the down-select axis
 "how much unpurchasable physics does the cheap number require", the

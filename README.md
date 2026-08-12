@@ -31,7 +31,7 @@ wall class, yield, burn mix), not by asserting an operating point.
 Headline: coherent tier-3 speculation bottoms at about 17 $/MWh at
 1 GWe and 13.6 $/MWh at 3 GWe; the $10 target is not reached by any
 internally consistent stack. Records alone price the concept at about 191 $/MWh (above its own design baseline: the recovery reversion outweighs the finance records);
-defensible extrapolation about 38 $/MWh. See `docs/writeup.md` for the narrative results
+defensible extrapolation about 40 $/MWh. See `docs/writeup.md` for the narrative results
 and `docs/ledger.md` for record-by-record sourcing, the tornado ranking,
 and the knob-by-knob consistency audit against the sister study
 `borealis_mirror_tea`.

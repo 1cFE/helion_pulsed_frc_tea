@@ -71,7 +71,7 @@ Q_LIM = {"panel": 2.0, "hhf": 10.0, "beam_dump": 20.0}
 # reference facility and a bigger one is charged more.
 TRITIUM_PLANT_MUSD = 200.0
 TRITIUM_FIXED_MUSD = 50.0
-TRITIUM_REF_P_NEUTRON_MW = 203.5  # plant-level neutron power at the reference
+TRITIUM_REF_P_NEUTRON_MW = 228.3  # plant-level neutron power at the reference
 DD_FRAC_TRITIUM_THRESHOLD = 0.5
 
 _VACUUM_T_DEFAULT = 0.10  # m; concept YAML plasma-to-wall gap

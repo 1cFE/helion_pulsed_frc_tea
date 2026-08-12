@@ -130,7 +130,7 @@ def test_tier1_rung(model, base_cfg):
 
 def test_tier2_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg, "best_case.yaml", "tier2.yaml")
-    assert diag["lcoe"] == pytest.approx(42.1, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(45.5, abs=0.2)
     # D-rich mix carries its plant; the adder is anchored at 200 M$ for this
     # rung's own throughput (185 MW plant neutron power)
     assert diag["tritium_adder_musd"] == pytest.approx(200.0, abs=0.5)
@@ -157,7 +157,7 @@ def test_tier2_coherent_minimum(model, base_cfg):
     apply_records(fwd, "tier2.yaml")
     fwd.update(chamber_length=20.0, plasma_t=0.5, r_bore=0.6, fw_class="panel")
     _, diag = run(model, fwd)
-    assert diag["lcoe"] == pytest.approx(37.5, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(40.3, abs=0.2)
     assert not coherence_violations(fwd, diag, "tier2")
 
 

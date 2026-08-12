@@ -28,7 +28,7 @@ Ladder at 1 GWe / 3 GWe (config stacks, concept-YAML chamber):
 |---|---|---|
 | design baseline (Helion's implied point) | 142.6 | 137.9 |
 | tier 1 records | 191.4 | 188.4 |
-| tier 2 extrapolations | 42.1 | 38.8 |
+| tier 2 extrapolations | 45.5 | 42.2 |
 | tier 3 speculation | 17.9 | 14.4 |
 
 The tier-1 rung sits above the design baseline: reverting the vendor's
@@ -39,10 +39,10 @@ tier 2.
 
 Design-optimized coherent minima (chamber, wall class, and burn mix chosen
 by `scripts/coherent_min.py` under the physics-consistency constraints in
-`scripts/study.py`): **tier 2: 37.5** at 1 GWe; **tier 3: 17.0** at 1 GWe,
+`scripts/study.py`): **tier 2: 40.3** at 1 GWe; **tier 3: 17.0** at 1 GWe,
 **13.6** at 3 GWe. Reconciliation bands around the minima (model gaps and
-conservatisms, `scripts/reconciliation.py`): tier 2 within 30.3-42.9, tier 3
-within 15.8-18.4 at 1 GWe.
+conservatisms, `scripts/reconciliation.py`): tier 2 within 30.8-48.4, tier 3
+within 15.7-18.3 at 1 GWe.
 
 ## Coherence constraints (enforced, not advisory)
 
@@ -66,12 +66,12 @@ flagged in the output of every script rather than reported:
    margin).
 4. **The D-rich fuel credit travels with its consequences.** Above
    dd_frac 0.5 the machine is a bulk tritium facility: the tier-2 machine
-   carries 203 MW of plant-level neutron power and breeds about 78 kg of
+   carries 228 MW of plant-level neutron power and breeds about 87 kg of
    tritium per year, and Helion's own store-for-decay fuel cycle implies an
    equilibrium getter-bed inventory of production rate x mean decay time,
-   about 1.4 tonnes of tritium on site. For scale: that inventory is
-   1.3e10 Ci, dissipates about 450 kW of continuous decay heat in the
-   store, is roughly 350x ITER's 4 kg site limit and about 50x the world's
+   about 1.55 tonnes of tritium on site. For scale: that inventory is
+   1.5e10 Ci, dissipates about 500 kW of continuous decay heat in the
+   store, is roughly 390x ITER's 4 kg site limit and about 55x the world's
    civilian tritium stock (about 25-30 kg, CANDU-derived). `study.run`
    charges a tritium-plant adder on C220500: 50 M$ fixed core plus a
    throughput-scaled balance anchored at 200 M$ for the tier-2 reference
@@ -249,8 +249,8 @@ bind on something real.
 |------|----------|-------|-------|-------|
 | cap_shot_lifetime | 1e8 | 1e9 | Pacific Fusion AMPS sec. 4.1: 100 to 35 kV derating projected to reach about 1e9 shots at about 9x lower energy density; GA Series DE cross-check (3e7-3e9 at 20% reversal). At the tier-2 point the plant fires 2.7e9 shots, so the bank is still replaced about 1.7x (charged to CAS72 by the model); the "1e9 outlives the plant" argument holds only below about 1.1 Hz. | published target |
 | fuel_recovery | 0.999 (tier-1 record) | 0.9999 | One nine beyond the JET-ILW retention record: the patent closed fuel cycle (US 2017/0011811) implies four-nines per-pulse recovery for the He-3 economy to close, and the physical argument (saturated walls, helium-dominated exhaust, direct re-injection without full reprocessing) points the right direction. No demonstration at any scale. Ties capacitor life as the largest lever under the tier-2 minimum (+39.8 $/MWh if reverted). | patent-implied extrapolation |
-| eta_dec | 0.85 | 0.90 | Bottom of the patent band, circuit-only, no fusion-inclusive measurement. Paired with f_pdv under the composite cap (0.90 x 0.85 = 0.765 <= 0.80). | weak-moderate |
-| f_pdv | 0.80 | 0.85 | Consistent with an about 18x adiabatic volume expansion, 1 - (V0/V1)^(2/3); leaves margin for incomplete fusion-product thermalization (14.7 MeV proton slowing time is ms-class at these conditions) and expansion-phase transport. | argued |
+| eta_dec | 0.85 | 0.90 | Bottom of the patent band, circuit-only, no fusion-inclusive measurement. Paired with f_pdv under the composite cap (0.90 x 0.77 = 0.693 <= 0.80). | weak-moderate |
+| f_pdv | 0.80 | 0.77 | Radial-only recovery bound: the 18x adiabatic expansion supports 0.85 of total boundary work, but FRC adiabatic scalings put about 1/5 of that work in axial elongation, captured only if the end circuits are switched for recovery during the stroke, which no publication claims. A mild anti-record against the concept-YAML 0.80; the axial-capture claim is priced at tier 3 (f_pdv 0.947 requires it). | physics bound |
 | eta_pin | 0.95 | 0.98 | Solid-state pulsed-power wall-plug efficiency; plausible for modern semiconductor switching, no datasheet or Helion statement located. | UNSOURCED |
 | max_f_rep | 1.0 | 3.0 | No public Helion statement of a numeric plant rep rate exists (Polaris target about 1/s; Trenta about 1/10 min; the 1-10 Hz band is the concept YAML's roadmap paraphrase). 3 Hz is what the bought wall supports at this tier's recovery parameters; it remains UNSOURCED as a demonstrated cadence (nothing MJ-class has run at 1 Hz continuously). The band top (10 Hz) is tier 3. | UNSOURCED-ROADMAP |
 | fw_class | panel | hhf | Machine-design purchase, not a record: divertor-grade monoblock wall (ITER divertor procurement anchor, 2.5 M$/m^2 NOAK, 10 MW/m^2 qualification) over the real 37.7 m^2 cylinder, about 94 M$/module, to make 3 Hz admissible in the concept-YAML chamber. The design-optimized tier-2 minimum instead buys a longer chamber with the cheaper panel wall (see coherent minimum below). | design purchase |
@@ -272,7 +272,7 @@ an explicit leap. See `config/tier3.yaml` for the per-knob notes.
 |------|-------|------|
 | max_f_rep | 10 | top of the third-party roadmap band; no duty-cycle analysis supports it |
 | cap_shot_lifetime | 1e10 | required for coherence with 10 Hz; no source at any price; jointly heroic with the $/J entry below |
-| eta_dec x f_pdv | 0.95 x 0.947 = 0.90 | the theory-optimal composite taken at face value, zero engineering margin |
+| eta_dec x f_pdv | 0.95 x 0.947 = 0.90 | the theory-optimal composite taken at face value, zero engineering margin; f_pdv 0.947 additionally claims capture of the axial expansion channel (about 1/5 of boundary work), which the tier-2 radial-only bound excludes |
 | c_cap_allin_per_joule | 0.1 | below the model's own documented range floor; contradicts the derating physics that buys the cap life above |
 | u_he3 | 5e5 $/kg | no fleet-scale He-3 market exists at any price. The only observed transactions are gram-to-kilogram scale at 19-22 M$/kg (2024 spot about $2,500/L per Edelgas; Interlune's 2025 DOE and Maybell Quantum agreements priced "at approximately today's commercial market price"; TAE's 2026 Black Moon lunar supply option discloses no price). This entry is 40x below every observed price, and the new entrants (lunar: Interlune, Black Moon; terrestrial: Pulsar Helium) are building toward the high price, not under it. |
 | dec_staged_recovery_factor | 0.5 | patent's unquantified "net reduction in cost and size", optimistic edge |
@@ -316,9 +316,10 @@ chi = 1.5 <beta> x_s^2 / (1.5 <beta> x_s^2 + 1 - x_s^2), a function of
 the separatrix-to-coil radius ratio alone: x_s 0.5/0.7/0.85 maps to
 chi 0.30/0.52/0.71, so fat FRCs are high-chi machines and good FRC
 confinement physics pushes the derate up. The extra recirculating loss
-eta_dec chi (1 - f_pdv) p_driver is worth +1.6/+2.8/+3.8 $/MWh at the
-tier-2 minimum across that x_s span (1160 MW of circulating driver
-power) and +0.1 at the tier-3 minimum; at the low-Q baseline rung it
+eta_dec chi (1 - f_pdv) p_driver is worth +3.3/+5.7/+7.8 $/MWh at the
+tier-2 minimum across that x_s span (1310 MW of circulating driver
+power, widened by the radial-only f_pdv) and +0.1 at the tier-3
+minimum; at the low-Q baseline rung it
 would be order +10. The Polaris shot triplet (vacuum / plasma no-burn /
 burning) separates eta_dec, chi (1 - f_pdv), and the fusion composite,
 so the study's most-wanted measurement delivers chi as a by-product;
@@ -345,7 +346,7 @@ shot triplet resolves it.
 
 **The observed He-3 market makes the fuel accounting first-order.** At the
 observed 19-22 M$/kg spot (he3_scan's 2e7 row) the tier-2 minimum
-machine reads 136 $/MWh at dd_frac 0.85 and 345 $/MWh lean: no mix
+machine reads 151 $/MWh at dd_frac 0.85 and 385 $/MWh lean: no mix
 survives market-priced He-3. That reading follows from the model's fuel accounting: prompt bred
 He-3 is credited through its species-resolved cumulative recycle
 fraction (0.80 at the per-pulse basis: He-3 burns out of the loop 3.3x
@@ -353,7 +354,7 @@ faster per pass than it leaks), but the decay store's He-3 return,
 0.42 atoms per primary event and equal to the prompt branch, is never
 netted against the purchased 1 - dd_frac per event. Without the decay
 return the machine imports about 45 kg/yr; crediting it flips the
-plant to a net exporter. The u_he3 = 0 row (26.5 $/MWh) is the full
+plant to a net exporter. The u_he3 = 0 row (28.0 $/MWh) is the full
 steady-state self-supply limit. The distance between
 those two readings, 25.5 vs 110 at the same machine, is the value of an
 open accounting question: the study prices the decay store's capital,
@@ -377,28 +378,28 @@ small-plant-penalty analysis.
 
 ## Robustness of the tier-2 coherent minimum
 
-One-at-a-time reversion from the 37.5 point (`scripts/tornado.py`):
+One-at-a-time reversion from the 40.3 point (`scripts/tornado.py`):
 
 | knob reverted | LCOE | delta |
 |---|---|---|
-| fuel_recovery -> 0.999 (JET-class record) | 77.3 | +39.8 |
-| cap_shot_lifetime -> 1e8 | 76.7 | +39.3 |
-| dhe3_dd_frac -> 0.314 (with its f_rad) | 52.7 | +15.2 |
-| max_f_rep -> 1 Hz | 49.0 | +11.5 |
-| f_rad -> 0.163 (incoherent: floor violated) | 34.0 | -3.5 |
-| eta_dec -> 0.85 | 40.6 | +3.2 |
-| f_pdv -> 0.80 | 39.6 | +2.2 |
-| eta_pin -> 0.95 | 39.5 | +2.0 |
+| fuel_recovery -> 0.999 (JET-class record) | 84.8 | +44.5 |
+| cap_shot_lifetime -> 1e8 | 82.2 | +42.0 |
+| dhe3_dd_frac -> 0.314 (with its f_rad) | 56.5 | +16.2 |
+| max_f_rep -> 1 Hz | 52.9 | +12.7 |
+| eta_dec -> 0.85 | 44.8 | +4.6 |
+| f_rad -> 0.163 (incoherent: floor violated) | 36.4 | -3.8 |
+| eta_pin -> 0.95 | 42.5 | +2.2 |
+| f_pdv -> 0.80 (baseline exceeds the radial-only bound) | 39.5 | -0.8 |
 
 The cap-life lever doubled when the CAS72 replacement event was widened
 to the full shot-cycled recovery chain (bank + store + switch): at 1e8
 shots everything that cycles is replaced about 8 times over plant life.
 Four tier-2 entries carry the number: the per-pulse fuel recovery and
-the capacitor life co-dominate at about +40 $/MWh each (an extrapolated
+the capacitor life co-dominate at +42 to +45 $/MWh each (an extrapolated
 nine beyond the JET retention record, and a published derating target),
 followed by the burn mix and the rep rate (an unsourced sweep endpoint
 and an unsourced roadmap band). None is a record. That is the honest
-quality of the 37.5 figure.
+quality of the 40.3 figure.
 
 ## Consistency with the Borealis ledger
 
