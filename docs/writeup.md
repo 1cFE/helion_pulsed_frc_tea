@@ -4,16 +4,17 @@
 (FRC) D-He3 power plant with inductive direct energy conversion using the
 `costingfe` bottom-up cost model, and ask how low its levelized cost of
 electricity (LCOE) can be pushed while remaining internally consistent,
-against the developer's public 1 cent/kWh ambition. Optimism is
+against the developer's public 10 \$/MWh ambition. Optimism is
 disciplined three ways: every input is placed on an evidence ladder
 (records, labelled extrapolations, labelled speculation); four physics
 couplings from an adversarial review are enforced on every quoted point;
 and the operating point at each evidence level is found by a constrained
 design-space search rather than asserted. The coherent floor is
 15.8 \$/MWh at 1 GWe and 12.4 \$/MWh at 3 GWe on full speculation;
-records alone support about 105 and defensible extrapolation about 34.
+records alone support about 105 \$/MWh and defensible extrapolation
+about 34 \$/MWh.
 The \$10/MWh target is not reached by any coherent stack, including He-3
-at zero price (10.4 at 3 GWe). The floor is carried by conventional plant
+at zero price (10.4 \$/MWh at 3 GWe). The floor is carried by conventional plant
 and by the tritium fuel cycle, not by the capacitor driver. The study's
 central physics finding is a contradiction inside the fuel cycle: the
 declared per-shot burnup (0.15) implies that 78-93% of the bred tritium
@@ -175,25 +176,26 @@ bottoming), yielding an honest band rather than a point.
 
 ## 4. Results: the ladder, the minima, and what carries the floor
 
-| rung | 1 GWe | 3 GWe | contents |
+| rung | 1 GWe (\$/MWh) | 3 GWe (\$/MWh) | contents |
 |---|---|---|---|
 | design baseline | 133.3 | 129.8 | Helion's implied point: 50 MJ driver, 101.4 MJ yield, 1 Hz, D-rich mix at its bremsstrahlung floor |
 | tier 1: records | 104.5 | 100.9 | finance (4.25%), 2.5 yr construction, 8% indirects, availability 0.95 |
 | tier 2: extrapolations | 38.6 | 35.3 | cap life 1e9, composite 0.765, 3 Hz on a divertor-class wall, D-rich mix with tritium plant |
 | tier 3: speculation | 16.6 | 13.2 | 10 Hz, composite 0.90, cap \$/J 0.1, cap life 1e10, He-3 at 0.5 M\$/kg, 80 yr |
 
-Design optimization improves the last two rungs to **33.9** (tier 2,
+Design optimization improves the last two rungs to **33.9 \$/MWh** (tier 2,
 1 GWe: the cited 101.4 MJ shot in eight 20 m x 0.5 m panel-wall modules
-at 2.9 Hz) and **15.8 / 12.4** (tier 3, 1 / 3 GWe: 200-750 MJ shots in
+at 2.9 Hz) and **15.8 / 12.4 \$/MWh** (tier 3, 1 / 3 GWe: 200-750 MJ shots in
 45 m x 1.0 m chambers, a broad plateau in yield). Reconciliation bands:
-tier 2 within 27.7-39.0, tier 3 within 14.8-17.2 at 1 GWe.
+tier 2 within 27.7-39.0 \$/MWh, tier 3 within 14.8-17.2 \$/MWh at
+1 GWe.
 
 The baseline and record rungs are dominated by scheduled replacement:
 the entire shot-cycled recovery chain is replaced on the capacitor-life
 schedule, about eight times over plant life at the 1e8-shot record life.
 One-at-a-time reversion from the tier-2 minimum ranks the levers:
 
-| knob reverted | LCOE | delta |
+| knob reverted | LCOE (\$/MWh) | delta (\$/MWh) |
 |---|---|---|
 | cap_shot_lifetime -> 1e8 | 73.2 | +39.2 |
 | dhe3_dd_frac -> 0.314 (with its f_rad) | 46.8 | +12.9 |
@@ -274,8 +276,8 @@ burnup. Three exits exist, none free:
   is the only exit preserving both high burnup and the store, it costs
   about 1 MeV per breeding event to the undirected channel, and it is
   measurable on Polaris.
-- **Accept the burn** (dhe3_f_T = 0.78): the tier-2 rung rises to 49.1
-  and the tier-3 minimum to 19.0, plant neutron power rises about 5x
+- **Accept the burn** (dhe3_f_T = 0.78): the tier-2 rung rises to 49.1 \$/MWh
+  and the tier-3 minimum to 19.0 \$/MWh, plant neutron power rises about 5x
   with a dominant 14.1 MeV component, and the decay store shrinks to
   0.2-0.3 t; these are floors, because the base wall audit checks
   surface heat only.
@@ -288,7 +290,7 @@ floor exists only at the high-burnup, prompt-loss corner. If tritons
 thermalize, the coherent optimum shifts to partial burnup (0.01-0.03,
 carrying 13-32% tritium burn and its neutron consequences). The
 store-purist corner (burnup at or below 1e-3) costs 63 \$/MWh at
-two-nines recovery and 19.8 at three-nines: below burnup 0.01,
+two-nines recovery and 19.8 \$/MWh at three-nines: below burnup 0.01,
 three-nines exhaust recovery is load-bearing, an unsourced NOAK claim
 that belongs beside the other heroic recycle assumptions. Vacuum
 pumping never binds (at most 35 M\$ across the axis); the fuel recycle
@@ -304,9 +306,9 @@ folded at 0.4) at tolerances of 20 dpa (the demonstrated RAFM database
 edge) and 50 dpa (the DEMO-class design target). The event carries both
 the wall and the close-coupled coils (109 + 17 M\$ at the tier-3
 minimum), since nothing 0.10 m behind the wall outlives it. All-in at
-the declared burnup, prompt-loss reads 16.1-16.8 against thermalized
-24.5-33.3: **keeping the tritium out of the burn is worth 8-17 \$/MWh
-at the floor** (2-9 after burnup re-optimization). At the tier-2 rung,
+the declared burnup, prompt-loss reads 16.1-16.8 \$/MWh against
+thermalized 24.5-33.3 \$/MWh: **keeping the tritium out of the burn is worth 8-17 \$/MWh
+at the floor** (2-9 \$/MWh after burnup re-optimization). At the tier-2 rung,
 whose wall is divertor-class at 2.5 M\$/m^2, thermalized high-burnup
 replacement is prohibitive (+45 to +122 \$/MWh).
 
@@ -361,8 +363,8 @@ market price", an unpriced lunar supply option) sit at 19-22 M\$/kg on
 gram-to-kilogram volumes, 10x above the study's baseline price and 40x
 above its tier-3 entry, with every new entrant building toward the high
 price. At the observed spot the tier-2 minimum reads 110 \$/MWh at the
-D-rich mix and 293 lean under the model's accounting, against 25.5 at
-the full self-supply limit; the distance between those two numbers is
+D-rich mix and 293 \$/MWh lean under the model's accounting, against 25.5 \$/MWh
+at the full self-supply limit; the distance between those two numbers is
 the value of the crediting decision, coupled to Section 5.2 because the
 decay return exists only if the tritium survives the pulse. A
 by-product observation: at these prices a kilogram of He-3 burned at
@@ -392,8 +394,9 @@ giving chi = 0.30 / 0.52 / 0.71 at x_s = 0.5 / 0.7 / 0.85. Fat FRCs
 are high-chi machines: good confinement physics pushes the derate up.
 The extra recirculating loss eta_dec chi (1 - f_pdv) p_driver is worth
 +1.6/+2.8/+3.8 \$/MWh at the tier-2 minimum across that x_s span (the
-Q of order 2 machine circulates 1160 MW of driver power), +0.1 at the
-tier-3 minimum, and order +10 at the low-Q baseline rung. It is carried
+Q of order 2 machine circulates 1160 MW of driver power),
++0.1 \$/MWh at the tier-3 minimum, and order +10 \$/MWh at the low-Q
+baseline rung. It is carried
 as a reconciliation adder pending a model-level treatment.
 
 **The expansion-ratio bound.** Adiabatic expansion caps the recoverable
@@ -418,12 +421,12 @@ Two controlled sweeps at the tier-3 stack (constant gain, constant wall
 loading, driver and chamber scaled with module power) separate module
 count from plant size. **Module count at fixed plant size is nearly
 free**: delivering 1 GWe from thirteen 80 MWe modules instead of one
-large module costs +2.0 \$/MWh, because buildings, supplementary
+large module costs +2.0 \$/MWh (15.8 to 17.9 \$/MWh), because buildings, supplementary
 capital, and balance of plant price plant totals; the only modularity
 tax is per-module fixed items, biting below about 100 MWe. **Standalone
 plant size is expensive**:
 
-| plant | LCOE | \$/kW | dominant penalties |
+| plant | LCOE (\$/MWh) | \$/kW | dominant penalties |
 |---|---|---|---|
 | 1 GWe | 15.8 | 1373 | - |
 | 250 MWe | 26.1 | 2182 | fixed site buildings, staffing^0.5 |
@@ -447,12 +450,13 @@ speculative stack.
 
 ## 8. What would have to be true to reach \$10/MWh
 
-On top of the full tier-3 stack at 3 GWe (12.4), in decreasing order of
+On top of the full tier-3 stack at 3 GWe (12.4 \$/MWh), in decreasing order of
 plausibility:
 
-- **He-3 at effectively zero cost** (10.4): a mature breeding economy or
+- **He-3 at effectively zero cost** (10.4 \$/MWh): a mature breeding
+  economy or
   an external supply two orders below the observed market. Even this
-  does not break 10, because the tritium plant scales with the breeding
+  does not break 10 \$/MWh, because the tritium plant scales with the breeding
   throughput that funds the credit.
 - **Gas-class site and decommissioning analogs** (about 1-1.5 \$/MWh):
   defensible only for the He-3-lean machine; the D-rich machine's
@@ -462,8 +466,9 @@ plausibility:
   small-unit strategy at all.
 
 None of these is in the evidence base at any tier. Within what the
-study can defend: records support about 105, defensible extrapolation
-about 34, and coherent speculation bottoms at 16 (1 GWe) / 12 (3 GWe).
+study can defend: records support about 105 \$/MWh, defensible
+extrapolation about 34 \$/MWh, and coherent speculation bottoms at
+16 \$/MWh (1 GWe) / 12 \$/MWh (3 GWe).
 
 ## 9. Caveats that survive into the headline
 
@@ -491,8 +496,8 @@ Same framework, same evidence discipline, one ledger harmonized against
 the other (knob-by-knob divergence table in `docs/ledger.md`; every
 divergence carries a stated physics or technology reason). At the
 speculation tier the two concepts land within about a dollar at 3 GWe
-(Borealis 11.1, this study 12.4). At the extrapolation tier the mirror
-is materially cheaper (16.9 against 33.9), chiefly because it needs no
+(Borealis 11.1 \$/MWh, this study 12.4 \$/MWh). At the extrapolation
+tier the mirror is materially cheaper (16.9 against 33.9 \$/MWh), chiefly because it needs no
 capacitor-life breakthrough, no tritium plant, and no rep-rate roadmap:
 its levers already sit in the evidence tiers. On the down-select axis
 "how much unpurchasable physics does the cheap number require", the
@@ -502,7 +507,7 @@ upside", the two are comparable.
 ## 11. Conclusions and measurement priorities
 
 A Helion-class pulsed FRC plant, priced bottom-up with enforced physics
-coherence, bottoms out at about 16 \$/MWh at 1 GWe and 12 at 3 GWe on
+coherence, bottoms out at about 16 \$/MWh at 1 GWe and 12 \$/MWh at 3 GWe on
 full speculation; the public \$10/MWh target is not reached by any
 internally consistent stack the study can construct. The floor is
 carried by conventional plant, staffing, and the tritium fuel cycle,
