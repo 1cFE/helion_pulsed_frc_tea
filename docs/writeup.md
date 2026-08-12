@@ -307,72 +307,77 @@ why the ledger refuses the "near-zero licensing" claim alongside the
 fuel credit, holds O&M at its baseline, and treats the 200 M\$
 tritium-plant allowance as more likely low than high.
 
-### 5.2 The burnup contradiction
+### 5.2 The burnup closure
 
 The store-and-decay idealization (dhe3_f_T = 0: no bred triton burns
 in-plasma) is not a free choice; it is a claim about pulse kinetics. A
 triton born mid-pulse sits in a deuterium-rich plasma at fusion
 temperature for the remaining dwell, and D-T reactivity is 14-43x D-D
-at 70-20 keV (Bosch and Hale 1992). The per-shot deuterium burnup pins the integrated
-exposure x_DD = -ln(1 - f_D) = n_D <sigma v>_DD tau without requiring
-density or dwell separately, and averaging triton births over the pulse
-gives the in-pulse tritium burn probability
+at 70-20 keV (Bosch and Hale 1992). The per-pulse deuterium burnup pins
+the integrated exposure x_DD = -ln(1 - f_D) = n_D <sigma v>_DD tau
+without requiring density or dwell separately; tritons are born
+uniformly in cumulated exposure (their production rate is proportional
+to the same n^2 <sigma v> that accumulates it), so averaging over
+births gives the thermalized-limit in-pulse tritium burn
 
-    f_T = 1 - (1 - e^-x)/x,  x = (sv_DT / sv_DD) x_DD.
+    f_T = 1 - (1 - e^-x)/x,  x = (sv_DT / sv_DD) x_DD,
 
-The study's configuration assumes burn_fraction = 0.15 (an unsourced
-magneto-inertial-literature midpoint, adopted because the vendor
-publishes gain, not burnup). At that burnup, f_T = 78-93% across
-70-20 keV if tritons thermalize and remain confined: the two
-assumptions, taken together, fail by an order of magnitude. The
-contradiction is internal to the study's basis, not an inference about
-the vendor's machine; what it establishes is that the real operating
-point must occupy one of three coherent regimes, each priced below,
-none free:
+exact for any density and pulse-shape history at fixed temperature:
+the reactivity ratio is the only physics input. Two caveats bracket
+it: a slowing 1 MeV triton passes through the D-T cross-section
+resonance, so beam-target burn can only add to the estimate, while
+prompt orbit loss from the small-s plasmoid (the triton's gyroradius
+is centimeter-scale at compression) truncates it and is the one
+mechanism that can hold the burn below the floor. This closure is
+enforced as coherence constraint 5: any quoted point whose dhe3_f_T
+sits materially below the floor is flagged as coherent only under
+prompt triton loss.
 
-- **Low burnup** (f_D at or below about 7e-4 for f_T under 1%): the
-  unburned-fuel recycle loss multiplies the fuel account 15x at 99%
-  exhaust recovery (2.4x at 99.9%), the bred-He-3 recycle credit
-  collapses, and the pumped throughput grows two orders.
-- **Prompt triton loss**: the 1.01 MeV triton's centimeter-scale
-  gyroradius in the compressed plasmoid may exceed the fast-ion
-  confinement of a small-s FRC, ejecting it before it thermalizes. This
-  is the only exit preserving both high burnup and the store, it costs
-  about 1 MeV per breeding event to the undirected channel, and it is
-  measurable on Polaris.
-- **Accept the burn** (dhe3_f_T = 0.78): the tier-2 rung rises to
-  58.1 \$/MWh and the tier-3 minimum to 20.0 \$/MWh, plant neutron
-  power rises about 5x with a dominant 14.1 MeV component, and the
-  decay store shrinks to 0.2-0.3 t; these are floors, because the base
-  wall audit checks surface heat only.
-
-The vendor's fuel-cycle patent (US 2017/0011811) settles which regime
-the design intends, and corrects the study's assumption in the process.
-It publishes an operating table (n_D = 0.75e22 m^-3, T = 70 keV,
-tau = 0.157 s without tritium removal and 0.103 s with it) and states
-that tritium "may be removed between each pulse ... prior to undesired
-D-T reactions taking place". Running the closure on those numbers:
-per confinement period the D burn is 2.5-3.8% and a thermalized triton
-riding it would burn 28-38%, the patent's own motivation for
+The basis values come from the vendor's fuel-cycle patent
+(US 2017/0011811), which publishes an operating table (n_D =
+0.75e22 m^-3, T = 70 keV, tau = 0.157 s without tritium removal and
+0.103 s with it) and states that tritium "may be removed between each
+pulse ... prior to undesired D-T reactions taking place". The closure
+run on those numbers explains the patent's own two-column structure:
+over a full confinement period the D burn is 2.5-3.8% and a
+thermalized triton riding it would burn 28-38%, which is the case for
 inter-pulse removal; per sub-millisecond pulse at the patent density
-the burnup is 1.2-2.5e-4 and the in-pulse tritium burn 0.2-0.3%,
-comfortably validating dhe3_f_T = 0. The study's burn_fraction = 0.15
-is therefore a cumulative single-pass figure, accumulated over of order
-a thousand pulses of fuel residence, misapplied as per-pulse exposure.
-The correction moves the machine to the far left of the burnup axis
-(Section 5.3), where the costs relocate rather than vanish: with
-per-pulse reprocessing, the unburned-fuel multiplier is 83x at
-per-pass recovery 0.99, 9.2x at 0.999, and 1.8x at 0.9999, so
-four-nines per-pulse fuel recovery and hertz-rate isotope separation
-are the load-bearing engineering claims of the published fuel cycle,
-and the tritium plant is their price. These are the model's basis:
-burn_fraction = 1.2e-4 and burn_fraction_he3 = 4.1e-4 per pulse (He-3
-burns 3.3x faster per pass, so the expensive species recycles at 0.80
-survival while deuterium leaks), with species-resolved recycle losses
-in the fuel account. The recovery itself is laddered: the vendor-implied
+the burnup is 1.2-2.5e-4 and the in-pulse tritium burn 0.2-0.3%, so
+dhe3_f_T = 0 satisfies its floor with two orders of margin. Fuel
+therefore resides in the machine for of order a thousand pulses before
+burning, and the model carries the per-pulse pair burn_fraction =
+1.2e-4 and burn_fraction_he3 = 4.1e-4 (He-3 burns 3.3x faster per
+pass, so the expensive species recycles at 0.80 survival while
+deuterium leaks), with species-resolved recycle losses in the fuel
+account. The costs of that residence are the fuel cycle's load-bearing
+claims: with per-pulse reprocessing the unburned-fuel multiplier is
+83x at per-pass recovery 0.99, 9.2x at 0.999, and 1.8x at 0.9999, so
+four-nines per-pulse recovery and hertz-rate isotope separation are
+what the published fuel cycle actually requires, and the tritium plant
+is their price. The recovery is graded accordingly: the vendor-implied
 0.9999 stays in the design basis, tier 1 reverts it to the JET-ILW
-retention record (0.999), and tier 2 re-grants the fourth nine as a
-labelled extrapolation.
+retention record (0.999; Brezinsek et al. 2013), and tier 2 re-grants
+the fourth nine as a labelled extrapolation.
+
+Away from the basis, the closure partitions the operating space into
+three regimes, each priced:
+
+- **Low burnup, confined tritons** (f_D at or below about 7e-4 keeps
+  f_T under 1%): the regime the patent operating point occupies; the
+  recycle and pumping costs above are its price.
+- **High burnup, prompt triton loss**: the 1.01 MeV triton escapes the
+  small-s plasmoid before thermalizing, preserving the store at any
+  burnup; it costs about 1 MeV per breeding event to the undirected
+  channel and is measurable on Polaris.
+- **High burnup, thermalized tritons** (dhe3_f_T = 0.78 at burnup
+  0.15): the tier-2 rung reads 58.1 \$/MWh and the tier-3 minimum
+  20.0 \$/MWh, plant neutron power rises about 5x with a dominant
+  14.1 MeV component, and the decay store shrinks to 0.2-0.3 t; these
+  are floors, because the base wall audit checks surface heat only.
+
+Which regime the reactor-scale machine actually occupies is set by its
+compression density, which the patent table may understate; Section 5.3
+prices the full axis.
 
 ### 5.3 The burnup axis
 
