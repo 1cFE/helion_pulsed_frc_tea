@@ -94,8 +94,10 @@ n_D <sigma v> tau, so f_T = 1 - (1 - e^-x)/x with
 x = (sv_DT/sv_DD)(-ln(1 - f_D)). At the concept YAML's burn_fraction
 0.15 (an unsourced MIF-literature midpoint; the vendor publishes Q, not
 burnup) the implied in-pulse tritium burn is **78-93%** across 70-20 keV
-if tritons thermalize and stay confined - flatly inconsistent with
-dhe3_f_T = 0. Three ways out, none free: (a) per-shot burnup at or below
+if tritons thermalize and stay confined - inconsistent with
+dhe3_f_T = 0. The inconsistency is internal to the study's assumption
+pair, not an inference about the vendor's machine; it partitions the
+operating space into three regimes, each priced, none free: (a) per-shot burnup at or below
 about 7e-4, which multiplies the CAS80 recycle-loss line 15x at
 fuel_recovery 0.99 (2.4x at 0.999), collapses the bred-He-3 recycle
 credit (f_He3_eff 0.95 -> 0.05-0.3), and inflates the vacuum-pumping
@@ -108,6 +110,26 @@ minimum 19.0, plant neutron power rises about 5x with a dominant
 14.1 MeV component, and the decay store shrinks to about 0.2-0.3 t - and
 those LCOE figures are floors, because the wall/shield audit checks
 surface heat only, not the D-T-class neutron loading it would imply.
+
+**The vendor's fuel-cycle patent resolves the direction and corrects
+the study's entry.** US 2017/0011811 publishes an operating table
+(n_D = 0.75e22 m^-3, T = 70 keV, tau = 0.157 s without tritium removal
+/ 0.103 s with it) and states tritium "may be removed between each
+pulse ... prior to undesired D-T reactions taking place". Under the
+closure at 70 keV: D burn per confinement period 2.5-3.8%, thermalized
+triton burn over that period 28-38% (the patent's own case for
+inter-pulse removal); per sub-millisecond pulse at the patent density,
+burnup 1.2-2.5e-4 and in-pulse tritium burn 0.2-0.3%, validating
+dhe3_f_T = 0. The study's burn_fraction 0.15 is therefore a cumulative
+single-pass figure (of order a thousand pulses of fuel residence)
+misapplied as per-pulse exposure; with per-pulse reprocessing the
+unburned-fuel multiplier is 83x at per-pass recovery 0.99, 9.2x at
+0.999, 1.8x at 0.9999, so the published fuel cycle's load-bearing
+claims are four-nines per-pulse fuel recovery and hertz-rate isotope
+separation. Grade: published design intent (a patent table, not a
+measured operating point); the reactor-point compression density may
+exceed the patent value, which would move the machine right along the
+burnup axis.
 
 `scripts/burnup_scan.py` prices the whole axis: burn_fraction swept from
 3e-4 to 0.3 with dhe3_f_T tied to the closure (thermalized branch) or
@@ -394,15 +416,19 @@ rather than through a lifetime knob the model ignores.
 4. A costed tritium plant scope for the D-rich fuel cycle (the 100-300 M$
    band here is an allowance, not an estimate), including its licensing
    posture.
-5. A sourced per-shot burnup fraction and the fast-triton confinement
-   physics for the reactor-scale machine. The declared burn_fraction 0.15
-   and dhe3_f_T = 0 are mutually inconsistent by an order of magnitude
-   (78-93% implied in-pulse T burn in the thermalized limit,
-   `scripts/tritium_burn.py`); the same knob sizes the vacuum pumping,
-   the fuel recycle loss, and the bred-He-3 credit, so its resolution
-   moves four accounts at once. Prompt MeV-triton loss from the small-s
-   plasmoid is the one escape that preserves store-and-decay at high
-   burnup, and it is measurable on Polaris.
+5. A measured per-pulse burnup and extraction cycle for the
+   reactor-scale machine. The vendor's patent (US 2017/0011811) settles
+   the design intent: low per-pulse burnup (about 1e-4 at its published
+   density) with inter-pulse tritium removal, which validates
+   dhe3_f_T = 0 and exposes the study's burn_fraction 0.15 as a
+   cumulative single-pass figure misapplied as per-pulse exposure. What
+   remains unmeasured: the reactor-point compression density (higher
+   density moves the machine right along the burnup axis and revives
+   the in-pulse burn), the demonstrated per-pulse isotope-separation
+   rate, and the per-pass fuel recovery, four nines of which are
+   required at the published point. The same knob set sizes the vacuum
+   pumping, the fuel recycle loss, and the bred-He-3 credit
+   (`scripts/tritium_burn.py`, `scripts/burnup_scan.py`).
 6. A resolved steady-state He-3 balance in the fuel account: whether
    NOAK operation may net the decay store's He-3 return against primary
    D-He3 burn (costingfe credits prompt bred He-3 via the recycle

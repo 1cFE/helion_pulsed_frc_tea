@@ -18,13 +18,24 @@ at zero price (10.4 \$/MWh at 3 GWe). The floor is carried by site
 and support infrastructure (buildings, heat rejection, staffing,
 decommissioning) and by the tritium fuel cycle, not by the capacitor
 driver; the machine has no turbine island at all. The study's
-central physics finding is a contradiction inside the fuel cycle: the
-declared per-shot burnup (0.15) implies that 78-93% of the bred tritium
-burns in-plasma before it can be extracted, which is incompatible with
-the store-and-decay He-3 self-supply strategy unless MeV tritons are
-promptly lost from the plasmoid. Pricing the alternatives, including
-14 MeV neutron damage to the unshieldable compression section, puts
-5-17 \$/MWh on that single unmeasured fast-ion property. A second
+central physics finding is that two of its own basis assumptions cannot
+both hold: the assumed per-shot burnup (0.15, a literature midpoint
+standing in for a figure the vendor does not publish) implies that
+78-93% of the bred tritium would burn in-plasma, which is incompatible
+with the study's store-and-decay idealization (dhe3_f_T = 0). The
+contradiction is resolved by the vendor's own fuel-cycle patent
+(US 2017/0011811), which publishes an operating point (n_D =
+0.75e22 m^-3, 70 keV, tau of about 0.1 s) and specifies tritium removal
+between pulses: at that density and the stated sub-millisecond pulse,
+per-pulse burnup is about 1.2e-4 and in-pulse tritium burn 0.2-0.3%,
+validating store-and-decay and revealing the study's burnup entry as a
+cumulative single-pass figure misapplied as per-pulse exposure. The
+repair relocates the load: at per-pulse burnup of order 1e-4 the fuel
+cycle demands per-pulse isotope separation at the repetition rate and
+per-pass fuel recovery of 0.999-0.9999, which become the enabling
+engineering claims; the priced spread across the burnup axis, including
+14 MeV neutron damage to the unshieldable compression section in the
+high-burnup regimes, remains 5-17 \$/MWh. A second
 finding is a recovery-accounting gap: the plasma-thermal share of the
 driver energy, fixed by the FRC equilibrium at 0.30-0.71 of the
 delivered energy, can only return through the expansion channel, worth
@@ -263,12 +274,15 @@ gives the in-pulse tritium burn probability
 
     f_T = 1 - (1 - e^-x)/x,  x = (sv_DT / sv_DD) x_DD.
 
-The concept configuration declares burn_fraction = 0.15 (an unsourced
-magneto-inertial-literature midpoint; the vendor publishes gain, not
-burnup). At that burnup, f_T = 78-93% across 70-20 keV if tritons
-thermalize and remain confined: the fuel cycle's central idealization
-fails by an order of magnitude against the machine's own declared
-burnup. Three exits exist, none free:
+The study's configuration assumes burn_fraction = 0.15 (an unsourced
+magneto-inertial-literature midpoint, adopted because the vendor
+publishes gain, not burnup). At that burnup, f_T = 78-93% across
+70-20 keV if tritons thermalize and remain confined: the two
+assumptions, taken together, fail by an order of magnitude. The
+contradiction is internal to the study's basis, not an inference about
+the vendor's machine; what it establishes is that the real operating
+point must occupy one of three coherent regimes, each priced below,
+none free:
 
 - **Low burnup** (f_D at or below about 7e-4 for f_T under 1%): the
   unburned-fuel recycle loss multiplies the fuel account 15x at 99%
@@ -285,6 +299,27 @@ burnup. Three exits exist, none free:
   with a dominant 14.1 MeV component, and the decay store shrinks to
   0.2-0.3 t; these are floors, because the base wall audit checks
   surface heat only.
+
+The vendor's fuel-cycle patent (US 2017/0011811) settles which regime
+the design intends, and corrects the study's assumption in the process.
+It publishes an operating table (n_D = 0.75e22 m^-3, T = 70 keV,
+tau = 0.157 s without tritium removal and 0.103 s with it) and states
+that tritium "may be removed between each pulse ... prior to undesired
+D-T reactions taking place". Running the closure on those numbers:
+per confinement period the D burn is 2.5-3.8% and a thermalized triton
+riding it would burn 28-38%, the patent's own motivation for
+inter-pulse removal; per sub-millisecond pulse at the patent density
+the burnup is 1.2-2.5e-4 and the in-pulse tritium burn 0.2-0.3%,
+comfortably validating dhe3_f_T = 0. The study's burn_fraction = 0.15
+is therefore a cumulative single-pass figure, accumulated over of order
+a thousand pulses of fuel residence, misapplied as per-pulse exposure.
+The correction moves the machine to the far left of the burnup axis
+(Section 5.3), where the costs relocate rather than vanish: with
+per-pulse reprocessing, the unburned-fuel multiplier is 83x at
+per-pass recovery 0.99, 9.2x at 0.999, and 1.8x at 0.9999, so
+four-nines per-pulse fuel recovery and hertz-rate isotope separation
+are the load-bearing engineering claims of the published fuel cycle,
+and the tritium plant is their price.
 
 ### 5.3 The burnup axis
 
@@ -524,11 +559,14 @@ gate:
 1. **Capacitor cost-at-life** (tens of \$/MWh): a sourced curve
    replacing the single derating target, resolving the joint optimism
    of 0.1 \$/J with 1e10-shot life.
-2. **Fast-triton confinement and per-shot burnup** (5-17 \$/MWh): the
-   declared burnup and the store-and-decay fuel cycle are mutually
-   inconsistent unless MeV tritons are promptly lost; the same
-   measurement fixes the neutron spectrum, the wall-replacement
-   schedule, and the decay store's existence.
+2. **Per-pulse burnup, extraction, and fuel recovery** (5-17 \$/MWh):
+   the vendor's patent resolves the study's assumption error in favor of
+   low per-pulse burnup with inter-pulse tritium removal, but a patent
+   is design intent, not a measurement; the reactor-point compression
+   density, the demonstrated per-pulse separation rate, and the
+   per-pass fuel recovery (four nines required at the published
+   operating point) fix the neutron spectrum, the wall-replacement
+   schedule, and the fuel-cycle cost between them.
 3. **The recovery chain** (order 5 \$/MWh at tier 2): the Polaris
    vacuum / no-burn / burn shot triplet separates the circuit
    efficiency, the thermalization share chi(1 - f_pdv), and the
