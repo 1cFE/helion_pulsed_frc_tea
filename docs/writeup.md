@@ -22,9 +22,11 @@ decommissioning) and by the tritium fuel cycle, not by the capacitor
 driver; the machine has no turbine island at all. The
 fuel cycle is anchored to the vendor's own patent (US 2017/0011811),
 which publishes an operating point (n_D = 0.75e22 m^-3, 70 keV) and
-specifies tritium removal between pulses: per-pulse burnup is 1.2e-4
-for deuterium and 4.1e-4 for He-3 (Bosch-Hale reactivities at a
-sub-millisecond dwell), the in-pulse tritium burn is under 1%, and the
+specifies tritium removal between pulses: the per-pulse burnup
+n <sigma v> tau is 1.2e-4 for deuterium and 4.1e-4 for He-3 (patent
+density and temperature, Bosch-Hale reactivities, a 0.5 ms dwell
+inside the vendor's sub-millisecond statement, and linear in that
+dwell), the in-pulse tritium burn is under 1%, and the
 store-and-decay He-3 self-supply idealization (dhe3_f_T = 0) holds.
 The price of that coherence is the fuel cycle itself: fuel transits the
 exhaust loop of order 1e3-1e4 times before burning, so per-pulse
