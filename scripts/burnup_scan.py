@@ -24,6 +24,12 @@ from study import OUTPUT_DIR, build_model, load_config, run, wall_area_m2
 
 from tritium_burn import POINTS, f_t_from_burnup, point_fwd, reaction_rates
 
+from costingfe.layers.reactivity import sigv_dd_n, sigv_dd_p, sigv_dhe3
+
+# Both species' per-pass burn fractions derive from the same n tau, so a
+# coherent burnup sweep scales them together at the fixed reactivity ratio.
+HE3_OVER_DD = float(sigv_dhe3(70.0)) / float(sigv_dd_n(70.0) + sigv_dd_p(70.0))
+
 from costingfe.layers.economics import levelized_replacement_cost
 
 BURN_FRACTIONS = (1.2e-4, 3e-4, 1e-3, 3e-3, 1e-2, 3e-2, 0.15, 0.3)
@@ -93,7 +99,9 @@ def scan_point(name, spec):
             out = {}
             for branch, dhe3_f_t in (("th", f_t), ("pr", 0.0)):
                 r, d = run(model, dict(
-                    fwd0, burn_fraction=bf, fuel_recovery=fr, dhe3_f_T=dhe3_f_t))
+                    fwd0, burn_fraction=bf,
+                    burn_fraction_he3=min(0.95, HE3_OVER_DD * bf),
+                    fuel_recovery=fr, dhe3_f_T=dhe3_f_t))
                 dmg, gamma = wall_damage_adder(r, dhe3_f_t, fwd0, mwh)
                 out[branch] = dict(
                     lcoe=d["lcoe"],

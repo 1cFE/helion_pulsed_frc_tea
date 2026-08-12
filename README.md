@@ -74,6 +74,7 @@ python3 module_scan.py     # module-count vs standalone-plant-size sweeps
 python3 tritium_burn.py    # in-pulse T burn vs breed rate; dhe3_f_T audit
 python3 burnup_scan.py     # burn_fraction axis under both triton-fate limits
 python3 reconciliation.py  # adders/credits the model cannot price, honest bands
+python3 make_figures.py    # paper figures into docs/figures/
 python3 -m pytest ../tests # closure, config-integrity, ladder regression
 ```
 

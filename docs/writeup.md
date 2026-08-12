@@ -221,6 +221,14 @@ tier 2. The baseline and record rungs are also dominated by scheduled
 replacement: the entire shot-cycled recovery chain is replaced on the
 capacitor-life schedule, about eight times over plant life at the
 1e8-shot record life.
+
+![The evidence ladder](figures/fig1_ladder.svg)
+
+*Figure 1: The evidence ladder at 1 and 3 GWe. The tier-1 rung sits
+above the design baseline because reverting the vendor's per-pulse fuel
+recovery to the JET-class record outweighs every finance record; the
+design-optimized minima are shown beneath their rungs.*
+
 One-at-a-time reversion from the tier-2 minimum ranks the levers:
 
 | knob reverted | LCOE (\$/MWh) | delta (\$/MWh) |
@@ -238,10 +246,17 @@ Two levers co-dominate at +42 to +45 \$/MWh each: the per-pulse fuel
 recovery (an extrapolated nine beyond the JET retention record) and the
 capacitor cycle life (a published derating target); the burn-mix
 package and the rep rate follow; reverting f_pdv to the baseline 0.80
-is mildly favorable, the signature of an anti-record; the conversion efficiencies,
+is mildly favorable, the signature of an anti-record;
+see Figure 2. the conversion efficiencies,
 once capped as a composite, are worth little at the margin (an
 incoherent double-booking of eta_dec = 0.97 with f_pdv = 0.95 would
 claim tens of \$/MWh and is excluded by construction).
+
+![Tornado from the tier-2 minimum](figures/fig2_tornado.svg)
+
+*Figure 2: One-at-a-time reversion of each tier-2 entry to its tier-1
+value, from the 40.3 \$/MWh design-optimized minimum. Red bars are
+favorable reversions, the signature of anti-record entries.*
 
 At the tier-3 minimum the capacitor-driver narrative is spent (the bank
 is 5 M\$ of a 690 M\$ reactor account) and the floor is carried by
@@ -253,13 +268,19 @@ are not a steam cycle):
 |---|---|---|
 | buildings (CAS21) | 287 | 1.6 |
 | CAS50, of which decommissioning provision 140 | 199 | 1.1 |
-| fuel handling + tritium plant (C220500) | 213 | 1.2 |
+| fuel handling + tritium plant (C220500) | 190 | 1.1 |
 | heat rejection + electrical plant (CAS24-26) | 171 | 0.9 |
 | vacuum and exhaust (C220106), of which per-pulse pumping 79 | 112 | 0.6 |
 | first wall of the 45 m chamber (C220101) | 109 | 0.6 |
 | DEC power electronics (C220109) | 59 | 0.3 |
 | O&M (CAS70) | 54/yr | 6.4 |
 | annualized capital, all-in | | about 7.5 |
+
+![What carries the floor](figures/fig4_anatomy.svg)
+
+*Figure 3: Capital accounts carrying the tier-3 minimum. The driver
+bank, the concept's narrative centerpiece, is the smallest bar; site
+infrastructure and the fuel cycle dominate.*
 
 ## 5. The tritium fuel cycle is the load-bearing subsystem
 
@@ -351,21 +372,32 @@ labelled extrapolation.
 
 ### 5.3 The burnup axis
 
-Sweeping burn_fraction from the patent basis (1.2e-4) up to 0.3 under
-both triton fates, at exhaust recovery 0.99, 0.999, and 0.9999, shows
-the structure plainly. At four-nines recovery the axis is nearly flat
-(16.4-17.1 \$/MWh prompt-loss, 16.6-20.0 thermalized) and the basis
-point reads the 17.0 \$/MWh floor; burnup itself is almost free to
-choose. What is not free is the recovery grade: the basis point costs
-17.0 at fr = 0.9999, 27.3 at 0.999, and 145.1 at 0.99, so at
-per-pulse burnup the recovery nines are the load-bearing knob, worth
-10 \$/MWh for the fourth nine and 120 \$/MWh for the third. If the
-reactor-point density exceeds the patent value, the machine moves
-right along the axis: the thermalized branch then climbs (19.6-20.4 at
-burnup 0.15-0.3, before neutron damage) while the prompt-loss branch
-stays flat, reopening the triton-fate question. Per-pulse exhaust
-pumping is priced honestly across the axis and peaks at the basis
-(79 M\$ per module at the floor: 8300 pumped particles per reaction).
+Both species' per-pass burn fractions derive from the same n tau, so
+the axis is swept coherently: burn_fraction_he3 scales with
+burn_fraction at the fixed 70 keV reactivity ratio (3.3x). Figure 4
+shows the result under both triton fates at exhaust recovery 0.99,
+0.999, and 0.9999. At the patent-density basis the recovery nines
+carry everything: 17.0 \$/MWh at fr = 0.9999, 27.5 at 0.999, 148 at
+0.99 (the fourth nine is worth 10 \$/MWh, the third 120). Moving
+right along the axis, i.e. toward higher compression density, the
+recovery requirement relaxes: above per-pulse burnup of about 3e-3
+the three- and four-nines curves converge near 15.5-16.0 \$/MWh on
+the prompt-loss branch, and the axis minimum (15.5, at burnup 1e-2 to
+3e-1) sits about 1.5 \$/MWh below the basis. The thermalized branch
+turns up past burnup 0.01 as the tritium burn grows (13-90%), so the
+triton-fate question reopens exactly where the recovery question
+closes. Per-pulse exhaust pumping is priced across the axis and peaks
+at the basis (79 M\$ per module at the floor: 8300 pumped particles
+per reaction).
+
+![The burnup axis](figures/fig3_burnup.svg)
+
+*Figure 4: LCOE at the tier-3 minimum machine across the per-pulse
+burnup axis, both species scaled together, under the two triton fates
+and three exhaust-recovery grades. The patent-density basis (dotted)
+is the hardest point for fuel recovery; the recovery grades converge
+above burnup of about 3e-3, where the thermalized branch begins to
+pay for its tritium burn instead.*
 
 ### 5.4 Neutron damage, the unshieldable throat, and the consumable core
 
@@ -384,8 +416,8 @@ high-burnup counterfactuals: if the reactor-point density pushes
 per-pulse burnup toward the 0.1 regime with thermalized tritons, the
 all-in gap between prompt-loss and thermalized reaches 8-17 \$/MWh,
 and at the tier-2 rung, whose wall is divertor-class at 2.5 M\$/m^2,
-thermalized high-burnup replacement is prohibitive (+61 to
-+182 \$/MWh). Keeping the tritium out of the burn is therefore free
+thermalized high-burnup replacement is prohibitive (+53 to
++161 \$/MWh). Keeping the tritium out of the burn is therefore free
 insurance at the basis and worth double digits off it.
 
 Shielding cannot buy the machine out of this, because a pulsed
@@ -532,6 +564,13 @@ plant size is expensive**:
 | 1 GWe | 17.0 | 1475 | - |
 | 250 MWe | 27.3 | 2285 | fixed site buildings, staffing^0.5 |
 | 50 MWe | 64.1 | 6464 | O&M 27 \$/MWh (staffing law), 141 M\$ of buildings, tritium-plant fixed core |
+
+![Module size, park vs standalone](figures/fig5_plant_size.svg)
+
+*Figure 5: The same physics sold two ways at the full speculative
+stack. Module size in a 1 GWe park is nearly free; standalone plant
+size is expensive, and the 50 MWe standalone unit costs 3.4x the park
+floor.*
 
 The penalty decomposes into three mechanisms: about 138 M\$ of fixed
 site buildings calibrated on fission-class analogs (an analog-class

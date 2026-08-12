@@ -140,18 +140,22 @@ table, not a measured operating point); the reactor-point compression
 density may exceed the patent value, which would move the machine right
 along the burnup axis.
 
-`scripts/burnup_scan.py` prices the whole axis: burn_fraction swept
-from the patent basis (1.2e-4) to 0.3 with dhe3_f_T tied to the closure
+`scripts/burnup_scan.py` prices the whole axis coherently: both
+species' per-pass burn fractions derive from the same n tau, so
+burn_fraction_he3 scales with burn_fraction at the fixed 70 keV
+reactivity ratio (3.3x), with dhe3_f_T tied to the closure
 (thermalized branch) or held at zero (prompt-loss branch), at
-fuel_recovery 0.99, 0.999, and 0.9999. At four-nines recovery the axis
-is nearly flat (16.4-17.1 $/MWh prompt-loss) and the basis point reads
-the 17.0 $/MWh floor; the recovery grade, not the burnup, is the
-load-bearing knob: the basis point costs 17.0 at fr 0.9999, 27.3 at
-0.999, and 145.1 at 0.99 (the fourth nine is worth 10 $/MWh, the third
-120 $/MWh). Higher reactor-point density moves the machine right along
-the axis and reopens the thermalized-triton penalty (19.6-20.4 $/MWh
-at burnup 0.15-0.3 before damage). Per-pulse exhaust pumping peaks at
-the basis (79 M$ per module at the floor).
+fuel_recovery 0.99, 0.999, and 0.9999. At the patent-density basis the
+recovery nines carry everything: 17.0 $/MWh at fr 0.9999, 27.5 at
+0.999, 148 at 0.99 (the fourth nine is worth 10 $/MWh, the third
+120 $/MWh). Toward higher compression density the recovery
+requirement relaxes: above per-pulse burnup of about 3e-3 the three-
+and four-nines curves converge near 15.5-16.0 $/MWh prompt-loss, and
+the axis minimum (15.5 at burnup 1e-2 to 3e-1) sits about 1.5 $/MWh
+below the basis, while the thermalized branch turns up past burnup
+0.01 as the tritium burn grows: the triton-fate question reopens
+exactly where the recovery question closes. Per-pulse exhaust pumping
+peaks at the basis (79 M$ per module at the floor).
 
 The scan also reprices neutron damage, which the base model cannot see
 (core_lifetime is inert for this concept): replacement of the exposed
@@ -169,7 +173,7 @@ a 14-MeV-equivalent load of 0.20 MW/m^2 and the adder is modest
 8-17 $/MWh triton-fate spread survives only as the high-burnup
 counterfactual (reactor-point density well above the patent value with
 thermalized tritons), where the tier-2 rung's hhf wall makes
-replacement brutal (+45 to +122 $/MWh). Two couplings the damage
+replacement brutal (+53 to +161 $/MWh). Two couplings the damage
 column exposes: low burnup raises neutron damage as well as fuel cost
 (more D-D events per MWh), and keeping the tritium out of the burn is
 free insurance at the basis and worth double digits off it.
