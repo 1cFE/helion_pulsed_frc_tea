@@ -215,3 +215,17 @@ def test_chi_from_xs_equilibrium_anchors():
     assert chi_from_xs(0.5) == pytest.approx(0.304, abs=0.01)
     assert chi_from_xs(0.7) == pytest.approx(0.52, abs=0.01)
     assert chi_from_xs(0.85) == pytest.approx(0.71, abs=0.01)
+
+
+def test_tritium_burn_floor_constraint(model, base_cfg):
+    """dhe3_f_T = 0 at high per-pulse burnup must be flagged (coherent only
+    under prompt triton loss); at the patent basis it passes."""
+    fwd = dict(base_cfg["forward"])
+    for c in TIER_CONFIGS:
+        apply_records(fwd, c)
+    fwd.update(yield_per_shot_mj=300.0, chamber_length=45.0, plasma_t=1.0,
+               r_bore=1.1, fw_class="panel")
+    _, diag = run(model, fwd)
+    assert not coherence_violations(fwd, diag, "tier3")
+    v = "; ".join(coherence_violations(dict(fwd, burn_fraction=0.15), diag, "tier3"))
+    assert "in-pulse burn floor" in v

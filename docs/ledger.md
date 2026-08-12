@@ -46,9 +46,9 @@ within 15.7-18.3 at 1 GWe.
 
 ## Coherence constraints (enforced, not advisory)
 
-Four physics couplings from the red-team review are enforced on every
-quoted point by `study.coherence_violations`; a stack that violates one is
-flagged in the output of every script rather than reported:
+Five physics couplings are enforced on every quoted point by
+`study.coherence_violations`; a stack that violates one is flagged in
+the output of every script rather than reported:
 
 1. **f_rad is coupled to the burn mix.** A D-rich plasma radiates more, not
    less: Bosch-Hale + bremsstrahlung at the study calibration (baseline
@@ -78,6 +78,13 @@ flagged in the output of every script rather than reported:
    machine (band 100-300 swept in reconciliation; given the tonne-class
    inventory, the allowance is more likely low than high). O&M stays at
    the baseline 27.5, never at an "aneutronic" discount.
+5. **dhe3_f_T is floored by the burnup closure.** The per-pulse D burnup
+   pins the thermalized in-pulse tritium burn (f_T = 1 - (1 - e^-x)/x,
+   x = (sv_DT/sv_DD)(-ln(1 - f_D))); any point whose dhe3_f_T sits more
+   than 1% below that floor is flagged as coherent only under prompt
+   MeV-triton loss. At the patent basis the floor is 0.002, so the
+   design's dhe3_f_T = 0 passes; the constraint exists to catch any
+   future high-burnup configuration that keeps the zero silently.
 
 The store-and-decay idealization itself (dhe3_f_T = 0: no bred triton
 burns in-plasma) is checked in `scripts/tritium_burn.py`. A triton born

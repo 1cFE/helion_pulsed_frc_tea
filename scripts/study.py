@@ -154,9 +154,39 @@ def run(model: CostModel, fwd: dict, tritium_adder: bool = True):
     return result, diag
 
 
+# Concept-YAML per-pulse D burnup: the default exposure behind the tritium
+# in-pulse burn floor when a point does not override burn_fraction.
+_BF_DEFAULT = 1.2e-4
+_T_I_CALIB_KEV = 70.0
+F_T_FLOOR_TOL = 0.01  # flag only when the shortfall is material
+
+
+def f_t_from_burnup(f_d: float, t_i_kev: float) -> float:
+    """Thermalized-limit in-pulse tritium burn implied by the D burnup.
+
+    The per-pass D burnup pins the integrated exposure -ln(1 - f_d); a
+    triton born mid-pulse sees the remainder scaled by the DT/DD
+    reactivity ratio. Averaging over births: f_T = 1 - (1 - e^-x)/x.
+    Assumes the triton thermalizes and stays confined; prompt loss from
+    the small-s plasmoid is the one escape below this floor."""
+    from costingfe.layers.reactivity import sigv_dd_n, sigv_dd_p, sigv_dt
+
+    x_dd = -math.log1p(-f_d)
+    ratio = float(sigv_dt(t_i_kev)) / float(sigv_dd_n(t_i_kev) + sigv_dd_p(t_i_kev))
+    x = ratio * x_dd
+    return 1.0 - (1.0 - math.exp(-x)) / x
+
+
 def coherence_violations(fwd: dict, diag: dict, tier: str) -> list[str]:
     """Return the list of red-team constraints a run violates (empty = coherent)."""
     v = []
+    f_t_floor = f_t_from_burnup(fwd.get("burn_fraction", _BF_DEFAULT),
+                                _T_I_CALIB_KEV)
+    if fwd.get("dhe3_f_T", 0.0) < f_t_floor - F_T_FLOOR_TOL:
+        v.append(
+            f"dhe3_f_T {fwd.get('dhe3_f_T', 0.0):.3f} sits below the "
+            f"thermalized in-pulse burn floor {f_t_floor:.3f} at this "
+            f"burnup: coherent only under prompt MeV-triton loss")
     dd = fwd.get("dhe3_dd_frac", 0.131)
     floor = f_rad_floor(dd)
     if fwd.get("f_rad", 0.05) < floor - 1e-9:

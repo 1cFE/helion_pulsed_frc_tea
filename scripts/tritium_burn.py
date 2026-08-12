@@ -67,8 +67,9 @@ POINTS = {
         ),
     ),
 }
-# 0.78 is the thermalized-triton limit at the concept's own burn_fraction
-# 0.15 (f_t_from_burnup at the study's 70 keV calibration).
+# 0.78 is the thermalized-triton limit at per-pulse burnup 0.15, the
+# high-compression-density counterfactual (the patent basis 1.2e-4 gives a
+# floor of 0.002, which dhe3_f_T = 0 satisfies within tolerance).
 F_T_SCENARIOS = (0.0, 0.01, 0.04, 0.78)
 
 
@@ -113,20 +114,9 @@ def reaction_rates(result):
     )
 
 
-def f_t_from_burnup(f_d: float, t_i_kev: float) -> float:
-    """In-pulse T burn probability implied by the per-shot D burnup alone.
-
-    The D burnup fixes the integrated exposure x_DD = n_D <sv>_DD tau
-    (= -ln(1 - f_D)); a triton born at time t sees the same n_D tau scaled
-    by the DT/DD reactivity ratio for the remaining dwell. Averaging over
-    birth times gives f_T = 1 - (1 - e^-x)/x with x = ratio * x_DD. No
-    density or dwell needed: the ratio is the only physics input, and it
-    assumes the triton thermalizes and stays confined for the rest of the
-    pulse (prompt fast-triton orbit loss would truncate it)."""
-    x_dd = -math.log1p(-f_d)
-    ratio = float(sigv_dt(t_i_kev)) / float(sigv_dd_n(t_i_kev) + sigv_dd_p(t_i_kev))
-    x = ratio * x_dd
-    return 1.0 - (1.0 - math.exp(-x)) / x
+# f_t_from_burnup now lives in study.py, where the coherence check uses it
+# as the in-pulse tritium burn floor; re-exported here for the scans/tests.
+from study import f_t_from_burnup  # noqa: E402, F401
 
 
 def he3_over_d(r_dhe3_over_r_dd: float, t_i_kev: float) -> float:

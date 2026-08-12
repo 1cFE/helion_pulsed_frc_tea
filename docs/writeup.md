@@ -174,7 +174,7 @@ margin), capacitor capital at 0.1 \$/J, shot life 1e10, He-3 at
 in the evidence ledger (`docs/ledger.md`); no tier-2 entry is a
 measured record.
 
-**Coherence constraints.** Four couplings are enforced on every quoted
+**Coherence constraints.** Five couplings are enforced on every quoted
 point: (1) the radiated fraction is a function of the burn mix through a
 bremsstrahlung floor (f_rad = 0.28 at dd_frac 0.85, not the lean-mix
 0.05); (2) recovery efficiency is capped as the composite
@@ -184,8 +184,12 @@ its steady flux (within the purchased wall class) and its per-shot flash
 energy (under the tungsten millisecond-melt bound); (4) a D-rich mix
 carries its tritium-plant consequences, priced as a fuel-handling adder
 of 50 M\$ fixed plus a throughput-scaled balance anchored at 200 M\$ for
-the tier-2 reference machine. Two further audits, developed in
-Sections 5 and 6, close the fuel cycle and the driver-energy accounting.
+the tier-2 reference machine; (5) the in-plasma tritium burn dhe3_f_T
+is floored by the burnup closure of Section 5.2, so a low-burn claim at
+high per-pulse burnup is flagged as requiring prompt triton loss (at
+the patent basis the floor is 0.002 and the design's zero passes). Two
+further audits, developed in Sections 5 and 6, close the fuel cycle and
+the driver-energy accounting.
 
 **Design search and reconciliation.** At each evidence level the
 operating point is the argmin of a scan over shot yield (tier 3 only;
