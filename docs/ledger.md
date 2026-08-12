@@ -331,6 +331,17 @@ fraction at 1 - (V_i/V_f)^(2/3), so f_pdv is chamber-coupled: the
 tier-2 minimum's 20 m chamber supports about 0.82 against the claimed
 0.85, and the tier-3 45 m chamber about 0.96 against 0.947, both at
 the edge; the big chamber buys expansion ratio, not just wall area.
+That bound also assumes ALL boundary work couples to the circuit, but
+the expansion is not all radial: FRC adiabatic scalings (r_s prop.
+B^-2/5, length prop. B^-1/5) put about 1/5 of the boundary work in
+axial elongation (a self-similar cylinder bounds it at 1/3), which
+changes flux linkage through the END coils and is captured only if
+those circuits are switched for recovery during the stroke; parallel
+particle streaming through the exhaust is captured by nothing. A
+radial-only-recovery design caps f_pdv near 0.77, i.e. the tier-2
+composite: the tier-2 to tier-3 recovery step (0.765 -> 0.90) is
+equivalent to claiming capture of the axial channel, and the Polaris
+shot triplet resolves it.
 
 **The observed He-3 market makes the fuel accounting first-order.** At the
 observed 19-22 M$/kg spot (he3_scan's 2e7 row) the tier-2 minimum
