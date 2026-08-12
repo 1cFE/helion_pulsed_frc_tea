@@ -1,8 +1,8 @@
 """Closure, config-integrity, and ladder-regression tests.
 
-Regression values are pinned at costingfe ac2d1a8 (cylinder geometry +
-wall audit + shot-cycled CAS72 replacement scope + physics-consistent
-store markup). If costingfe moves and a number shifts, the ladder in
+Regression values are pinned at costingfe 7042946 (cylinder geometry +
+wall audit, shot-cycled CAS72 scope, physics-consistent store markup,
+per-pulse fuel-cycle semantics). If costingfe moves and a number shifts, the ladder in
 docs/ledger.md must be re-based in the same change that updates the pin
 here - the red-team review's reproducibility finding is the reason this
 file exists.
@@ -107,7 +107,7 @@ def test_coherence_catches_the_withdrawn_tier2_point(model, base_cfg):
     assert "composite cap" in v
 
 
-# --- ladder regression (costingfe ac2d1a8) ---------------------------------
+# --- ladder regression (costingfe 7042946) ---------------------------------
 
 def _ladder_lcoe(model, base_cfg, *cfgs):
     fwd = dict(base_cfg["forward"])

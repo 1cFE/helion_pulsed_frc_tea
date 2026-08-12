@@ -39,7 +39,7 @@ driver energy, fixed by the FRC equilibrium at 0.30-0.71 of the
 delivered energy, can only return through the expansion channel, worth
 +1.8 to +4.2 \$/MWh at the extrapolation-tier minimum. All numbers are
 reproducible from configuration files and scripts pinned by regression
-tests at `costingfe` commit `ac2d1a8`.
+tests at `costingfe` commit `7042946`.
 
 ## 1. Introduction
 
@@ -96,7 +96,7 @@ that carry order-10 \$/MWh each, and specifies the measurement protocol
 on the developer's own next machine that would resolve them. Everything
 here is reproducible: the tier stacks are YAML configuration files, each
 figure is produced by a named script, and seventeen regression tests pin
-the ladder to `costingfe` commit `ac2d1a8`.
+the ladder to `costingfe` commit `7042946`.
 
 ## 2. Machine basis
 
@@ -406,20 +406,21 @@ finally bind on something real.
 ### 5.5 The He-3 balance and the observed market
 
 The fuel account charges every primary D-He3 event as purchased He-3
-(1 - dd_frac per event) and credits prompt bred He-3 nearly fully
-through its cumulative recycle fusion probability (0.95 at the declared
-burn/recovery pair). What it never credits is the decay store's He-3
-return, 0.42 atoms per primary event, equal to the prompt branch.
-Without it the machine imports about 35 kg/yr of He-3; crediting it
-flips the plant to a net exporter. The question is not academic,
+(1 - dd_frac per event) and credits prompt bred He-3 through its
+species-resolved cumulative recycle fusion probability (0.80 at the
+per-pulse basis: He-3 burns out of the loop 3.3x faster per pass than
+it leaks). What it never credits is the decay store's He-3 return,
+0.42 atoms per primary event, equal to the prompt branch. Without it
+the machine imports about 45 kg/yr of He-3; crediting it flips the
+plant to a net exporter. The question is not academic,
 because the only observed He-3 transactions (2024-2026: spot near
 \$2,500/L, lunar-extraction agreements priced "at today's commercial
 market price", an unpriced lunar supply option) sit at 19-22 M\$/kg on
 gram-to-kilogram volumes, 10x above the study's baseline price and 40x
 above its tier-3 entry, with every new entrant building toward the high
-price. At the observed spot the tier-2 minimum reads 110 \$/MWh at the
-D-rich mix and 293 \$/MWh lean under the model's accounting, against 25.5 \$/MWh
-at the full self-supply limit; the distance between those two numbers is
+price. At the observed spot the tier-2 minimum reads 136 \$/MWh at the
+D-rich mix and 345 \$/MWh lean under the model's accounting, against
+26.5 \$/MWh at the full self-supply limit; the distance between those two numbers is
 the value of the crediting decision, coupled to Section 5.2 because the
 decay return exists only if the tritium survives the pulse. A
 by-product observation: at these prices a kilogram of He-3 burned at
@@ -448,8 +449,8 @@ separatrix-to-coil radius ratio alone,
 giving chi = 0.30 / 0.52 / 0.71 at x_s = 0.5 / 0.7 / 0.85. Fat FRCs
 are high-chi machines: good confinement physics pushes the derate up.
 The extra recirculating loss eta_dec chi (1 - f_pdv) p_driver is worth
-+1.6/+2.8/+3.8 \$/MWh at the tier-2 minimum across that x_s span (the
-Q of order 2 machine circulates 1160 MW of driver power),
++1.8/+3.1/+4.2 \$/MWh at the tier-2 minimum across that x_s span (the
+Q of order 2 machine circulates 1170 MW of driver power),
 +0.1 \$/MWh at the tier-3 minimum, and order +10 \$/MWh at the low-Q
 baseline rung. It is carried
 as a reconciliation adder pending a model-level treatment.
@@ -476,16 +477,16 @@ Two controlled sweeps at the tier-3 stack (constant gain, constant wall
 loading, driver and chamber scaled with module power) separate module
 count from plant size. **Module count at fixed plant size is nearly
 free**: delivering 1 GWe from thirteen 80 MWe modules instead of one
-large module costs +2.0 \$/MWh (15.8 to 17.9 \$/MWh), because buildings, supplementary
+large module costs +2.1 \$/MWh (17.0 to 19.1 \$/MWh), because buildings, supplementary
 capital, and balance of plant price plant totals; the only modularity
 tax is per-module fixed items, biting below about 100 MWe. **Standalone
 plant size is expensive**:
 
 | plant | LCOE (\$/MWh) | \$/kW | dominant penalties |
 |---|---|---|---|
-| 1 GWe | 15.8 | 1373 | - |
-| 250 MWe | 26.1 | 2182 | fixed site buildings, staffing^0.5 |
-| 50 MWe | 62.8 | 6355 | O&M 27 \$/MWh (staffing law), 141 M\$ of buildings, tritium-plant fixed core |
+| 1 GWe | 17.0 | 1475 | - |
+| 250 MWe | 27.3 | 2285 | fixed site buildings, staffing^0.5 |
+| 50 MWe | 64.1 | 6464 | O&M 27 \$/MWh (staffing law), 141 M\$ of buildings, tritium-plant fixed core |
 
 The penalty decomposes into three mechanisms: about 138 M\$ of fixed
 site buildings calibrated on fission-class analogs (an analog-class
@@ -500,15 +501,15 @@ economics live in power parks, many modules sharing one site, one
 staff, one balance of plant. The physics is nearly indifferent to
 module size above 100 MWe, so a 50 MWe module is a manufacturing
 choice the model neither rewards nor punishes at park scale; sold as a
-standalone distributed plant it is a 60+ \$/MWh machine on the full
+standalone distributed plant it is a 64 \$/MWh machine on the full
 speculative stack.
 
 ## 8. What would have to be true to reach \$10/MWh
 
-On top of the full tier-3 stack at 3 GWe (12.4 \$/MWh), in decreasing order of
+On top of the full tier-3 stack at 3 GWe (13.6 \$/MWh), in decreasing order of
 plausibility:
 
-- **He-3 at effectively zero cost** (10.4 \$/MWh): a mature breeding
+- **He-3 at effectively zero cost** (11.0 \$/MWh): a mature breeding
   economy or
   an external supply two orders below the observed market. Even this
   does not break 10 \$/MWh, because the tritium plant scales with the breeding
@@ -521,9 +522,9 @@ plausibility:
   small-unit strategy at all.
 
 None of these is in the evidence base at any tier. Within what the
-study can defend: records support about 105 \$/MWh, defensible
-extrapolation about 34 \$/MWh, and coherent speculation bottoms at
-16 \$/MWh (1 GWe) / 12 \$/MWh (3 GWe).
+study can defend: records support about 112 \$/MWh, defensible
+extrapolation about 38 \$/MWh, and coherent speculation bottoms at
+17 \$/MWh (1 GWe) / 14 \$/MWh (3 GWe).
 
 ## 9. Caveats that survive into the headline
 
@@ -550,9 +551,9 @@ extrapolation about 34 \$/MWh, and coherent speculation bottoms at
 Same framework, same evidence discipline, one ledger harmonized against
 the other (knob-by-knob divergence table in `docs/ledger.md`; every
 divergence carries a stated physics or technology reason). At the
-speculation tier the two concepts land within about a dollar at 3 GWe
-(Borealis 11.1 \$/MWh, this study 12.4 \$/MWh). At the extrapolation
-tier the mirror is materially cheaper (16.9 against 33.9 \$/MWh), chiefly because it needs no
+speculation tier the mirror is 2.5 \$/MWh cheaper at 3 GWe (Borealis
+11.1 \$/MWh, this study 13.6 \$/MWh). At the extrapolation tier it is
+materially cheaper (16.9 against 37.5 \$/MWh), chiefly because it needs no
 capacitor-life breakthrough, no tritium plant, and no rep-rate roadmap:
 its levers already sit in the evidence tiers. On the down-select axis
 "how much unpurchasable physics does the cheap number require", the
@@ -562,7 +563,7 @@ upside", the two are comparable.
 ## 11. Conclusions and measurement priorities
 
 A Helion-class pulsed FRC plant, priced bottom-up with enforced physics
-coherence, bottoms out at about 16 \$/MWh at 1 GWe and 12 \$/MWh at 3 GWe on
+coherence, bottoms out at about 17 \$/MWh at 1 GWe and 13.6 \$/MWh at 3 GWe on
 full speculation; the public \$10/MWh target is not reached by any
 internally consistent stack the study can construct. The floor is
 carried by site and support infrastructure (buildings, heat
