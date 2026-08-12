@@ -14,8 +14,10 @@ design-space search rather than asserted. The coherent floor is
 records alone support about 105 \$/MWh and defensible extrapolation
 about 34 \$/MWh.
 The \$10/MWh target is not reached by any coherent stack, including He-3
-at zero price (10.4 \$/MWh at 3 GWe). The floor is carried by conventional plant
-and by the tritium fuel cycle, not by the capacitor driver. The study's
+at zero price (10.4 \$/MWh at 3 GWe). The floor is carried by site
+and support infrastructure (buildings, heat rejection, staffing,
+decommissioning) and by the tritium fuel cycle, not by the capacitor
+driver; the machine has no turbine island at all. The study's
 central physics finding is a contradiction inside the fuel cycle: the
 declared per-shot burnup (0.15) implies that 78-93% of the bred tritium
 burns in-plasma before it can be extracted, which is incompatible with
@@ -213,14 +215,16 @@ claim tens of \$/MWh and is excluded by construction).
 
 At the tier-3 minimum the capacitor-driver narrative is spent (the bank
 is 15 M\$ of a 641 M\$ reactor account) and the floor is carried by
-conventional plant and the fuel cycle:
+site and support infrastructure and by the fuel cycle (there is no
+turbine island; the heat-rejection and electrical-plant accounts below
+are not a steam cycle):
 
 | item | M\$ | \$/MWh (approx) |
 |---|---|---|
 | buildings (CAS21) | 286 | 1.6 |
 | CAS50, of which decommissioning provision 140 | 196 | 1.1 |
 | fuel handling + tritium plant (C220500) | 203 | 1.2 |
-| heat rejection + BOP (CAS24-26) | 170 | 0.9 |
+| heat rejection + electrical plant (CAS24-26) | 170 | 0.9 |
 | first wall of the 45 m chamber (C220101) | 109 | 0.6 |
 | DEC power electronics (C220109) | 60 | 0.4 |
 | O&M (CAS70) | 54/yr | 6.4 |
@@ -510,7 +514,8 @@ A Helion-class pulsed FRC plant, priced bottom-up with enforced physics
 coherence, bottoms out at about 16 \$/MWh at 1 GWe and 12 \$/MWh at 3 GWe on
 full speculation; the public \$10/MWh target is not reached by any
 internally consistent stack the study can construct. The floor is
-carried by conventional plant, staffing, and the tritium fuel cycle,
+carried by site and support infrastructure (buildings, heat
+rejection, staffing, decommissioning) and by the tritium fuel cycle,
 not by the capacitor driver, and the concept's economics require power
 parks rather than distributed small plants. The cheap numbers rest on a
 small set of unmeasured properties, ranked here by the \$/MWh they

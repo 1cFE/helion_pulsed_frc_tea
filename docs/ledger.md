@@ -322,7 +322,7 @@ one more speculation than tier 3
 already carries - and even that no longer breaks 10 once the tritium plant
 scales with the throughput that breeds the He-3. What carries the floor at
 the tier-3 minimum is no longer the capacitor bank: it is buildings (CAS21
-286 M$), heat rejection and BOP (CAS24-26 about 170 M$), CAS50 (196 M$,
+286 M$), heat rejection and electrical plant (CAS24-26 about 170 M$), CAS50 (196 M$,
 of which 140 is the decommissioning provision), fuel handling plus the
 tritium plant (about 203 M$), and the first wall of the big chamber
 (109 M$). See `docs/writeup.md` for the account-by-account anatomy and the
