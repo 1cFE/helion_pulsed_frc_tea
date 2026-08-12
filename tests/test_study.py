@@ -119,18 +119,18 @@ def _ladder_lcoe(model, base_cfg, *cfgs):
 
 def test_baseline_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg)
-    assert diag["lcoe"] == pytest.approx(133.3, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(142.6, abs=0.2)
     assert diag["n_mod"] == 24
 
 
 def test_tier1_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg, "best_case.yaml")
-    assert diag["lcoe"] == pytest.approx(104.5, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(112.1, abs=0.2)
 
 
 def test_tier2_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg, "best_case.yaml", "tier2.yaml")
-    assert diag["lcoe"] == pytest.approx(38.6, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(42.1, abs=0.2)
     # D-rich mix carries its plant; the adder is anchored at 200 M$ for this
     # rung's own throughput (185 MW plant neutron power)
     assert diag["tritium_adder_musd"] == pytest.approx(200.0, abs=0.5)
@@ -148,7 +148,7 @@ def test_tritium_adder_scales_with_throughput(model, base_cfg):
 
 def test_tier3_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg, *TIER_CONFIGS)
-    assert diag["lcoe"] == pytest.approx(16.6, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(17.9, abs=0.2)
 
 
 def test_tier2_coherent_minimum(model, base_cfg):
@@ -157,7 +157,7 @@ def test_tier2_coherent_minimum(model, base_cfg):
     apply_records(fwd, "tier2.yaml")
     fwd.update(chamber_length=20.0, plasma_t=0.5, r_bore=0.6, fw_class="panel")
     _, diag = run(model, fwd)
-    assert diag["lcoe"] == pytest.approx(33.9, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(37.5, abs=0.2)
     assert not coherence_violations(fwd, diag, "tier2")
 
 
@@ -168,7 +168,7 @@ def test_tier3_coherent_minimum(model, base_cfg):
     fwd.update(yield_per_shot_mj=300.0, chamber_length=45.0, plasma_t=1.0,
                r_bore=1.1, fw_class="panel")
     _, diag = run(model, fwd)
-    assert diag["lcoe"] == pytest.approx(15.8, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(17.0, abs=0.2)
     assert not coherence_violations(fwd, diag, "tier3")
     assert diag["e_flash_mj_m2"] < E_FLASH_MELT_MJ_M2
 

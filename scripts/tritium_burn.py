@@ -90,8 +90,11 @@ def reaction_rates(result):
     p = result.params
     dd = p["dhe3_dd_frac"]
     f_t = p.get("dhe3_f_T", 0.0)
-    bf, fr = p["burn_fraction"], p["fuel_recovery"]
-    f_he3_eff = bf / (1.0 - fr * (1.0 - bf))
+    bf_he3 = p.get("burn_fraction_he3")
+    if bf_he3 is None:
+        bf_he3 = p["burn_fraction"]
+    fr = p["fuel_recovery"]
+    f_he3_eff = bf_he3 / (1.0 - fr * (1.0 - bf_he3))
     q_eff_mev = (1.0 - dd) * Q_DHE3 + dd * (
         0.5 * (Q_DD_PT + Q_DD_NHE3)
         + 0.5 * f_t * Q_DT

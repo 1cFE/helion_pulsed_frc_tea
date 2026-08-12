@@ -26,8 +26,8 @@ from tritium_burn import POINTS, f_t_from_burnup, point_fwd, reaction_rates
 
 from costingfe.layers.economics import levelized_replacement_cost
 
-BURN_FRACTIONS = (3e-4, 1e-3, 3e-3, 1e-2, 3e-2, 0.15, 0.3)
-FUEL_RECOVERY = (0.99, 0.999)
+BURN_FRACTIONS = (1.2e-4, 3e-4, 1e-3, 3e-3, 1e-2, 3e-2, 0.15, 0.3)
+FUEL_RECOVERY = (0.99, 0.999, 0.9999)
 T_I_CALIB_KEV = 70.0
 MWH_PER_YR = 1000.0 * 8760.0  # at 1 GWe net; scaled by availability below
 
