@@ -341,9 +341,18 @@ built and publicly shown is Polaris at 19 m (Trenta about 12 m), with
 that length covering formation, acceleration, compression, and
 expansion end to end. The tier-2 minimum's 30 m is a 1.6x extrapolation
 of the built envelope, appropriate to its tier; the tier-3 minimum's
-60 m is 3x beyond any built machine and rests, like the rest of that
-tier, on the linear machine's section-by-section extendability rather
-than on hardware. The public facility imagery also corroborates the
+60 m is 3x beyond any built machine. Length here is not the passive
+extendability of a mirror central cell: every added meter is active
+pulsed structure, coils ramped with the compression-expansion cycle,
+switched into the recovery circuit as the plasmoid transits, and
+fatigue-cycled every shot, with the synchronization problem growing
+with the machine. The model currently underprices this: the pulsed
+coil account is length-blind (C220103 = 44 M$ at 20 m and at 60 m
+alike; only wall, vacuum, and structure scale), so the scans' long
+chambers buy their active coil length for free, an estimated
++0.4-0.8 $/MWh at the floor if priced per-length like the mirror's
+central-cell solenoids, before per-section switching. Open item 8
+below. The public facility imagery also corroborates the
 cost structure at today's prices: most of the Polaris building's floor
 is the pulsed-power farm (about 2,500 stacked power units), with the
 fusion machine and its vault in a small corner, which is precisely the
@@ -539,3 +548,9 @@ damage scan nor CAS72 currently prices.
    pressure cycled 1e9-1e10 times sits at or above copper-alloy
    gigacycle fatigue strengths; the coil may be schedule-limited by
    mechanics, not neutrons).
+8. A per-length pulsed coil model: the pulsed family's C220103 is
+   derived from field and bore only, so chamber length adds no coil or
+   switching cost, unlike the mirror's L/d_coil central-cell pricing.
+   A two-class structure (short 22 T compression section plus a
+   low-field per-length expander solenoid with its recovery switching)
+   would close the gap the long-chamber optima currently exploit.
