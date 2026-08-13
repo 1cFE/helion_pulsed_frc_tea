@@ -333,11 +333,18 @@ enforced as coherence constraint 5: any quoted point whose dhe3_f_T
 sits materially below the floor is flagged as coherent only under
 prompt triton loss.
 
-The basis values come from the vendor's fuel-cycle patent
-(US 2017/0011811), which publishes an operating table (n_D =
-0.75e22 m^-3, T = 70 keV, tau = 0.157 s without tritium removal and
-0.103 s with it) and states that tritium "may be removed between each
-pulse ... prior to undesired D-T reactions taking place". The closure
+The basis values come from the vendor's fuel-cycle patent (published
+as US 2017/0011811, granted as US 11,469,003 B2), which publishes an
+operating table (n_D = 0.75e22 m^-3, T = 70 keV, tau = 0.157 s without
+tritium removal and 0.103 s with it) and states that tritium "may be
+removed between each pulse ... prior to undesired D-T reactions taking
+place". A patent is evidence of design intent, not of working physics:
+prophetic operating tables are legally permitted, and this one proves
+its own prophecy (its tau implies n tau of 2-3e21 s/m^3 at 70 keV,
+three to four orders beyond any demonstrated FRC confinement). The
+study therefore uses the table's density and temperature, which the
+vendor's stated >15 T compression hardware corroborates in class
+through pressure balance, and never its confinement time. The closure
 run on those numbers explains the patent's own two-column structure:
 over a full confinement period the D burn is 2.5-3.8% and a
 thermalized triton riding it would burn 28-38%, which is the case for
@@ -717,10 +724,11 @@ loudly if the model moves under the study.
 - Helion Energy. Technology and FAQ pages (helionenergy.com/technology,
   /faq); Microsoft power purchase agreement announcement (2023); Nucor
   500 MW facility announcement (2024).
-- Helion Energy (Slough, J., et al.). US patent application
-  2017/0011811, "Advanced fuel cycle and fusion reactors utilizing the
-  same" (the breed-extract-store-decay fuel cycle and its operating
-  table).
+- Helion Energy (Slough, J., et al.). "Advanced fuel cycle and fusion
+  reactors utilizing the same," published as US 2017/0011811, granted
+  as US 11,469,003 B2 (2022): the breed-extract-store-decay fuel cycle
+  and its operating table. Used as design intent, not as a record; see
+  Section 5.2.
 - Helion Energy. US patent application 2024/0275198 (inductive
   recovery circuit band cited for eta_dec).
 - Kirtley, D., and Milroy, R. (2023). "Fundamental scaling of

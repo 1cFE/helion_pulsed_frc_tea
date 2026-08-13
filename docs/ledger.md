@@ -125,27 +125,41 @@ minimum 19.0, plant neutron power rises about 5x with a dominant
 those LCOE figures are floors, because the wall/shield audit checks
 surface heat only, not the D-T-class neutron loading it would imply.
 
-**The vendor's fuel-cycle patent resolves the direction and corrects
-the study's entry.** US 2017/0011811 publishes an operating table
-(n_D = 0.75e22 m^-3, T = 70 keV, tau = 0.157 s without tritium removal
-/ 0.103 s with it) and states tritium "may be removed between each
-pulse ... prior to undesired D-T reactions taking place". Under the
-closure at 70 keV: D burn per confinement period 2.5-3.8%, thermalized
-triton burn over that period 28-38% (the patent's own case for
-inter-pulse removal); per sub-millisecond pulse at the patent density,
-burnup 1.2-2.5e-4 and in-pulse tritium burn 0.2-0.3%, validating
-dhe3_f_T = 0. The study's burn_fraction 0.15 is therefore a cumulative
-single-pass figure (of order a thousand pulses of fuel residence)
-misapplied as per-pulse exposure; with per-pulse reprocessing the
-unburned-fuel multiplier is 84x at per-pass recovery 0.99, 9.3x at
-0.999, 1.8x at 0.9999, so the published fuel cycle's load-bearing
-claims are four-nines per-pulse fuel recovery and hertz-rate isotope
-separation. These are now the model basis (burn_fraction 1.2e-4,
-burn_fraction_he3 4.1e-4 per pulse with species-resolved recycle
-losses, fuel_recovery 0.9999). Grade: published design intent (a patent
-table, not a measured operating point); the reactor-point compression
-density may exceed the patent value, which would move the machine right
-along the burnup axis.
+**The fuel-cycle basis and its patent source.** The vendor's fuel-cycle
+patent (published as US 2017/0011811, granted as US 11,469,003 B2)
+publishes an operating table (n_D = 0.75e22 m^-3, T = 70 keV,
+tau = 0.157 s without tritium removal / 0.103 s with it) and states
+tritium "may be removed between each pulse ... prior to undesired D-T
+reactions taking place". Under the closure at 70 keV: D burn per
+confinement period 2.5-3.8%, thermalized triton burn over that period
+28-38% (the patent's own case for inter-pulse removal); per
+sub-millisecond pulse at the patent density, burnup 1.2-2.5e-4 and
+in-pulse tritium burn 0.2-0.3%, consistent with dhe3_f_T = 0. The
+model basis carries the per-pulse pair (burn_fraction 1.2e-4,
+burn_fraction_he3 4.1e-4, species-resolved recycle losses,
+fuel_recovery 0.9999), under which fuel resides for of order a
+thousand pulses and the load-bearing claims are four-nines per-pulse
+recovery and hertz-rate isotope separation (unburned-fuel multiplier
+84x / 9.3x / 1.8x at two / three / four nines). Grade: published
+design intent; the reactor-point compression density may exceed the
+patent value, which would move the machine right along the burnup
+axis.
+
+**Patents as sources.** A patent, granted or not, is evidence of design
+intent, not of working physics: prophetic operating tables are legally
+permitted, and grant examination tests claim novelty and formal
+enablement, not whether the physics closes. This ledger therefore uses
+patent numbers only in the design-basis rung and in tier-2
+extrapolations accompanied by a physical argument, never as records:
+the same discipline already applied to the recovery-circuit patent's
+"up to 90% and higher" band (demoted as prophetic under eta_dec). The
+fuel-cycle table carries its own proof of prophecy: its tau column
+implies n tau of 2-3e21 s/m^3 at 70 keV, three to four orders beyond
+any demonstrated FRC confinement, and the study accordingly uses the
+table's density and temperature (whose field companion, B = 22 T,
+follows from pressure balance and is corroborated in class by the
+vendor's stated >15 T compression hardware) but never its confinement
+time.
 
 `scripts/burnup_scan.py` prices the whole axis coherently: both
 species' per-pass burn fractions derive from the same n tau, so
