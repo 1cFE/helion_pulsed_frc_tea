@@ -21,6 +21,10 @@ records:
     value: 0.95
     source: "SPECULATION: with f_pdv below, composite 0.90 = the APS DPP24 theory optimum ('optimal cycles exceeding 90%') taken at face value with zero engineering margin."
 
+  f_pdv_radial_share:
+    value: 1.0
+    source: "SPECULATION: axial-channel capture. The tier-2 to tier-3 recovery step is exactly the claim that the ~1/5 of boundary work in axial elongation is recovered by end circuits switched during the stroke; resolvable by the Polaris shot triplet."
+
   f_pdv:
     value: 0.947
     source: "SPECULATION: with eta_dec above, composite = 0.90, the theory optimum exactly. Requires ~80x adiabatic volume expansion with full fusion-product thermalization and negligible transport during expansion."

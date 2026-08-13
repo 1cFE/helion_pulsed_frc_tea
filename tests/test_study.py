@@ -1,6 +1,6 @@
 """Closure, config-integrity, and ladder-regression tests.
 
-Regression values are pinned at costingfe 7042946 (cylinder geometry +
+Regression values are pinned at costingfe 0a6befe (cylinder geometry +
 wall audit, shot-cycled CAS72 scope, physics-consistent store markup,
 per-pulse fuel-cycle semantics). If costingfe moves and a number shifts, the ladder in
 docs/ledger.md must be re-based in the same change that updates the pin
@@ -104,10 +104,14 @@ def test_coherence_catches_the_withdrawn_tier2_point(model, base_cfg):
     _, diag = run(model, fwd)
     v = "; ".join(coherence_violations(fwd, diag, "tier2"))
     assert "bremsstrahlung floor" in v
-    assert "composite cap" in v
+    # the double-booked f_pdv = 0.95 cannot execute: the chamber-coupled
+    # radial bound clamps it before the run (0.8 x cap at the concept
+    # chamber), so the composite never reaches the incoherent value
+    assert diag["f_pdv_eff"] == pytest.approx(0.8 * diag["f_pdv_cap"], rel=1e-6)
+    assert 0.97 * diag["f_pdv_eff"] < 0.80
 
 
-# --- ladder regression (costingfe 7042946) ---------------------------------
+# --- ladder regression (costingfe 0a6befe) ---------------------------------
 
 def _ladder_lcoe(model, base_cfg, *cfgs):
     fwd = dict(base_cfg["forward"])
@@ -119,21 +123,22 @@ def _ladder_lcoe(model, base_cfg, *cfgs):
 
 def test_baseline_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg)
-    assert diag["lcoe"] == pytest.approx(142.6, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(150.0, abs=0.2)
     assert diag["n_mod"] == 24
 
 
 def test_tier1_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg, "best_case.yaml")
-    assert diag["lcoe"] == pytest.approx(191.4, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(220.6, abs=0.2)
 
 
 def test_tier2_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg, "best_case.yaml", "tier2.yaml")
-    assert diag["lcoe"] == pytest.approx(45.5, abs=0.2)
-    # D-rich mix carries its plant; the adder is anchored at 200 M$ for this
-    # rung's own throughput (228 MW plant neutron power)
-    assert diag["tritium_adder_musd"] == pytest.approx(200.0, abs=0.5)
+    assert diag["lcoe"] == pytest.approx(50.2, abs=0.2)
+    # D-rich mix carries its plant; the adder is unit-priced
+    # (50 M$ + 0.657 M$/MW of plant neutron power), so the rung's value is a
+    # consequence of its throughput, not an identity
+    assert diag["tritium_adder_musd"] == pytest.approx(213.0, abs=1.0)
 
 
 def test_tritium_adder_scales_with_throughput(model, base_cfg):
@@ -148,16 +153,16 @@ def test_tritium_adder_scales_with_throughput(model, base_cfg):
 
 def test_tier3_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg, *TIER_CONFIGS)
-    assert diag["lcoe"] == pytest.approx(17.9, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(18.4, abs=0.2)
 
 
 def test_tier2_coherent_minimum(model, base_cfg):
     fwd = dict(base_cfg["forward"])
     apply_records(fwd, "best_case.yaml")
     apply_records(fwd, "tier2.yaml")
-    fwd.update(chamber_length=20.0, plasma_t=0.5, r_bore=0.6, fw_class="panel")
+    fwd.update(chamber_length=30.0, plasma_t=0.5, r_bore=0.6, fw_class="panel")
     _, diag = run(model, fwd)
-    assert diag["lcoe"] == pytest.approx(40.3, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(43.2, abs=0.2)
     assert not coherence_violations(fwd, diag, "tier2")
 
 
@@ -165,10 +170,10 @@ def test_tier3_coherent_minimum(model, base_cfg):
     fwd = dict(base_cfg["forward"])
     for c in TIER_CONFIGS:
         apply_records(fwd, c)
-    fwd.update(yield_per_shot_mj=300.0, chamber_length=45.0, plasma_t=1.0,
-               r_bore=1.1, fw_class="panel")
+    fwd.update(yield_per_shot_mj=300.0, chamber_length=60.0, plasma_t=0.75,
+               r_bore=0.85, fw_class="panel")
     _, diag = run(model, fwd)
-    assert diag["lcoe"] == pytest.approx(17.0, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(17.2, abs=0.2)
     assert not coherence_violations(fwd, diag, "tier3")
     assert diag["e_flash_mj_m2"] < E_FLASH_MELT_MJ_M2
 
@@ -223,8 +228,8 @@ def test_tritium_burn_floor_constraint(model, base_cfg):
     fwd = dict(base_cfg["forward"])
     for c in TIER_CONFIGS:
         apply_records(fwd, c)
-    fwd.update(yield_per_shot_mj=300.0, chamber_length=45.0, plasma_t=1.0,
-               r_bore=1.1, fw_class="panel")
+    fwd.update(yield_per_shot_mj=300.0, chamber_length=60.0, plasma_t=0.75,
+               r_bore=0.85, fw_class="panel")
     _, diag = run(model, fwd)
     assert not coherence_violations(fwd, diag, "tier3")
     v = "; ".join(coherence_violations(dict(fwd, burn_fraction=0.15), diag, "tier3"))

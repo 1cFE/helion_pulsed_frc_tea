@@ -36,5 +36,10 @@ forward:
   # which anchors the f_rad_floor() coupling every other burn mix must obey.
   # (The concept YAML's shipped default, f_rad 0.05 at dd_frac 0.131, is
   # itself below the bremsstrahlung floor; this baseline does not use it.)
+  # Vendor-implied per-pulse exhaust recovery (the closed-cycle fourth nine,
+  # US 11,469,003 B2); the model default is the JET-ILW-analog 0.999, so the
+  # vendor point carries its own value explicitly. Tier 1 reverts it, tier 2
+  # re-grants it as a labelled extrapolation.
+  fuel_recovery: 0.9999
   dhe3_dd_frac: 0.314
   f_rad: 0.163

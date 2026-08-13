@@ -28,10 +28,12 @@ carries its tritium-plant consequences. The minimum at each evidence
 level is then found by a constrained design-space scan (chamber size,
 wall class, yield, burn mix), not by asserting an operating point.
 
-Headline: coherent tier-3 speculation bottoms at about 17 $/MWh at
-1 GWe and 13.6 $/MWh at 3 GWe; the $10 target is not reached by any
-internally consistent stack. Records alone price the concept at about 191 $/MWh (above its own design baseline: the recovery reversion outweighs the finance records);
-defensible extrapolation about 40 $/MWh. See `docs/writeup.md` for the narrative results
+Headline: coherent tier-3 speculation bottoms at about 17.2 $/MWh at
+1 GWe and 13.8 $/MWh at 3 GWe; the $10 target is not reached by any
+internally consistent stack. Records alone price the concept at about
+185 $/MWh (above its own design baseline: the recovery reversions
+outweigh the finance records); defensible extrapolation about
+43 $/MWh. See `docs/writeup.md` for the narrative results
 and `docs/ledger.md` for record-by-record sourcing, the tornado ranking,
 and the knob-by-knob consistency audit against the sister study
 `borealis_mirror_tea`.
@@ -39,7 +41,7 @@ and the knob-by-knob consistency audit against the sister study
 ## Requirements
 
 This study depends on `costingfe` from `/mnt/c/Users/talru/1cfe/1costingfe`
-at commit `7042946` or later. That guarantees: linear pulsed concepts are
+at commit `0a6befe` or later. That guarantees: linear pulsed concepts are
 costed as cylinders with the first-wall flux audited against the declared
 `fw_class` (panel/hhf pricing on the real chamber area); pulsed `p_wall`
 counts undirected ash plus radiation plus DEC circuit waste; the
@@ -50,8 +52,9 @@ covers the full shot-cycled recovery chain (driver bank plus the
 C220109_cap/C220109_switch sub-lines) with its short-life warning; the
 inductive-DEC store markup is sized for the physics-returned energy
 (f_pdv, 1 - f_rad); and the fuel cycle is per-pulse (patent-anchored
-burn_fraction 1.2e-4 with species-resolved DHE3 recycle losses and
-per-pulse fuel_recovery 0.9999). The ladder regression tests in
+burn_fraction 1.2e-4 with species-resolved DHE3 recycle losses, the
+JET-analog fuel_recovery 0.999 default, and the 22 T compression-field
+basis priced into the coils). The ladder regression tests in
 `tests/test_study.py` pin the numbers at that commit and fail loudly if
 the model moves under the study.
 

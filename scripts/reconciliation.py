@@ -49,13 +49,13 @@ from study import (
 POINTS = {
     "tier2_min": dict(
         tier_cfgs=("best_case.yaml", "tier2.yaml"),
-        overrides=dict(chamber_length=20.0, plasma_t=0.5, r_bore=0.6,
+        overrides=dict(chamber_length=30.0, plasma_t=0.5, r_bore=0.6,
                        fw_class="panel"),
     ),
     "tier3_min": dict(
         tier_cfgs=("best_case.yaml", "tier2.yaml", "tier3.yaml"),
-        overrides=dict(yield_per_shot_mj=300.0, chamber_length=45.0,
-                       plasma_t=1.0, r_bore=1.1, fw_class="panel"),
+        overrides=dict(yield_per_shot_mj=300.0, chamber_length=60.0,
+                       plasma_t=0.75, r_bore=0.85, fw_class="panel"),
     ),
 }
 
@@ -153,6 +153,19 @@ def analyze(label, spec):
     if dd > 0.5:
         print(f"  ADDER tritium-plant band vs 200 M$ point: "
               f"{tri_lo:+.2f} / {tri_hi:+.2f} $/MWh")
+
+    # --- field/density risk (the dominant open band) ---
+    # The per-pulse burnup basis is the patent triple at 22 T; if the
+    # reactor-point compression field is lower, density and burnup fall as
+    # B^2 and the recovery nines bind harder. Priced by scaling both
+    # species' per-pulse burn fractions.
+    for b_t in (10.0, 5.0):
+        scale = (b_t / 22.0) ** 2
+        _, d_b = run(model, dict(
+            fwd, burn_fraction=1.2e-4 * scale,
+            burn_fraction_he3=4.1e-4 * scale))
+        print(f"  RISK field/density: at a {b_t:.0f} T-consistent burn point "
+              f"LCOE {d_b['lcoe']:.1f} ({d_b['lcoe'] - diag['lcoe']:+.1f}) $/MWh")
 
     # --- credit (rerun in-model) ---
     _, diag_bottom = run(model, dict(fwd, eta_th=ETA_TH_BOTTOMING))

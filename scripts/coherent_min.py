@@ -51,7 +51,8 @@ def tier_fwd(tier: str) -> dict:
     base_cfg = load_config("baseline.yaml")
     fwd0 = dict(base_cfg["forward"])
     apply_records(fwd0, "best_case.yaml")
-    apply_records(fwd0, "tier2.yaml")
+    if tier in ("tier2", "tier3"):
+        apply_records(fwd0, "tier2.yaml")
     if tier == "tier3":
         apply_records(fwd0, "tier3.yaml")
     return fwd0
@@ -73,6 +74,8 @@ def scan(tier: str):
 
     fwd0 = tier_fwd(tier)
     yields = YIELDS_MJ if tier == "tier3" else (fwd0.get("yield_per_shot_mj", 101.4),)
+    # tier-1 coherence uses the tier-2 cap set (no tier-1-specific caps exist)
+    
 
     rows = []
     for y, length, radius, fw, branch in itertools.product(
@@ -83,7 +86,8 @@ def scan(tier: str):
             _, diag = run(model, fwd)
         except SizingInfeasible:
             continue
-        violations = coherence_violations(fwd, diag, tier)
+        violations = coherence_violations(
+            fwd, diag, "tier2" if tier == "tier1" else tier)
         rows.append(
             dict(
                 tier=tier,
@@ -108,7 +112,7 @@ def scan(tier: str):
 if __name__ == "__main__":
     OUTPUT_DIR.mkdir(exist_ok=True)
     all_rows = []
-    for tier in ("tier2", "tier3"):
+    for tier in ("tier1", "tier2", "tier3"):
         rows = scan(tier)
         all_rows.extend(rows)
         ok = [r for r in rows if r["coherent"]]
@@ -143,7 +147,8 @@ if __name__ == "__main__":
                     _, d3 = run(model3, fwd3)
                 except SizingInfeasible:
                     continue
-                if coherence_violations(fwd3, d3, tier):
+                if coherence_violations(
+                        fwd3, d3, "tier2" if tier == "tier1" else tier):
                     continue
                 if best3 is None or d3["lcoe"] < best3[1]["lcoe"]:
                     best3 = (cand, d3)

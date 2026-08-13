@@ -29,7 +29,7 @@ from study import (
 MODULE_MWE = (1000.0, 500.0, 250.0, 100.0, 50.0)
 REF_YIELD_MJ = 300.0
 REF_DRIVER_MJ = 50.0
-REF_LENGTH_M = 45.0
+REF_LENGTH_M = 60.0
 MIN_LENGTH_M = 3.0
 
 
@@ -49,8 +49,8 @@ def scaled(fwd, module_mwe, plant_mwe):
         yield_per_shot_mj=REF_YIELD_MJ * s,
         e_driver_mj=REF_DRIVER_MJ * s,
         chamber_length=max(REF_LENGTH_M * s, MIN_LENGTH_M),
-        plasma_t=1.0,
-        r_bore=1.1,
+        plasma_t=0.75,
+        r_bore=0.85,
         fw_class="panel",
     )
 

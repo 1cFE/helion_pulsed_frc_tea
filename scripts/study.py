@@ -69,10 +69,36 @@ Q_LIM = {"panel": 2.0, "hhf": 10.0, "beam_dump": 20.0}
 # (isotope separation, safety envelope, getter-bed decay store) and a
 # throughput-scaled balance, so a small plant is not charged the full
 # reference facility and a bigger one is charged more.
-TRITIUM_PLANT_MUSD = 200.0
+# Unit-priced, not anchored: the throughput-scaled balance is a stated
+# price per MW of plant neutron power (a definition the reconciliation
+# band 100-300 M$ at reference scale brackets), so the reference machine's
+# adder is a consequence, not an identity.
 TRITIUM_FIXED_MUSD = 50.0
-TRITIUM_REF_P_NEUTRON_MW = 228.3  # plant-level neutron power at the reference
+TRITIUM_MUSD_PER_MW_NEUTRON = 0.657
 DD_FRAC_TRITIUM_THRESHOLD = 0.5
+
+# Chamber-coupled recovery bound (coherence constraint 6). The compressed
+# flux volume is estimated as all delivered driver energy stored at the
+# basis compression field (patent triple, B = 22 T): V_i = E_del/(B^2/2mu0),
+# about 0.26 m^3 at 50 MJ. Adiabatic expansion to the chamber volume V_f
+# caps the recoverable fraction at 1 - (V_i/V_f)^(2/3); the radial channel
+# carries about 0.8 of the boundary work (FRC adiabatic scalings), so
+# f_pdv_eff = min(claim, share x cap) with share = 0.8 unless axial-channel
+# capture is claimed (tier 3) or the point is the unchallenged vendor basis
+# (share 1.0 default).
+B_COMPRESSION_T = 22.0
+_MU0 = 4e-7 * 3.141592653589793
+F_PDV_RADIAL_SHARE_DEFAULT = 1.0
+
+
+def f_pdv_cap(fwd: dict, model: CostModel) -> float:
+    ed = model._eng_defaults
+    e_del_j = fwd.get("e_driver_mj", ed["e_driver_mj"]) * 1e6
+    v_i = e_del_j / (B_COMPRESSION_T**2 / (2 * _MU0))
+    r = fwd.get("plasma_t", ed["plasma_t"])
+    length = fwd.get("chamber_length", ed["chamber_length"])
+    v_f = 3.141592653589793 * r * r * length
+    return 1.0 - (v_i / v_f) ** (2.0 / 3.0)
 
 _VACUUM_T_DEFAULT = 0.10  # m; concept YAML plasma-to-wall gap
 
@@ -119,6 +145,10 @@ def run(model: CostModel, fwd: dict, tritium_adder: bool = True):
     overrides replace rather than add).
     """
     fwd = dict(fwd)
+    share = fwd.pop("f_pdv_radial_share", F_PDV_RADIAL_SHARE_DEFAULT)
+    cap = f_pdv_cap(fwd, model)
+    f_pdv_claim = fwd.get("f_pdv", float(model.cc.f_pdv))
+    fwd["f_pdv"] = min(f_pdv_claim, share * cap)
     overrides = None
     tritium_musd = 0.0
     if tritium_adder and fwd.get("dhe3_dd_frac", 0.131) > DD_FRAC_TRITIUM_THRESHOLD:
@@ -127,9 +157,8 @@ def run(model: CostModel, fwd: dict, tritium_adder: bool = True):
             probe = model.forward(size_from_power=True, **fwd)
         base_c220500 = float(probe.cas22_detail["C220500"])
         p_neutron_total = float(probe.power_table.p_neutron) * int(probe.solved_n_mod)
-        tritium_musd = TRITIUM_FIXED_MUSD + (
-            (TRITIUM_PLANT_MUSD - TRITIUM_FIXED_MUSD)
-            * p_neutron_total / TRITIUM_REF_P_NEUTRON_MW
+        tritium_musd = (
+            TRITIUM_FIXED_MUSD + TRITIUM_MUSD_PER_MW_NEUTRON * p_neutron_total
         )
         overrides = {"C220500": base_c220500 + tritium_musd}
 
@@ -148,6 +177,8 @@ def run(model: CostModel, fwd: dict, tritium_adder: bool = True):
         "q_wall_mw_m2": p_wall / area,
         "e_flash_mj_m2": (p_wall / f_rep / area) if f_rep > 0 else float("inf"),
         "capital_per_kw": float(result.costs.capital_per_kw),
+        "f_pdv_eff": fwd["f_pdv"],
+        "f_pdv_cap": cap,
         "tritium_adder_musd": tritium_musd,
         "warnings": sorted({str(w.message) for w in caught}),
     }
@@ -191,7 +222,8 @@ def coherence_violations(fwd: dict, diag: dict, tier: str) -> list[str]:
     floor = f_rad_floor(dd)
     if fwd.get("f_rad", 0.05) < floor - 1e-9:
         v.append(f"f_rad {fwd.get('f_rad')} below bremsstrahlung floor {floor:.3f} at dd_frac {dd}")
-    comp = fwd.get("eta_dec", 0.85) * fwd.get("f_pdv", 0.80)
+    comp = fwd.get("eta_dec", 0.85) * diag.get("f_pdv_eff",
+                                                fwd.get("f_pdv", 0.80))
     cap = COMPOSITE_RECOVERY_CAP[tier]
     if comp > cap + 1e-9:
         v.append(f"eta_dec*f_pdv = {comp:.3f} exceeds the {tier} composite cap {cap}")

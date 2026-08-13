@@ -17,9 +17,9 @@ BLUE, ORANGE, AQUA, RED = "#2a78d6", "#eb6834", "#1baf7a", "#e34948"
 INK, INK2, GRID, SURFACE = "#0b0b0b", "#52514e", "#e5e4e0", "#fcfcfb"
 FIGDIR = Path(__file__).resolve().parents[1] / "docs" / "figures"
 
-TIER2_MIN = dict(chamber_length=20.0, plasma_t=0.5, r_bore=0.6, fw_class="panel")
-TIER3_MIN = dict(yield_per_shot_mj=300.0, chamber_length=45.0, plasma_t=1.0,
-                 r_bore=1.1, fw_class="panel")
+TIER2_MIN = dict(chamber_length=30.0, plasma_t=0.5, r_bore=0.6, fw_class="panel")
+TIER3_MIN = dict(yield_per_shot_mj=300.0, chamber_length=60.0, plasma_t=0.75,
+                 r_bore=0.85, fw_class="panel")
 TIERS = (("best_case.yaml",), ("best_case.yaml", "tier2.yaml"),
          ("best_case.yaml", "tier2.yaml", "tier3.yaml"))
 
@@ -55,9 +55,12 @@ def stack(cfg, *tier_cfgs, **over):
 
 
 def fig1_ladder(model, cfg):
+    TIER1_MIN = dict(dhe3_dd_frac=0.85, f_rad=0.28, chamber_length=20.0,
+                     plasma_t=0.5, r_bore=0.6, fw_class="panel")
     rows = [
         ("design baseline", ()),
         ("tier 1: records", TIERS[0]),
+        ("tier 1 minimum (design-optimized)", TIERS[0]),
         ("tier 2: extrapolations", TIERS[1]),
         ("tier 2 minimum (design-optimized)", TIERS[1]),
         ("tier 3: speculation", TIERS[2]),
@@ -67,8 +70,8 @@ def fig1_ladder(model, cfg):
     # machine trips the wall audit at 3 GWe when the module count snaps, so
     # the 3 GWe bar uses the coherent 200 MJ design (coherent_min.py footer).
     TIER3_MIN_3GWE = dict(TIER3_MIN, yield_per_shot_mj=200.0)
-    overs = {1000.0: [{}, {}, {}, TIER2_MIN, {}, TIER3_MIN],
-             3000.0: [{}, {}, {}, TIER2_MIN, {}, TIER3_MIN_3GWE]}
+    overs = {1000.0: [{}, {}, TIER1_MIN, {}, TIER2_MIN, {}, TIER3_MIN],
+             3000.0: [{}, {}, TIER1_MIN, {}, TIER2_MIN, {}, TIER3_MIN_3GWE]}
     vals = {1000.0: [], 3000.0: []}
     for i, (label, cfgs) in enumerate(rows):
         for p in vals:
@@ -214,8 +217,8 @@ def fig5_plant_size(model, cfg):
         s = module_mwe / 1000.0
         return dict(fwd0, net_electric_mw=plant_mwe,
                     yield_per_shot_mj=300.0 * s, e_driver_mj=50.0 * s,
-                    chamber_length=max(45.0 * s, 3.0), plasma_t=1.0,
-                    r_bore=1.1, fw_class="panel")
+                    chamber_length=max(60.0 * s, 3.0), plasma_t=0.75,
+                    r_bore=0.85, fw_class="panel")
 
     stand, park = [], []
     for m in sizes:
