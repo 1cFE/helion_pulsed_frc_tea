@@ -111,14 +111,7 @@ the load-bearing subsystem of the concept in the tritium fuel cycle
 (Section 5) and in the recovery physics of the driver energy
 (Section 6), identifies the small set of unmeasured plasma properties
 that carry order-10 \$/MWh each, and specifies the measurement protocol
-on the developer's own next machine that would resolve them. This study is also the down-select's deep dive into the subject of our
-second blog post, direct energy conversion: the concept whose economics
-that post examined in the abstract is here priced as a complete plant,
-and supporting the analysis required extending the cost model itself
-(per-pulse fuel-cycle semantics with species-resolved recycle,
-chamber-coupled recovery bounds, coils priced along the expansion
-adiabat, and shot-cycled replacement scope), extensions that are now
-part of `costingfe` for every concept it prices. Everything
+on the developer's own next machine that would resolve them. Everything
 here is reproducible: the tier stacks are YAML configuration files, each
 figure is produced by a named script, and eighteen regression tests pin
 the ladder to a fixed revision of the cost model (see Reproducibility).

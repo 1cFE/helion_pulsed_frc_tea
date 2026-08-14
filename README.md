@@ -14,6 +14,13 @@ rather than from any disclosed measurement. 1 GWe is the baseline anchor,
 built as an integer count of Helion-class modules; see
 `config/baseline.yaml` for the basis rationale.
 
+This study is the down-select's deep dive into the subject of the
+second 1cFE blog post ("Direct Energy Conversion for Fusion"): the
+concept that post examined at the free-core level is priced here as a
+complete plant, and supporting it required extending `costingfe` itself
+(per-pulse fuel-cycle semantics, chamber-coupled recovery bounds,
+adiabat-priced coils, shot-cycled replacement scope).
+
 The study is a floor hunt: it answers "how low can this concept's LCOE be
 pushed, and what would have to be true", against Helion's public $10/MWh
 target. The quoted story starts at the design baseline and the evidence
