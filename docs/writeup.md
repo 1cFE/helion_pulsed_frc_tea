@@ -590,17 +590,30 @@ plasmoid rather than raising its pressure), adiabatic over-expansion
 into a chamber far larger than the compression volume, and open-cycle
 exhaust. In engine terms that is a Diesel-type cycle with an Atkinson
 expansion stroke, and it is the vendor's own framing: the cited burn
-cycle framework (Kirtley 2024) analyzes generalized Diesel and Otto
-cycles with axial and radial expansion, quoting about 60% for a
-constant-pressure burn under historical assumptions and above 90% for
-optimal cycles. There is no Carnot exemption in this: the cycle's
+cycle framework (Kirtley 2024; slides archived in `docs/sources/`)
+derives closed-form efficiencies for generalized Otto and Diesel
+cycles, defined fusion-inclusively as
+eta_cp = W_out / (W_compression + E_merger + E_fusion), with the
+over-expansion built in as an extra expansion factor m = ER/CR and the
+convergence ratio split into axial and radial parts
+(CR = x_l^-1 x_s^-2). Two of its results matter here: the generalized
+Otto efficiency is independent of gain while the Diesel form carries a
+gain-dependent cutoff penalty, which is exactly the Otto-versus-Diesel
+distinction this section prices; and the framework takes gamma = 1.66
+for the plasma alone and 1.8 for the plasma-plus-field fluid, quoting
+about 60% for a constant-pressure burn under historical assumptions
+and above 90% for optimal cycles. There is no Carnot exemption in this: the cycle's
 efficiency is set by its form, its compression and expansion ratios,
 and the entropy generated in the deliberately irreversible merging
 (the chi derate above), which is exactly what the composite cap
 encodes. Constraint 6 enforces the adiabatic-stroke bound
 1 - (V_i/V_f)^(2/3), with V_i = E_del/(B^2/2mu0), about 0.26 m^3 at
 50 MJ and the 22 T basis field: the Otto/Atkinson-form expression at
-gamma = 5/3. The machine's isobaric burn leg makes the true
+gamma = 5/3. The 5/3 is deliberate where the vendor's lumped fluid
+uses 1.8: our cap bounds the plasma channel alone, with field energy
+recovered separately through eta_dec, and since the field compresses
+at gamma = 2 the lumped index would raise the cap; the channel-split
+5/3 is the stricter, correct-for-channel exponent. The machine's isobaric burn leg makes the true
 Diesel-form ideal value 1-2 percentage points lower at the study's
 ratios (softened because the expansion work done during the burn
 pushes against the same crowbarred coil), so the enforced expression
@@ -815,10 +828,12 @@ loudly if the model moves under the study.
   Section 5.2.
 - Kirtley, D. (2024). "Fundamental theory of the direct magnetic
   energy recovery in a thermonuclear field reversed configuration
-  system." APS DPP 2024, abstract GO05.8 (the composite-recovery
-  figure behind constraint 2, and the generalized Diesel/Otto burn
-  cycle framework with axial and radial expansion behind the cycle
-  identification in Section 6).
+  system." APS DPP 2024, abstract GO05.8; slide captures in
+  `docs/sources/` (the composite-recovery figure behind constraint 2,
+  and the generalized Otto/Diesel burn-cycle expressions, with the
+  m = ER/CR over-expansion factor, CR = x_l^-1 x_s^-2 axial/radial
+  split, and gamma = 1.66/1.8 plasma/plasma-plus-field indices, behind
+  the cycle identification in Section 6).
 - Kirtley, D., and Milroy, R. (2023). "Fundamental scaling of
   adiabatic compression of field reversed configuration thermonuclear
   fusion plasmas." Journal of Fusion Energy 42, 30.
