@@ -337,7 +337,7 @@ constraints, at each evidence level:
 | tier 3, 3 GWe | **13.8** | 3 modules of the 200 MJ / 60 m design at 9.0 Hz (larger shots trip the wall audit once the integer module count snaps down) |
 
 Chamber lengths against built hardware: the longest machine Helion has
-built and publicly shown is Polaris at 19 m (Trenta about 12 m), with
+built and publicly shown is Polaris at 19 m (Trenta 15 m; Orion undisclosed), with
 that length covering formation, acceleration, compression, and
 expansion end to end. The tier-2 minimum's 30 m is a 1.6x extrapolation
 of the built envelope, appropriate to its tier; the tier-3 minimum's
