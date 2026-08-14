@@ -1,8 +1,9 @@
 # Helion-class pulsed FRC TEA study
 
 This repo is a techno-economic analysis (TEA) of a Helion-class pulsed
-D-He3 field-reversed-configuration power plant with inductive direct energy
-conversion and no turbine, built on top of the `costingfe` cost model. The
+inductive direct-energy-conversion power plant, no turbine anywhere,
+whose burning plasma is a D-He3 field-reversed configuration; it is
+built on top of the `costingfe` cost model. The
 machine basis takes Helion's own architecture at face value: a 50 MJ
 capacitor-bank driver (Polaris, sourced), inductive recovery of driver and
 PdV energy through the coil circuit (eta_th = 0; radiated and undirected

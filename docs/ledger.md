@@ -7,8 +7,9 @@ stated roadmap or physical argument, tier 3 labelled speculation with no
 source. "Held at baseline" is the recorded outcome when no defensible value
 exists.
 
-Orientation: the machine is a pulsed D-He3 FRC with inductive DEC and no
-turbine, 1 GWe as an integer count of Helion-class modules; design basis in
+Orientation: the machine is a pulsed inductive-DEC generator with no
+turbine, its burning plasma a D-He3 FRC, 1 GWe as an integer count of
+Helion-class modules; design basis in
 `config/baseline.yaml`, capacitor and pulsed-power evidence in
 `docs/capacitor_technology_report.md`, adversarial findings in
 `docs/red_team_review.md` (all of whose verdicts are folded into the tier
