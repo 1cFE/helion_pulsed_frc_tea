@@ -18,13 +18,14 @@ pushed, and what would have to be true", against Helion's public $10/MWh
 target. The quoted story starts at the design baseline and the evidence
 ladder applies records, then labelled extrapolations, then labelled
 speculation on top (`config/best_case.yaml`, `config/tier2.yaml`,
-`config/tier3.yaml`). Four physics-coherence constraints from the
-red-team review (`docs/red_team_review.md`) are enforced on every quoted
-point: the radiated fraction is coupled to the burn mix through the
-bremsstrahlung floor, recovery efficiency is capped as a composite
-(eta_dec x f_pdv), the wall must survive its steady flux and per-shot
-flash energy in the wall class it is costed at, and a D-rich burn mix
-carries its tritium-plant consequences. The minimum at each evidence
+`config/tier3.yaml`). Six physics-coherence constraints are enforced
+on every quoted point: the radiated fraction is coupled to the burn mix
+through the bremsstrahlung floor, recovery efficiency is capped as a
+composite (eta_dec x f_pdv), the wall must survive its steady flux and
+per-shot flash energy in the wall class it is costed at, a D-rich burn
+mix carries its tritium-plant consequences, the in-plasma tritium burn
+is floored by the burnup closure, and f_pdv is derived per point from
+the chamber's expansion ratio times the radial work share. The minimum at each evidence
 level is then found by a constrained design-space scan (chamber size,
 wall class, yield, burn mix), not by asserting an operating point.
 
@@ -51,11 +52,12 @@ scales on thermal power; scheduled replacement at `cap_shot_lifetime`
 covers the full shot-cycled recovery chain (driver bank plus the
 C220109_cap/C220109_switch sub-lines) with its short-life warning; the
 inductive-DEC store markup is sized for the physics-returned energy
-(f_pdv, 1 - f_rad); and the fuel cycle is per-pulse (patent-anchored
+(f_pdv, 1 - f_rad); the fuel cycle is per-pulse (patent-anchored
 burn_fraction 1.2e-4 with species-resolved DHE3 recycle losses, the
 JET-analog fuel_recovery 0.999 default, and the 22 T compression-field
 basis); and PULSED_FRC coils are priced along the expansion adiabat
-(conductor ~ L^(1/3)), so chamber length is active structure. The ladder regression tests in
+(conductor growing as L^(1/3)), so chamber length is active structure.
+The ladder regression tests in
 `tests/test_study.py` pin the numbers at that commit and fail loudly if
 the model moves under the study.
 

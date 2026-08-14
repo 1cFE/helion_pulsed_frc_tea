@@ -244,12 +244,11 @@ is the lesser problem (steel skin depth is about 16 mm at ms rise
 times, so structure must be laminated; FLiBe at 200 S/m is
 magnetically transparent); the irreducible cost is the magnetized
 volume itself. A shield is energetically cheap only around the
-low-field expansion chamber (W scales as B^2: MJ-class per pulse at
-0.5 T and below). The emerging neutron architecture is therefore
-sacrificial ceramic-insulated throat coils on the wall-replacement
-schedule plus a shielded expander, and it sharpens the tritium
-argument: the unshieldable throat is exactly where a 14 MeV spectrum
-hurts most. Honesty note the other way: the scan spreads neutrons
+low-field regions of the machine (W scales as B^2: MJ-class per pulse
+at 0.5 T and below). The coils nearest the burn are therefore
+sacrificial, ceramic-insulated, and on the wall-replacement schedule,
+which sharpens the tritium argument: the unshieldable compression
+section is exactly where a 14 MeV spectrum hurts most. Honesty note the other way: the scan spreads neutrons
 uniformly over the cylinder, but the burn is localized near the
 compression section, whose wall and coils see several times the
 average load on 15-20% of the event value; a localized audit would
@@ -372,7 +371,7 @@ shot-life entries claim will invert. The public facility imagery also corroborat
 cost structure at today's prices: most of the Polaris building's floor
 is the pulsed-power farm (about 2,500 stacked power units), with the
 fusion machine and its vault in a small corner, which is precisely the
-picture the tier-3 capacitor \$/J and shot-life entries claim will
+picture the tier-3 capacitor $/J and shot-life entries claim will
 invert.
 
 Reconciliation (`scripts/reconciliation.py`) puts honest bands around
