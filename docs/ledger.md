@@ -336,29 +336,26 @@ constraints, at each evidence level:
 | tier 3, 1 GWe | **17.2** | 300-500 MJ shots, single module at 5.9 Hz, 60 m x 0.75 m chamber, panel wall |
 | tier 3, 3 GWe | **13.8** | 3 modules of the 200 MJ / 60 m design at 9.0 Hz (larger shots trip the wall audit once the integer module count snaps down) |
 
-Chamber lengths against built hardware: the longest machine Helion has
-built and publicly shown is Polaris at 19 m (Trenta 15 m; Orion undisclosed), with
-that length covering formation, acceleration, compression, and
-expansion end to end. The tier-2 minimum's 30 m is a 1.6x extrapolation
-of the built envelope, appropriate to its tier; the tier-3 minimum's
-60 m is 3x beyond any built machine. Length here is not the passive
-extendability of a mirror central cell: every added meter is active
-pulsed structure, coils ramped with the compression-expansion cycle,
-switched into the recovery circuit as the plasmoid transits, and
-fatigue-cycled every shot, with the synchronization problem growing
-with the machine. The model currently underprices this: the pulsed
-coil account is length-blind (C220103 = 44 M$ at 20 m and at 60 m
-alike; only wall, vacuum, and structure scale), so the scans' long
-chambers buy their active coil length for free, an estimated
-+0.4-0.8 $/MWh at the floor if the coils were priced per length.
-Worse, the length axis itself is not a vendor design axis: Helion's
-published architecture is symmetric (formation and acceleration at
-both ends, merge-compression in the central section, expansion back
-against the same compression coils), so the machine's expansion
-volume lives inside its 15-19 m envelope and no published material
-describes a stretched expansion section. The scans' long chambers are
-therefore the study's own speculation twice over: an unbuilt geometry
-whose active coil length is unpriced. Open item 8 below. The public facility imagery also corroborates the
+Chamber length is a design variable, not an evidence-tier entry, the
+same category as the wall class: nothing about a longer vessel with
+more coil sections requires undemonstrated technology, and the design
+search is entitled to choose it. For context, the built envelope is
+Trenta 15 m and Polaris 19 m (Orion's length is undisclosed), with
+Helion's published geometry symmetric (formation and acceleration at
+both ends, merge-compression central, expansion back against the same
+compression coils). What the length axis does expose is a model
+pricing gap: every added meter is active pulsed structure (coils
+ramped each cycle, switched into the recovery circuit, fatigue-cycled
+every shot), but the pulsed coil account is length-blind (C220103 =
+44 M$ at 20 m and at 60 m alike; only wall, vacuum, and structure
+scale), so the optimizer's preference for long chambers is partly an
+artifact of unpriced coils, roughly +0.4-0.8 $/MWh at the floor if
+priced per length, before switching. Open item 8 below. The public
+facility imagery also corroborates the cost structure at today's
+prices: most of the Polaris building's floor is the pulsed-power farm
+(about 2,500 stacked power units) with the fusion machine in a small
+corner, which is precisely the picture the tier-3 capacitor $/J and
+shot-life entries claim will invert. The public facility imagery also corroborates the
 cost structure at today's prices: most of the Polaris building's floor
 is the pulsed-power farm (about 2,500 stacked power units), with the
 fusion machine and its vault in a small corner, which is precisely the
@@ -554,14 +551,12 @@ damage scan nor CAS72 currently prices.
    pressure cycled 1e9-1e10 times sits at or above copper-alloy
    gigacycle fatigue strengths; the coil may be schedule-limited by
    mechanics, not neutrons).
-8. A coil-architecture basis for chamber length. The pulsed family's
-   C220103 derives from field and bore only, so chamber length adds no
-   coil or switching cost, and the long-chamber optima exploit that
-   gap; but no per-length pricing can be written honestly without a
-   published coil architecture for a stretched machine, which Helion
-   has not provided (their published geometry expands back through the
-   same central compression coils inside a 15-19 m envelope). Until
-   the vendor publishes a longer-machine architecture or the study
-   ceilings the length axis at the built envelope, long-chamber points
-   carry this as an unpriced optimism, flagged here rather than
-   patched with an invented design.
+8. A per-length cost basis for the pulsed chamber's active structure.
+   Chamber length is a legitimate design variable, but the model gives
+   it away free on the coil side: C220103 derives from field and bore
+   only, so the design search is biased toward length by an unpriced
+   cost. An honest per-length price needs a coil-and-switching
+   architecture to cost, which Helion has not published (their
+   geometry expands back through the central compression coils);
+   flagged as a model gap rather than patched with an invented
+   design.
