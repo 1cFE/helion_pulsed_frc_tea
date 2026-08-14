@@ -61,6 +61,22 @@ V4 = m CR V2; stage-4 energy exhausted. In units of U2:
   behind the tier-3 composite cap, whose speculation grade already
   reflects this.
 
+## Why the denominator is not adopted
+
+Adopting the full eta_cp (verified numerator over transcribed
+denominator) into the model's f_pdv slot is rejected on two grounds.
+Mechanically, the denominator inflates the recovery caps by
+1/(1 - (2-g) CR^(1-g)), pushing the tier-3 chamber's cap above unity:
+a recovered fraction exceeding 1, which breaks the power balance.
+Structurally, the inflation comes from an input ledger that discounts
+merger and compression energy, i.e. it credits their recovery inside
+eta_cp; the model already credits exactly that recovery through the
+separate eta_dec driver-return channel (p_dee = eta_dec (p_driver +
+p_pdv) - p_driver), so adopting the denominator would count the
+driver-energy recovery in two ledgers at once, the same double-booking
+the composite cap exists to prevent. f_pdv remains the fusion-heat
+stroke fraction: the verified numerator only.
+
 ## Study usage
 
 The constraint-6 cap uses only the verified stroke bound (the Q = 0 /
