@@ -383,14 +383,29 @@ dhe3_f_T = 0 satisfies its floor with two orders of margin. Fuel
 therefore resides in the machine of order a thousand pulses before
 burning, and the model carries the per-pulse pair burn_fraction =
 1.2e-4 and burn_fraction_he3 = 4.1e-4 (He-3 burns 3.3x faster per
-pass, so its cumulative fusion probability is 0.80 while deuterium
-mostly leaks), with species-resolved recycle losses in the fuel
-account. The costs of that residence are the fuel cycle's load-bearing
-claims: with per-pulse reprocessing the unburned-fuel multiplier is
-84x at per-pass recovery 0.99, 9.3x at 0.999, and 1.8x at 0.9999, so
-four-nines per-pulse recovery and hertz-rate isotope separation are
-what the published fuel cycle actually requires, and the tritium plant
-is their price. The recovery is graded accordingly: the vendor-implied
+pass), with species-resolved recycle losses in the fuel account. A
+recirculating nucleus faces the same race every pass, burn with
+probability bf or leak with probability 1 - fr, so its ultimate fate
+is the geometric series bf / (1 - fr (1 - bf)), set by the ratio of
+the two rates:
+
+| species (per-pass burn) | fr = 0.99 | fr = 0.999 | fr = 0.9999 |
+|---|---|---|---|
+| deuterium (1.2e-4) | 1.2% burns | 11% burns | 55% burns |
+| He-3 (4.1e-4) | 3.9% burns | 29% burns | 80% burns |
+
+At the four-nines basis, He-3 mostly burns (0.80 is the cumulative
+fusion probability the fuel account credits) while deuterium splits
+nearly evenly between burning and leaking; at three nines the loop is
+primarily a fuel-disposal device, wasting 71% of its He-3, and at two
+nines nearly everything leaks. Tritium sees no geometric series at
+all: it is extracted to the store on its first pass, so separation
+loss hits it once, not compounded. The costs of the residence are the
+fuel cycle's load-bearing claims: with per-pulse reprocessing the
+unburned-fuel repurchase multiplier is 84x at per-pass recovery 0.99,
+9.3x at 0.999, and 1.8x at 0.9999, so four-nines per-pulse recovery
+and hertz-rate isotope separation are what the published fuel cycle
+actually requires, and the tritium plant is their price. The recovery is graded accordingly: the vendor-implied
 0.9999 stays in the design basis (the model default is the JET-analog
 0.999), tier 1 reverts to that three-nines analogy (an analog
 argument, not a per-pass record: JET campaign retention measures
