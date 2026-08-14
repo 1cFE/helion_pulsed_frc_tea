@@ -98,10 +98,13 @@ every script rather than reported:
    is min(claim, share x [1 - (V_i/V_f)^(2/3)]) with V_i the compressed
    flux volume at the 22 T basis field (E_del/(B^2/2mu0), about
    0.26 m^3 at 50 MJ), V_f its own chamber, and share the radial
-   fraction of the boundary work: 0.8 from tier 1 (no publication
-   claims end-circuit recovery of the axial channel), 1.0 at tier 3
-   (the axial-capture speculation) and at the unchallenged vendor
-   baseline. Recovery can no longer be claimed independently of the
+   fraction of the boundary work: 0.8 from tier 1 (the free-expansion adiabatic partition; no
+   publication claims end-circuit recovery of the axial channel), 1.0
+   at tier 3 (by axial capture with switched end circuits, or by axial
+   suppression with static end-field shaping, which the published
+   symmetric geometry's high-field end sections make
+   architecture-consistent though unquantified) and at the unchallenged
+   vendor baseline. Recovery can no longer be claimed independently of the
    geometry that must deliver it. The 4/5 radial share is the FRC's own
    adiabatic partition (r_s ~ B^-2/5 against l_s ~ B^-1/5), not a
    design choice: the expanding plasmoid does most of its work against

@@ -23,7 +23,7 @@ records:
 
   f_pdv_radial_share:
     value: 1.0
-    source: "SPECULATION: axial-channel capture. The tier-2 to tier-3 recovery step is exactly the claim that the ~1/5 of boundary work in axial elongation is recovered by end circuits switched during the stroke; resolvable by the Polaris shot triplet."
+    source: "SPECULATION with two distinct physical routes: (a) axial-channel CAPTURE, end circuits switched into recovery during the stroke (no publication claims it); or (b) axial-expansion SUPPRESSION, static end-field gradients confining the plasmoid axially so nearly all boundary work is forced radial - architecture-consistent with the published geometry (higher-field formation/acceleration sections at both ends form a magnetic well) but unquantified anywhere, and it forces oblateness, pushing on the tilt boundary. Either route is resolvable by the Polaris shot triplet."
 
   f_pdv:
     value: 0.947
