@@ -53,9 +53,13 @@ V4 = m CR V2; stage-4 energy exhausted. In units of U2:
   talk: the reason for the (g-1) merger weight, and the Diesel
   formula's extra (g-1) Q^2 fusion-input term. Under the ordinary
   state definitions this denominator lets eta_cp exceed the naive
-  energy-balance efficiency (and nominally unity at large ER), so the
-  >90% optimal-cycle claim should not be used numerically until the
-  input definition is resolved against the talk.
+  energy-balance efficiency (and nominally unity at large ER). The
+  talk does not elaborate on the denominator (checked), so the input
+  definition is unresolvable from public material: the >90%
+  optimal-cycle claim cannot be independently reproduced and must not
+  be used numerically. It survives only as the qualitative statement
+  behind the tier-3 composite cap, whose speculation grade already
+  reflects this.
 
 ## Study usage
 
