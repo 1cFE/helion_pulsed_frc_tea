@@ -8,7 +8,7 @@ burning plasma a D-He3 field-reversed configuration (FRC), using the
 electricity (LCOE) can be pushed while remaining internally consistent,
 against the developer's public 10 $/MWh ambition. Optimism is
 disciplined three ways: every input is placed on an evidence ladder
-(records, labelled extrapolations, labelled speculation); four physics
+(records, labelled extrapolations, labelled speculation); six physics
 couplings are enforced on every quoted point;
 and the operating point at each evidence level is found by a constrained
 design-space search rather than asserted. The coherent floor is
