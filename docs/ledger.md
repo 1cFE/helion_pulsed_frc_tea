@@ -105,7 +105,17 @@ every script rather than reported:
    suppression with static end-field shaping, which the published
    symmetric geometry's high-field end sections make
    architecture-consistent though unquantified) and at the unchallenged
-   vendor baseline. Recovery can no longer be claimed independently of the
+   vendor baseline. The enforced expression is the Otto/Atkinson-form
+   adiabatic-stroke bound at gamma = 5/3; the machine's actual cycle is
+   Diesel-type (constant-pressure burn at the beta = 1 force balance)
+   with an Atkinson over-expansion, the same generalized Diesel/Otto
+   framework with axial and radial expansion that the vendor's cited
+   burn-cycle analysis (Kirtley, APS DPP24) uses, and the Diesel-form
+   ideal value sits 1-2 percentage points below the enforced cap at the
+   study's ratios, so the cap is strict and slightly generous. There is
+   no Carnot exemption: cycle form, ratios, and merging entropy set the
+   efficiency, which is what the composite cap encodes. Recovery cannot
+   be claimed independently of the
    geometry that must deliver it. The 4/5 radial share is the FRC's own
    adiabatic partition (r_s ~ B^-2/5 against l_s ~ B^-1/5), not a
    design choice: the expanding plasmoid does most of its work against
