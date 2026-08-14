@@ -4,7 +4,7 @@
 direct-energy-conversion power plant, a machine whose capacitor-driven
 compression circuit is also its electrical recovery path, with the
 burning plasma a D-He3 field-reversed configuration (FRC), using the
-`costingfe` bottom-up cost model, and ask how low its levelized cost of
+`1costingfe` bottom-up cost model, and ask how low its levelized cost of
 electricity (LCOE) can be pushed while remaining internally consistent,
 against the developer's public 10 \$/MWh ambition. Optimism is
 disciplined three ways: every input is placed on an evidence ladder
@@ -155,7 +155,7 @@ tritium plant is an exhaust-processing and storage plant.
 
 ## 3. Method
 
-**Cost model.** `costingfe` is a bottom-up, account-structured
+**Cost model.** `1costingfe` is a bottom-up, account-structured
 (CAS-coded) fusion costing framework. At the pinned commit it prices
 linear pulsed concepts as cylinders with the first-wall heat flux
 audited against the declared wall class (panel or divertor-grade
@@ -767,7 +767,7 @@ developer is already building.
 ## Reproducibility
 
 All quantities in this paper are produced by the scripts named in the
-text from the configuration files in `config/`, against the `costingfe`
+text from the configuration files in `config/`, against the `1costingfe`
 cost model at commit `44434d9` (which guarantees the cylinder wall
 audit, rep-rate sizing, shot-cycled replacement scope,
 physics-consistent recovery-store markup, and per-pulse fuel-cycle
@@ -802,7 +802,7 @@ loudly if the model moves under the study.
 - Langtry, A., et al. (2025). "Affordable, manageable, practical
   Z-pinch driver (AMPS)." arXiv:2504.10680 (capacitor derating and
   shot-life target; MagLIF burn fraction).
-- Rubin, T. (2026). costingfe: a bottom-up fusion power plant cost
+- Rubin, T. (2026). 1costingfe: a bottom-up fusion power plant cost
   model. Repository at commit `44434d9`.
 - Tuszewski, M. (1988). "Field reversed configurations." Nuclear
   Fusion 28, 2033 (FRC equilibrium, average-beta theorem, adiabatic
