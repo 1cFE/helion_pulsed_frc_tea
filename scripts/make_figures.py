@@ -17,9 +17,9 @@ BLUE, ORANGE, AQUA, RED = "#2a78d6", "#eb6834", "#1baf7a", "#e34948"
 INK, INK2, GRID, SURFACE = "#0b0b0b", "#52514e", "#e5e4e0", "#fcfcfb"
 FIGDIR = Path(__file__).resolve().parents[1] / "docs" / "figures"
 
-TIER2_MIN = dict(chamber_length=30.0, plasma_t=0.5, r_bore=0.6, fw_class="panel")
-TIER3_MIN = dict(yield_per_shot_mj=300.0, chamber_length=60.0, plasma_t=0.75,
-                 r_bore=0.85, fw_class="panel")
+TIER2_MIN = dict(chamber_length=10.0, plasma_t=1.5, r_bore=1.6, fw_class="panel")
+TIER3_MIN = dict(yield_per_shot_mj=500.0, chamber_length=30.0, plasma_t=1.5,
+                 r_bore=1.6, fw_class="panel")
 TIERS = (("best_case.yaml",), ("best_case.yaml", "tier2.yaml"),
          ("best_case.yaml", "tier2.yaml", "tier3.yaml"))
 
@@ -55,8 +55,8 @@ def stack(cfg, *tier_cfgs, **over):
 
 
 def fig1_ladder(model, cfg):
-    TIER1_MIN = dict(dhe3_dd_frac=0.85, f_rad=0.28, chamber_length=20.0,
-                     plasma_t=0.5, r_bore=0.6, fw_class="panel")
+    TIER1_MIN = dict(dhe3_dd_frac=0.85, f_rad=0.28, chamber_length=10.0,
+                     plasma_t=1.5, r_bore=1.6, fw_class="panel")
     rows = [
         ("design baseline", ()),
         ("tier 1: records", TIERS[0]),

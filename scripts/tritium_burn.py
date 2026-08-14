@@ -62,8 +62,8 @@ POINTS = {
         tier="tier3",
         tier_cfgs=("best_case.yaml", "tier2.yaml", "tier3.yaml"),
         overrides=dict(
-            yield_per_shot_mj=300.0, chamber_length=60.0, plasma_t=0.75,
-            r_bore=0.85, fw_class="panel",
+            yield_per_shot_mj=500.0, chamber_length=30.0, plasma_t=1.5,
+            r_bore=1.6, fw_class="panel",
         ),
     ),
 }

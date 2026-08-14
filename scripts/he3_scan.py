@@ -27,7 +27,7 @@ from study import (
 U_HE3_USD_KG = (2e7, 2e6, 1e6, 5e5, 1e5, 0.0)
 DD_FRACS = (0.131, 0.314, 0.5, 0.7, 0.85, 0.95)
 TIER2_MIN_OVERRIDES = dict(
-    chamber_length=30.0, plasma_t=0.5, r_bore=0.6, fw_class="panel")
+    chamber_length=10.0, plasma_t=1.5, r_bore=1.6, fw_class="panel")
 
 if __name__ == "__main__":
     cfg = load_config("baseline.yaml")

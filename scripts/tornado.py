@@ -15,7 +15,7 @@ from study import (
 )
 
 TIER2_MIN_OVERRIDES = dict(
-    chamber_length=30.0, plasma_t=0.5, r_bore=0.6, fw_class="panel")
+    chamber_length=10.0, plasma_t=1.5, r_bore=1.6, fw_class="panel")
 
 
 def tier2_fwd():
