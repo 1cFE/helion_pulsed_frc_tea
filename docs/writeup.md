@@ -1,7 +1,8 @@
 # The techno-economic floor of a Helion-class pulsed inductive fusion power plant
 
 **Abstract.** We price a Helion-class pulsed inductive
-direct-energy-conversion power plant, a machine whose capacitor-driven
+direct-energy-conversion power plant. This machine burns a D-He3 fuel
+in a Diesel cycle.  a machine whose capacitor-driven
 compression circuit is also its electrical recovery path, with the
 burning plasma a D-He3 field-reversed configuration (FRC), using the
 `1costingfe` bottom-up cost model, and ask how low its levelized cost of
@@ -580,15 +581,35 @@ radial-only f_pdv widens the uncaptured channel),
 baseline rung. It is carried
 as a reconciliation adder pending a model-level treatment.
 
-**The expansion-ratio bound.** Adiabatic expansion caps the recoverable
-fraction of plasma energy at 1 - (V_i/V_f)^(2/3) with V_i =
-E_del/(B^2/2mu0), about 0.26 m^3 at 50 MJ and the 22 T basis field.
-Constraint 6 applies it per point: the tier-2 minimum's 10 m x 1.5 m
-chamber delivers a derived f_pdv of 0.78, and the tier-3
-minimum's 30 m x 1.5 m chamber supports the claimed 0.947 (cap 0.989)
-only because the axial channel is granted there. The large chamber buys expansion ratio, not
-merely wall area, and recovery cannot be improved without more
-chamber.
+**The expansion-ratio bound, and the cycle it belongs to.** The
+machine is a heat engine with magnetic pistons: adiabatic magnetic
+compression, compression ignition with no external heater, heat
+addition at roughly constant pressure (the beta = 1 force balance pins
+plasma pressure to the crowbarred field, so fusion heating expands the
+plasmoid rather than raising its pressure), adiabatic over-expansion
+into a chamber far larger than the compression volume, and open-cycle
+exhaust. In engine terms that is a Diesel-type cycle with an Atkinson
+expansion stroke, and it is the vendor's own framing: the cited burn
+cycle framework (Kirtley 2024) analyzes generalized Diesel and Otto
+cycles with axial and radial expansion, quoting about 60% for a
+constant-pressure burn under historical assumptions and above 90% for
+optimal cycles. There is no Carnot exemption in this: the cycle's
+efficiency is set by its form, its compression and expansion ratios,
+and the entropy generated in the deliberately irreversible merging
+(the chi derate above), which is exactly what the composite cap
+encodes. Constraint 6 enforces the adiabatic-stroke bound
+1 - (V_i/V_f)^(2/3), with V_i = E_del/(B^2/2mu0), about 0.26 m^3 at
+50 MJ and the 22 T basis field: the Otto/Atkinson-form expression at
+gamma = 5/3. The machine's isobaric burn leg makes the true
+Diesel-form ideal value 1-2 percentage points lower at the study's
+ratios (softened because the expansion work done during the burn
+pushes against the same crowbarred coil), so the enforced expression
+is a strict, slightly generous cap. Applied per point: the tier-2
+minimum's 10 m x 1.5 m chamber delivers a derived f_pdv of 0.78, and
+the tier-3 minimum's 30 m x 1.5 m chamber supports the claimed 0.947
+(cap 0.989) only because the axial channel is granted there. The
+large chamber buys expansion ratio, not merely wall area, and
+recovery cannot be improved without more chamber.
 
 **The parallel channel.** The expansion work is not all radial, and the
 components couple to the circuit differently. Radial expansion
@@ -795,7 +816,9 @@ loudly if the model moves under the study.
 - Kirtley, D. (2024). "Fundamental theory of the direct magnetic
   energy recovery in a thermonuclear field reversed configuration
   system." APS DPP 2024, abstract GO05.8 (the composite-recovery
-  figure behind constraint 2).
+  figure behind constraint 2, and the generalized Diesel/Otto burn
+  cycle framework with axial and radial expansion behind the cycle
+  identification in Section 6).
 - Kirtley, D., and Milroy, R. (2023). "Fundamental scaling of
   adiabatic compression of field reversed configuration thermonuclear
   fusion plasmas." Journal of Fusion Energy 42, 30.
