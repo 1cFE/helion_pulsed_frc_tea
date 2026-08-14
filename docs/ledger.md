@@ -350,9 +350,15 @@ with the machine. The model currently underprices this: the pulsed
 coil account is length-blind (C220103 = 44 M$ at 20 m and at 60 m
 alike; only wall, vacuum, and structure scale), so the scans' long
 chambers buy their active coil length for free, an estimated
-+0.4-0.8 $/MWh at the floor if priced per-length like the mirror's
-central-cell solenoids, before per-section switching. Open item 8
-below. The public facility imagery also corroborates the
++0.4-0.8 $/MWh at the floor if the coils were priced per length.
+Worse, the length axis itself is not a vendor design axis: Helion's
+published architecture is symmetric (formation and acceleration at
+both ends, merge-compression in the central section, expansion back
+against the same compression coils), so the machine's expansion
+volume lives inside its 15-19 m envelope and no published material
+describes a stretched expansion section. The scans' long chambers are
+therefore the study's own speculation twice over: an unbuilt geometry
+whose active coil length is unpriced. Open item 8 below. The public facility imagery also corroborates the
 cost structure at today's prices: most of the Polaris building's floor
 is the pulsed-power farm (about 2,500 stacked power units), with the
 fusion machine and its vault in a small corner, which is precisely the
@@ -548,9 +554,14 @@ damage scan nor CAS72 currently prices.
    pressure cycled 1e9-1e10 times sits at or above copper-alloy
    gigacycle fatigue strengths; the coil may be schedule-limited by
    mechanics, not neutrons).
-8. A per-length pulsed coil model: the pulsed family's C220103 is
-   derived from field and bore only, so chamber length adds no coil or
-   switching cost, unlike the mirror's L/d_coil central-cell pricing.
-   A two-class structure (short 22 T compression section plus a
-   low-field per-length expander solenoid with its recovery switching)
-   would close the gap the long-chamber optima currently exploit.
+8. A coil-architecture basis for chamber length. The pulsed family's
+   C220103 derives from field and bore only, so chamber length adds no
+   coil or switching cost, and the long-chamber optima exploit that
+   gap; but no per-length pricing can be written honestly without a
+   published coil architecture for a stretched machine, which Helion
+   has not provided (their published geometry expands back through the
+   same central compression coils inside a 15-19 m envelope). Until
+   the vendor publishes a longer-machine architecture or the study
+   ceilings the length axis at the built envelope, long-chamber points
+   carry this as an unpriced optimism, flagged here rather than
+   patched with an invented design.
