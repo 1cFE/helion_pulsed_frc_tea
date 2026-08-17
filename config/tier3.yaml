@@ -23,7 +23,7 @@ records:
 
   f_pdv_radial_share:
     value: 1.0
-    source: "SPECULATION with two distinct physical routes: (a) axial-channel CAPTURE, end circuits switched into recovery during the stroke (no publication claims it); or (b) axial-expansion SUPPRESSION, static end-field gradients confining the plasmoid axially so nearly all boundary work is forced radial - architecture-consistent with the published geometry (higher-field formation/acceleration sections at both ends form a magnetic well) but unquantified anywhere, and it forces oblateness, pushing on the tilt boundary. Either route is resolvable by the Polaris shot triplet."
+    source: "Vendor-claimed, undemonstrated: Kirtley states axial-compression recovery to coil current in the DPP24 talk (docs/sources/kirtley_dpp24_formulas.md; asserted, no measurement, no mechanism detail), the same evidential class as the recovery-circuit patent band. Two physical routes could deliver it: (a) axial-channel CAPTURE, end circuits switched into recovery during the stroke; or (b) axial-expansion SUPPRESSION, static end-field gradients forcing the boundary work radial - architecture-consistent with the published geometry but unquantified, and it forces oblateness, pushing on the tilt boundary. Either route is resolvable by the Polaris shot triplet."
 
   f_pdv:
     value: 0.947
