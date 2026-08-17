@@ -100,9 +100,9 @@ every script rather than reported:
    flux volume at the 22 T basis field (E_del/(B^2/2mu0), about
    0.26 m^3 at 50 MJ), V_f its own chamber, and share the radial
    fraction of the boundary work: 0.8 from tier 1 (the free-expansion
-   adiabatic partition; the vendor claims axial recovery in the DPP24
-   talk but without measurement or mechanism detail, so tier 1 reverts
-   it), 1.0
+   adiabatic partition, per the Spencer 1983 scalings the vendor's own
+   talk invokes for the radial-axial coupling; no source asserts
+   recovery of the axial work), 1.0
    at tier 3 (by axial capture with switched end circuits, or by axial
    suppression with static end-field shaping, which the published
    symmetric geometry's high-field end sections make
@@ -317,7 +317,7 @@ bind on something real.
 | cap_shot_lifetime | 1e8 | 1e9 | Pacific Fusion AMPS sec. 4.1: 100 to 35 kV derating projected to reach about 1e9 shots at about 9x lower energy density; GA Series DE cross-check (3e7-3e9 at 20% reversal). At the tier-2 point the plant fires 2.7e9 shots, so the bank is still replaced about 1.7x (charged to CAS72 by the model); the "1e9 outlives the plant" argument holds only below about 1.1 Hz. | published target |
 | fuel_recovery | 0.999 (tier-1 record) | 0.9999 | One nine beyond the JET-ILW retention record: the patent closed fuel cycle (US 2017/0011811) implies four-nines per-pulse recovery for the He-3 economy to close, and the physical argument (saturated walls, helium-dominated exhaust, direct re-injection without full reprocessing) points the right direction. No demonstration at any scale. Ties capacitor life as the largest lever under the tier-2 minimum (+43.9 $/MWh if reverted). | patent-implied extrapolation |
 | eta_dec | 0.85 | 0.90 | Bottom of the patent band, circuit-only, no fusion-inclusive measurement. Paired with the derived f_pdv under the composite cap (0.90 x 0.78 = 0.70 <= 0.80 at the tier-2 minimum's chamber). | weak-moderate |
-| f_pdv | (derived) | share x expansion bound | Not a record: derived per point under coherence constraint 6 as the chamber's adiabatic expansion bound times the radial work share (0.8 at this tier). The vendor claims axial recovery (Kirtley DPP24 talk, no measurement or mechanism detail); the claim is admitted only at tier 3 through the share. | constraint-derived |
+| f_pdv | (derived) | share x expansion bound | Not a record: derived per point under coherence constraint 6 as the chamber's adiabatic expansion bound times the radial work share (0.8 at this tier). The vendor's talk states the radial-axial coupling (Spencer 1983 scaling), not recovery of the axial work; capture is admitted only at tier 3 through the share. | constraint-derived |
 | eta_pin | 0.95 | 0.98 | Solid-state pulsed-power wall-plug efficiency; plausible for modern semiconductor switching, no datasheet or Helion statement located. | UNSOURCED |
 | max_f_rep | 1.0 | 3.0 | No public Helion statement of a numeric plant rep rate exists (Polaris target about 1/s; Trenta about 1/10 min; the 1-10 Hz band is the concept YAML's roadmap paraphrase). 3 Hz is what the bought wall supports at this tier's recovery parameters; it remains UNSOURCED as a demonstrated cadence (nothing MJ-class has run at 1 Hz continuously). The band top (10 Hz) is tier 3. | UNSOURCED-ROADMAP |
 | fw_class | panel | hhf | Machine-design purchase, not a record: divertor-grade monoblock wall (ITER divertor procurement anchor, 2.5 M$/m^2 NOAK, 10 MW/m^2 qualification) over the real 37.7 m^2 cylinder, about 94 M$/module, to make 3 Hz admissible in the concept-YAML chamber. The design-optimized tier-2 minimum instead buys a longer chamber with the cheaper panel wall (see coherent minimum below). | design purchase |

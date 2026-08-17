@@ -641,8 +641,10 @@ capturable only if those circuits are switched for recovery during the
 stroke, a design choice. Parallel particle streaming along open field
 lines (the exhaust) couples to nothing and lands in the undirected
 residual. FRC adiabatic scalings (r_s proportional to B^-2/5, length
-to B^-1/5; Tuszewski 1988, Kirtley and Milroy 2023) put the axial
-share of the boundary work near 1/5, and a self-similar cylinder
+to B^-1/5; Spencer et al. 1983, Tuszewski 1988, Kirtley and Milroy
+2023, and the coupling the vendor's own talk invokes: radial
+compression pulls the FRC in axially, per the Spencer scaling) put the
+axial share of the boundary work near 1/5, and a self-similar cylinder
 bounds it at 1/3. This is enforced as coherence constraint 6: every
 point's f_pdv is derived from its own chamber's expansion ratio times
 the radial share, so recovery cannot be claimed independently of the
@@ -850,6 +852,10 @@ loudly if the model moves under the study.
   shot-life target; MagLIF burn fraction).
 - Rubin, T. (2026). 1costingfe: a bottom-up fusion power plant cost
   model. Repository at commit `44434d9`.
+- Spencer, R. L., Tuszewski, M., and Linford, R. K. (1983).
+  "Adiabatic compression of elongated field-reversed configurations."
+  Physics of Fluids 26, 1564 (the FRC adiabatic compression scalings
+  behind the radial-axial work partition).
 - Tuszewski, M. (1988). "Field reversed configurations." Nuclear
   Fusion 28, 2033 (FRC equilibrium, average-beta theorem, adiabatic
   scalings).
