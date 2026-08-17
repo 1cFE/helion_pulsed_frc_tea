@@ -315,7 +315,7 @@ are not a steam cycle):
 | O&M (CAS70) | 54/yr | 6.4 |
 | annualized capital, all-in | | about 7.5 |
 
-![What carries the floor](figures/fig4_anatomy.svg)
+![What carries the floor](figures/fig3_anatomy.svg)
 
 *Figure 3: Capital accounts carrying the tier-3 minimum. The driver
 bank, the concept's narrative centerpiece, is the smallest bar; site
@@ -463,7 +463,7 @@ closes. Per-pulse exhaust pumping is priced across the axis and peaks
 at the basis (79 M\$ per module at the floor: 8300 pumped particles
 per reaction).
 
-![The burnup axis](figures/fig3_burnup.svg)
+![The burnup axis](figures/fig4_burnup.svg)
 
 *Figure 4: LCOE at the tier-3 minimum machine across the per-pulse
 burnup axis, both species scaled together, under the two triton fates

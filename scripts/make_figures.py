@@ -173,7 +173,7 @@ def fig3_burnup(model, cfg):
                          title="per-pulse fuel recovery", title_fontsize=8,
                          loc="center right")
     leg.get_title().set_color(INK2)
-    save(fig, "fig3_burnup")
+    save(fig, "fig4_burnup")
 
 
 def fig4_anatomy(model, cfg):
@@ -206,7 +206,7 @@ def fig4_anatomy(model, cfg):
     ax.set_axisbelow(True)
     ax.grid(axis="x", color=GRID, linewidth=0.8)
     style(ax)
-    save(fig, "fig4_anatomy")
+    save(fig, "fig3_anatomy")
 
 
 def fig5_plant_size(model, cfg):
