@@ -198,7 +198,9 @@ the same discipline already applied to the recovery-circuit patent's
 "up to 90% and higher" band (demoted as prophetic under eta_dec). The
 fuel-cycle table carries its own proof of prophecy: its tau column
 implies n tau of 2-3e21 s/m^3 at 70 keV, three to four orders beyond
-any demonstrated FRC confinement, and the study accordingly uses the
+any demonstrated FRC confinement (Wurzel and Hsu 2022, Phys. Plasmas
+29 062103, is the uniform triple-product ledger this claim is measured
+against), and the study accordingly uses the
 table's density and temperature (whose field companion, B = 22 T,
 follows from pressure balance and is corroborated in class by the
 vendor's stated >15 T compression hardware) but never its confinement
