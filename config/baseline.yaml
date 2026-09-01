@@ -22,11 +22,24 @@ forward:
   # with borealis_mirror_tea and the down-select. Helion's 50 MWe PPA unit
   # is a point on the scale scan, not the baseline.
   net_electric_mw: 1000.0
-  availability: 0.85          # repo-typical baseline; record hunted in the ledger
+
+  # --- Common plant-environment basis (shared by all four priced devices) ---
+  # Financing and availability are not device properties: every rung is
+  # financed on the same terms, so the ladder compares physics and
+  # technology, not interest rates. Sources (graded in docs/ledger.md):
+  # 4.25% nominal WACC (Apostoleris et al. 2021, sovereign-backed
+  # long-term-offtake generation analog) against the 2% Fed longer-run
+  # inflation backdrop; 2.5 yr construction (Siemens Energy 1200 MWe CCGT
+  # block in about 30 months); 8% EPCM indirects (US DOE/NETL QGESS low
+  # end); availability 0.95 (US DOE geothermal baseload analog derated
+  # for staggered capacitor-bank swaps; diverges from Borealis 0.98 with
+  # that stated technology reason).
+  availability: 0.95
   lifetime_yr: 30.0           # standard TEA book life; 80 yr is an ANTI-record here (see ledger)
-  construction_time_yr: 6.0   # repo-typical baseline; record hunted in the ledger
-  interest_rate: 0.07         # repo default nominal
-  inflation_rate: 0.0245
+  construction_time_yr: 2.5
+  interest_rate: 0.0425
+  inflation_rate: 0.02
+  indirect_fraction: 0.08
   noak: true
 
   # --- Burn point (the D-rich direction Helion's own materials describe) ---

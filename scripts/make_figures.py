@@ -55,32 +55,29 @@ def stack(cfg, *tier_cfgs, **over):
 
 
 def fig1_ladder(model, cfg):
+    # One device per evidence grade: the records, extrapolation, and
+    # speculation devices are their stacks' design-optimized machines;
+    # Helion's requirements is the vendor configuration on the design basis.
     TIER1_MIN = dict(dhe3_dd_frac=0.85, f_rad=0.28, chamber_length=10.0,
                      plasma_t=1.5, r_bore=1.6, fw_class="panel")
-    rows = [
-        ("design baseline", ()),
-        ("tier 1: records", TIERS[0]),
-        ("tier 1 minimum (design-optimized)", TIERS[0]),
-        ("tier 2: extrapolations", TIERS[1]),
-        ("tier 2 minimum (design-optimized)", TIERS[1]),
-        ("tier 3: speculation", TIERS[2]),
-        ("tier 3 minimum (design-optimized)", TIERS[2]),
-    ]
-    # The tier-3 minimum design is power-dependent: the 300 MJ single-module
+    # The speculation design is power-dependent: the 500 MJ single-module
     # machine trips the wall audit at 3 GWe when the module count snaps, so
     # the 3 GWe bar uses the coherent 200 MJ design (coherent_min.py footer).
     TIER3_MIN_3GWE = dict(TIER3_MIN, yield_per_shot_mj=200.0)
-    overs = {1000.0: [{}, {}, TIER1_MIN, {}, TIER2_MIN, {}, TIER3_MIN],
-             3000.0: [{}, {}, TIER1_MIN, {}, TIER2_MIN, {}, TIER3_MIN_3GWE]}
+    rows = [
+        ("citable records", TIERS[0], TIER1_MIN, TIER1_MIN),
+        ("Helion's requirements", (), {}, {}),
+        ("extrapolations", TIERS[1], TIER2_MIN, TIER2_MIN),
+        ("speculation", TIERS[2], TIER3_MIN, TIER3_MIN_3GWE),
+    ]
     vals = {1000.0: [], 3000.0: []}
-    for i, (label, cfgs) in enumerate(rows):
-        for p in vals:
-            _, d = run(model, stack(cfg, *cfgs, net_electric_mw=p,
-                                    **overs[p][i]))
+    for label, cfgs, over1, over3 in rows:
+        for p, over in ((1000.0, over1), (3000.0, over3)):
+            _, d = run(model, stack(cfg, *cfgs, net_electric_mw=p, **over))
             vals[p].append(d["lcoe"])
     labels = [r[0] for r in rows]
     y = np.arange(len(labels))[::-1]
-    fig, ax = plt.subplots(figsize=(7.2, 3.6))
+    fig, ax = plt.subplots(figsize=(7.2, 2.9))
     h = 0.34
     b1 = ax.barh(y + h / 2 + 0.02, vals[1000.0], height=h, color=BLUE, label="1 GWe")
     b3 = ax.barh(y - h / 2 - 0.02, vals[3000.0], height=h, color=ORANGE, label="3 GWe")
@@ -129,8 +126,8 @@ def fig2_tornado(model, cfg):
                 fontsize=8, color=INK)
     ax.axvline(0, color=INK2, linewidth=1)
     ax.set_yticks(y, labels)
-    ax.set_xlabel(f"change in LCOE when reverted to the tier-1 value "
-                  f"(\\$/MWh, from the {d0['lcoe']:.1f} minimum)")
+    ax.set_xlabel(f"change in LCOE when reverted to the record value "
+                  f"(\\$/MWh, from the {d0['lcoe']:.1f} extrapolation device)")
     ax.set_xlim(min(deltas) - 6, max(deltas) + 7)
     ax.set_axisbelow(True)
     ax.grid(axis="x", color=GRID, linewidth=0.8)
@@ -187,7 +184,7 @@ def fig4_anatomy(model, cfg):
         ("heat rejection + electrical plant (CAS24-26)",
          float(c.cas24) + float(c.cas25) + float(c.cas26)),
         ("vacuum + per-pulse exhaust pumping (C220106)", d22["C220106"]),
-        ("first wall, 45 m chamber (C220101)", d22["C220101"]),
+        ("first wall, 30 m chamber (C220101)", d22["C220101"]),
         ("DEC power electronics (C220109)", d22["C220109"]),
         ("driver capacitor bank (C220107)", d22["C220107"]),
     ]
@@ -201,7 +198,7 @@ def fig4_anatomy(model, cfg):
         ax.text(v + 3, b.get_y() + b.get_height() / 2, f"{v:.0f}",
                 va="center", ha="left", fontsize=8, color=INK)
     ax.set_yticks(y, labels)
-    ax.set_xlabel("capital at the tier-3 minimum (M\\$, 1 GWe plant)")
+    ax.set_xlabel("capital at the speculation device (M\\$, 1 GWe plant)")
     ax.set_xlim(0, max(vals) * 1.12)
     ax.set_axisbelow(True)
     ax.grid(axis="x", color=GRID, linewidth=0.8)

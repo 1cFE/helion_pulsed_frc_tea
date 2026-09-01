@@ -12,8 +12,8 @@ energy in the plasma to electricity than the limit imposed by the
 working temperature of a conventional working fluid. The direct energy
 conversion system also replaces the conventional and expensive turbine
 island. The best fusion fuel for this purpose is deuterium-helium-3 (D-He3),
-whose fusion energy is carried almost entirely by charged particles.
-And the best physical mechanism for directly interacting with the plasma
+whose fusion energy is carried almost entirely by charged particles, and has relatively manageable photon emissions at fusion conditions.
+One of the best physical mechanism for directly interacting with the plasma
 is inductive recovery: a coil-driven magnetic field compresses the
 plasma, and the plasma then expands against that field much as the gas
 in an engine expands against a piston.
@@ -28,56 +28,53 @@ customer. Markedly, it states a long-run ambition of electricity at
 Astera is set on investigating.
 
 Helion realizes inductive recovery in a pulsed linear device:
-capacitor-driven coils generate an external axial field, and the plasma
+coils generate an external axial field, and the plasma
 is formed within it as two field-reversed configuration (FRC)
 plasmoids. These are accelerated toward each other and merged, the
 collision converting their directed kinetic energy into ion heat. The
-resulting single hot FRC is then compressed to burn conditions by
+resulting single hot FRC is then compressed to fusion conditions by
 raising the external field. An important feature of the FRC is used
-here: radial and axial compression are coupled, and raising the
-external field does both. The fusion heat released at burn causes an
+here: radial and axial compression are coupled, so a radial compression of the FRC causes also an axial compression.
+The fusion heat released at burn causes an
 isobaric expansion. That expansion returns the driver energy and part
 of the fusion energy to the capacitor banks through the same coils.
 This is a Diesel-type thermodynamic cycle with an Atkinson
-over-expansion stroke.
+over-expansion stroke, because the FRC is allowed to expand past its initial state.
 
-This work is divided into the following parts: we describe Helion's
-device and subsystem requirements according to the available published
-material. We then price that device with these subsystems held at the
-state of the art. That is tier 1 - existing technology and citable
-records. Then, we take a step forward and consider tier 2 -
-extrapolations, and tier 3 - speculation. Six physics couplings are
-enforced on every quoted point, so that a fuel credit cannot be claimed
-without its radiation and tritium consequences, a recovery efficiency
-cannot be double-booked, and a shot cannot be costed in a chamber it
-would melt. For each tier, we perform design optimization over chamber
-geometry, wall class, shot yield, and burn mix, so the quoted minima are
-properties of the design space, not of an asserted operating point.
-
-This work uses the `1costingfe` bottom-up cost model, which
-uses publicly available data and labeled extrapolations. This open
-source code is available [here](https://github.com/1cFE/1costingfe),
+The costing uses the `1costingfe` bottom-up cost model, built on
+publicly available data and labeled extrapolations; the open-source
+code is available [here](https://github.com/1cFE/1costingfe),
 with detailed documentation
 [here](https://files.1cf.energy/1costingfe_paper.pdf).
 
-Records alone price the concept at about 173 $/MWh (218 $/MWh at the
-vendor's own configuration), above the vendor's implied point: the fuel
-cycle's recovery claim has no record, and its reversion outweighs every
-finance record. Defensible extrapolation supports about 41 $/MWh. The
-coherent floor, on full speculation, is 16.8 $/MWh at 1 GWe and 13.5
-$/MWh at 3 GWe. The $10/MWh target is not reached by any coherent stack,
+This work is divided into the following parts: in Section 2 we first
+describe Helion's device and its subsystem requirements from the
+available published material. In Section 3 we define four devices which share that
+architecture and differ only in the subsystem performance they are
+granted. The first, citable records, grants every subsystem what
+existing technology has demonstrated. The second grants the
+performance Helion's own materials imply, taken at face value. The
+third and fourth, extrapolations and speculation, relax the evidence
+standard in two labeled steps. We use the same financing,
+construction, and availability estimates for all four devices, enforce
+physics constraints on every quoted point, and optimize each device to
+its best cost. In Section 4 we report the four costs. Sections 5 and 6
+then develop the two
+load-bearing subsystems, the tritium fuel cycle and the recovery
+physics of the driver energy, each gated by a small set of unmeasured
+plasma properties that the developer's own next machine could resolve.
+
+The four devices form a descending ladder. The citable-records device
+prices the concept at about 173 $/MWh. The second device, Helion's own
+configuration granted its two unrecorded performance claims (the
+fourth nine of per-pulse fuel recovery and the axial share of the
+expansion work), reads 113.5 $/MWh. The extrapolation device supports
+about 41 $/MWh, and the speculation device sets the coherent floor:
+16.8 $/MWh at 1 GWe and 13.5 $/MWh at 3 GWe. The $10/MWh target is not reached by any coherent stack,
 including He-3 at zero price (10.9 $/MWh at 3 GWe). The floor is carried
 by site and support infrastructure (buildings, heat rejection, staffing,
 decommissioning) and by the tritium fuel cycle, not by the capacitor
 driver; the machine has no turbine island at all.
-
-Section 4 develops the ladder and its minima. Beyond the numbers, this
-work's contribution is structural: it locates the load-bearing
-subsystem of the concept in the tritium fuel cycle (Section 5) and in
-the recovery physics of the driver energy (Section 6), identifies the
-small set of unmeasured plasma properties that carry order-10 $/MWh
-each, and specifies the measurement protocol on the developer's own
-next machine that would resolve them.
 
 The fuel cycle is anchored to the vendor's own patent (US 11,469,003
 B2), whose operating table (n_D = 0.75e22 m^-3, 70 keV, and a
@@ -91,11 +88,10 @@ the exhaust loop of order 1e3-1e4 times before burning. Per-pulse
 isotope separation at the repetition rate and per-pass fuel recovery of
 0.9999 are therefore the load-bearing engineering claims, and per-pulse
 exhaust pumping becomes a first-order account (79 M$ at the floor). That
-recovery is graded, not assumed: the JET-ILW retention analogy (an
-analog argument, not a per-pass record) supports three nines at tier 1,
-the patent-implied fourth nine enters as a labeled extrapolation at tier
-2, and its reversion ties capacitor life as the largest single lever
-under the extrapolation-tier minimum (+43.9 $/MWh). A lower
+recovery is graded, not assumed: the JET-ILW retention analogy supports
+three nines, the patent-implied fourth enters only as a labeled
+extrapolation, and its reversion ties capacitor life as the largest
+single lever under the extrapolation minimum (+43.9 $/MWh). A lower
 reactor-point field is the dominant open risk: burnup falls as B^2, and
 a 10 T machine adds 6 $/MWh to the floor, a 5 T machine 32 $/MWh. The
 coils are priced along the machine's own expansion adiabat, so chamber
@@ -104,14 +100,14 @@ free. The fraction of the expansion work recovered is likewise derived,
 not assumed: each design's recovery is capped by its own chamber's
 adiabatic expansion ratio times the radial share of the boundary work,
 with the axial-channel capture that would lift that share to unity
-admitted only at tier 3. A residual accounting gap remains on the
+admitted only as speculation. A residual accounting gap remains on the
 recovery side: the plasma-thermal share of the driver energy, fixed by
 the FRC equilibrium at 0.30-0.71 of the delivered energy, can only
 return through the expansion channel, worth +3.2 to +7.4 $/MWh at the
-extrapolation-tier minimum.
+extrapolation minimum.
 
-Everything here is reproducible: the tier stacks are YAML configuration
-files, each figure is produced by a named script, and eighteen
+Everything here is reproducible: the four evidence stacks are YAML
+configuration files, each figure is produced by a named script, and nineteen
 regression tests pin the ladder to a fixed revision of the cost model
 (see Reproducibility).
 
@@ -142,7 +138,8 @@ number of Helion-class modules, with the repetition rate and module
 count solved jointly from the net-power target under a rep-rate ceiling.
 
 The fuel cycle is Helion's stated one (US 11,469,003 B2). Running deuterium-rich
-(dd_frac = 0.85 at the extrapolation tier and above), half the D-D
+(dd_frac = 0.85, the mix every design-optimized device chooses; the
+vendor configuration runs the leaner reconstructed 0.314), half the D-D
 reactions breed tritium. None of it is recycled into the burn
 (dhe3_f_T = 0 in the basis): the exhaust is pumped, isotope-separated,
 and the tritium is stored on getter beds to decay (12.3 yr half-life)
@@ -168,30 +165,33 @@ full shot-cycled recovery chain (driver bank, recovery store, switch
 stack) with a loud warning whenever the chain does not outlive the
 plant.
 
-**Evidence ladder.** Tier 1 (records): financing at 4.25% from a
-sovereign-backed generation precedent (Apostoleris et al. 2021), 2.5-year construction (Siemens Energy CCGT block precedent), 8%
-indirects (US DOE/NETL QGESS), availability 0.95 (US DOE geothermal
-fleet data, derated for bank-swap outages), per-pulse fuel
-recovery reverted from the vendor-implied 0.9999 to 0.999, the value
-the JET-ILW retention analogy supports (Brezinsek et al. 2013), and
-the recovery share held at the radial-only 0.8 of the adiabatic work
-partition. Tier 2 (labeled
-extrapolations): capacitor life 1e9 shots (the Pacific Fusion AMPS
-derating target; Langtry et al. 2025), the derived radial-only
-recovery at each machine's own chamber (Section 6), 3 Hz on a
-purchased divertor-class wall, the D-rich burn mix with its tritium
-plant, and fuel recovery 0.9999 (the patent-implied fourth nine). Tier 3 (labeled
-speculation): 10 Hz, composite 0.90 (the theory optimum with zero
-margin), capacitor capital at 0.1 $/J, shot life 1e10, He-3 at
-0.5 M$/kg, 80-year plant life. Every entry carries a source and grade
-in the evidence ledger (`docs/ledger.md`); no tier-2 entry is a
-measured record.
+**Evidence ladder.** All four devices share a record-sourced plant
+environment: financing at 4.25% from a sovereign-backed generation
+precedent (Apostoleris et al. 2021), 2.5-year construction (Siemens
+Energy CCGT block precedent), 8% indirects (US DOE/NETL QGESS), and
+availability 0.95 (US DOE geothermal fleet data, derated for bank-swap
+outages). The records device holds the two performance claims that
+have no record at their evidence-supported values: per-pulse fuel
+recovery 0.999, the value the JET-ILW retention analogy supports
+(Brezinsek et al. 2013), and the recovery share at the radial-only 0.8
+of the adiabatic work partition. The Helion device grants the vendor's
+0.9999 and the full share. The extrapolation stack adds labeled
+extrapolations on top of the records: capacitor life 1e9 shots (the
+Pacific Fusion AMPS derating target; Langtry et al. 2025), a 3 Hz
+ceiling with a purchasable divertor-class wall, and fuel recovery
+0.9999 (the patent-implied fourth nine, re-granted). The speculation
+stack adds labeled speculation: 10 Hz, composite 0.90 (the theory
+optimum with zero margin), capacitor capital at 0.1 $/J, shot life
+1e10, He-3 at 0.5 M$/kg, 80-year plant life. Every entry carries a
+source and grade in the evidence ledger (`docs/ledger.md`); no
+extrapolation entry is a measured record.
 
 **Coherence constraints.** Six couplings are enforced on every quoted
 point: (1) the radiated fraction is a function of the burn mix through a
 bremsstrahlung floor (f_rad = 0.28 at dd_frac 0.85, not the lean-mix
 0.05); (2) recovery efficiency is capped as the composite
-eta_dec x f_pdv (0.80 at tier 2, 0.90 at tier 3), because the only
+eta_dec x f_pdv (0.80 through the extrapolation grade, 0.90 at
+speculation), because the only
 published figure speaks to the product; (3) the wall must survive both
 its steady flux (within the purchased wall class) and its per-shot flash
 energy (under the tungsten millisecond-melt bound); (4) a D-rich mix
@@ -203,62 +203,65 @@ the patent basis the floor is 0.002 and the design's zero passes);
 (6) the expansion-work recovery fraction is derived per point, never asserted:
 f_pdv = min(claim, share x [1 - (V_i/V_f)^(2/3)]) with V_i the
 compressed flux volume at the 22 T basis field, V_f the chamber, and
-share the radial fraction of the boundary work (0.8 from tier 1, the
-free-expansion adiabatic partition; 1.0 at tier 3, by axial capture
-with switched end circuits or axial suppression with static end-field
-shaping, and 1.0 at the unchallenged vendor baseline). Two
+share the radial fraction of the boundary work (0.8 at the records and
+extrapolation grades, the free-expansion adiabatic partition; 1.0 at
+speculation, by axial capture with switched end circuits or axial
+suppression with static end-field shaping; and 1.0 at the Helion
+device, the unchallenged vendor claim). Two
 further audits, developed in Sections 5 and 6, close the fuel cycle and
 the driver-energy accounting.
 
-**Design search and reconciliation.** At each evidence level the
-operating point is the argmin of a scan over shot yield (tier 3 only;
-tier 2 keeps the cited shot), chamber length and radius, wall class, and
-burn mix, discarding any design that violates a constraint.
+**Design search and reconciliation.** Each device except Helion's own
+configuration is the argmin of a scan over shot yield (freed only at
+speculation; the records and extrapolation devices keep the cited
+shot), chamber length and radius, wall class, and burn mix, discarding
+any design that violates a constraint.
 Reconciliation then brackets each minimum with the model gaps it cannot
 price internally (HVDC-class switch duty, the tritium-plant band, the
 driver-thermalization derate) and its conservatisms (no thermal
 bottoming), yielding an honest band rather than a point.
 
-## 4. Results: the ladder, the minima, and what carries the floor
+## 4. Results: the four devices and what carries the floor
 
-| rung | 1 GWe ($/MWh) | 3 GWe ($/MWh) | contents |
+| device | 1 GWe ($/MWh) | 3 GWe ($/MWh) | stack and design |
 |---|---|---|---|
-| design baseline | 145.4 | 140.7 | Helion's implied point: 50 MJ driver, 101.4 MJ yield, 1 Hz, D-rich mix at its bremsstrahlung floor |
-| tier 1: records | 217.9 | 214.2 | finance (4.25%), 2.5 yr construction, 8% indirects, availability 0.95, fuel recovery reverted to the JET-analog 0.999, recovery share reverted to radial-only |
-| tier 2: extrapolations | 49.2 | 45.3 | cap life 1e9, radial-only recovery at the machine's own chamber, 3 Hz on a divertor-class wall, D-rich mix with tritium plant, fuel recovery 0.9999 (patent-implied) |
-| tier 3: speculation | 18.3 | 14.8 | 10 Hz, axial-channel capture, cap $/J 0.1, cap life 1e10, He-3 at 0.5 M$/kg, 80 yr |
+| citable records | 173.0 | 169.6 | fuel recovery 0.999 (JET analog), radial-only recovery share; optimum: the cited 101.4 MJ shot at 1 Hz in 10 m x 1.5 m panel-wall modules, D-rich mix with its tritium plant |
+| Helion's requirements | 113.5 | 110.5 | the vendor configuration (50 MJ driver, 101.4 MJ yield, 1 Hz, the reconstructed 0.314 mix) granted its two unrecorded claims: fuel recovery 0.9999, full recovery share |
+| extrapolations | 41.0 | 37.3 | records + capacitor life 1e9, a 3 Hz ceiling, a purchasable divertor-class wall, fuel recovery 0.9999 (patent-implied fourth nine); optimum: nine of the same modules at 2.9 Hz, panel wall |
+| speculation | 16.8 | 13.5 | extrapolations + 10 Hz, axial-channel capture, capacitors at 0.1 $/J and 1e10 shots, He-3 at 0.5 M$/kg, 80-year life; optimum: 300-750 MJ shots in 30 m x 1.5 m chambers |
 
-Design optimization at every tier, including tier 1,
-improves the rungs to **173.0 $/MWh** (tier 1: the D-rich mix with
-its tritium plant is already the records-only optimum),
-**41.0 $/MWh** (tier 2, 1 GWe: the cited 101.4 MJ shot in nine
-10 m x 1.5 m panel-wall modules at 2.9 Hz) and **16.8 / 13.5 $/MWh**
-(tier 3, 1 / 3 GWe: 300-750 MJ shots in 30 m x 1.5 m chambers). With
-the coils priced along the expansion adiabat, the design search trades
-length for radius: fat short chambers buy expansion volume with less
-active structure. Reconciliation bands: tier 2 within 31.4-48.8
-$/MWh, tier 3 within 15.6-18.1 $/MWh at 1 GWe.
+With the coils priced along the expansion adiabat, the design search
+trades length for radius: fat short chambers buy expansion volume with
+less active structure. Reconciliation brackets the extrapolation
+device within 31.4-48.8 $/MWh and the speculation device within
+15.6-18.1 $/MWh at 1 GWe.
 
-The record rung sits above the design baseline: reverting the vendor's
-per-pulse fuel recovery to the JET-analog three nines and the recovery
-share to radial-only costs more than every finance record saves, even
-after the tier-1 design optimization (173.0 $/MWh at the records-only
-optimum, against the 145.4 $/MWh vendor point). On evidence alone,
+The records device tops the ladder, and the reason is exactly two
+claims. The headline gap (173.0 against 113.5 $/MWh) cannot show that
+by itself, because the two devices are different machines; the
+controlled comparison is to take Helion's machine unchanged and revert
+only its two unrecorded claims to their record-supported values. That
+alone nearly doubles its cost, from 113.5 to 217.9 $/MWh; design
+freedom under the record stack (its optimum is already the D-rich mix
+with its tritium plant) buys back less than half of the increase, to
+173.0 $/MWh. The evidence premium is not diffuse conservatism but two
+specific, measurable claims: the fourth nine of per-pulse fuel
+recovery and the axial share of the expansion work. On evidence alone
 the fuel cycle is uneconomic; the descent begins when the recovery
-extrapolations are granted at tier 2. The baseline and record rungs are also dominated by scheduled
-replacement: the entire shot-cycled recovery chain is replaced on the
-capacitor-life schedule, about eight times over plant life at the
-1e8-shot record life.
+extrapolations are granted. The records and Helion devices are also dominated by
+scheduled replacement: the entire shot-cycled recovery chain is
+replaced on the capacitor-life schedule, about eight times over plant
+life at the 1e8-shot record life.
 
 ![The evidence ladder](figures/fig1_ladder.svg)
 
-*Figure 1: The evidence ladder at 1 and 3 GWe, each rung followed by
-its design-optimized minimum. The tier-1 rows sit above the design
-baseline because reverting the vendor's per-pulse fuel recovery and
-recovery share to their evidence-supported values outweighs every
-finance record.*
+*Figure 1: The four devices at 1 and 3 GWe, one machine per evidence
+grade. The ladder descends as unrecorded performance is granted; the
+records device sits above Helion's requirements because reverting the
+vendor's per-pulse fuel recovery and recovery share to their
+evidence-supported values is worth about 104 $/MWh.*
 
-One-at-a-time reversion from the tier-2 minimum ranks the levers:
+One-at-a-time reversion from the extrapolation device ranks the levers:
 
 | knob reverted | LCOE ($/MWh) | delta ($/MWh) |
 |---|---|---|
@@ -280,13 +283,13 @@ once capped as a composite, are worth little at the margin (an
 incoherent double-booking of eta_dec = 0.97 with f_pdv = 0.95 would
 claim tens of $/MWh and is excluded by construction).
 
-![Tornado from the tier-2 minimum](figures/fig2_tornado.svg)
+![Tornado from the extrapolation device](figures/fig2_tornado.svg)
 
-*Figure 2: One-at-a-time reversion of each tier-2 entry to its tier-1
-value, from the 41.0 $/MWh design-optimized minimum. Red bars are
+*Figure 2: One-at-a-time reversion of each extrapolation entry to its
+record value, from the 41.0 $/MWh extrapolation device. Red bars are
 favorable reversions, the signature of anti-record entries.*
 
-At the tier-3 minimum the capacitor-driver narrative is spent (the bank
+At the speculation device the capacitor-driver narrative is spent (the bank
 is 5 M$ of a 666 M$ reactor account) and the floor is carried by
 site and support infrastructure and by the fuel cycle (there is no
 turbine island; the heat-rejection and electrical-plant accounts below
@@ -307,7 +310,7 @@ are not a steam cycle):
 
 ![What carries the floor](figures/fig3_anatomy.svg)
 
-*Figure 3: Capital accounts carrying the tier-3 minimum. The driver
+*Figure 3: Capital accounts carrying the speculation device. The driver
 bank, the concept's narrative centerpiece, is the smallest bar; site
 infrastructure and the fuel cycle dominate.*
 
@@ -315,15 +318,15 @@ infrastructure and the fuel cycle dominate.*
 
 ### 5.1 Rates and inventory
 
-At the tier-3 minimum the single module runs 7.7e20 D-D and 4.5e20
+At the speculation device the single module runs 7.7e20 D-D and 4.5e20
 D-He3 reactions per second; only 1.4e20/s of the D-He3 burns are fed by
 purchased He-3, the rest by recycled bred He-3 (cumulative fusion
 probability 0.80). The module breeds tritium at half the D-D rate:
-0.55 mg per shot, 58 kg/yr. The tier-2 reference machine carries 248 MW of plant
-neutron power and breeds about 95 kg/yr. Store-for-decay fixes the
+0.55 mg per shot, 58 kg/yr. The extrapolation device carries 225 MW of plant
+neutron power and breeds about 86 kg/yr. Store-for-decay fixes the
 equilibrium inventory at production rate times the 17.8 yr mean life:
-about 1.7 tonnes of tritium, which is 1.6e10 Ci, about 550 kW of
-continuous decay heat, roughly 420x ITER's site authorization and 60x
+about 1.5 tonnes of tritium, which is 1.4e10 Ci, about 500 kW of
+continuous decay heat, roughly 380x ITER's site authorization and 55x
 the world's civilian tritium stock. The
 inventory is intrinsic to He-3 self-supply at this scale; shipping it to
 a central fuel facility relocates it (and can hold the reactor site near
@@ -405,13 +408,13 @@ unburned-fuel repurchase multiplier is 84x at per-pass recovery 0.99,
 9.3x at 0.999, and 1.8x at 0.9999, so four-nines per-pulse recovery
 and hertz-rate isotope separation are what the published fuel cycle
 actually requires, and the tritium plant is their price. The recovery is graded accordingly: the vendor-implied
-0.9999 stays in the design basis (the model default is the JET-analog
-0.999), tier 1 reverts to that three-nines analogy (an analog
-argument, not a per-pass record: JET campaign retention measures
+0.9999 stays in the Helion device (the model default is the JET-analog
+0.999), the records device reverts to that three-nines analogy (an
+analog argument, not a per-pass record: JET campaign retention measures
 co-deposited wall inventory over many recycles, not single-transit
 loss, and measures none of the separation slip a per-pulse
-reprocessing plant adds; Brezinsek et al. 2013), and tier 2 re-grants
-the fourth nine as a labeled extrapolation.
+reprocessing plant adds; Brezinsek et al. 2013), and the extrapolation
+stack re-grants the fourth nine as a labeled extrapolation.
 
 Away from the basis, the closure partitions the operating space into
 three regimes, each priced:
@@ -424,7 +427,8 @@ three regimes, each priced:
   burnup; it costs about 1 MeV per breeding event to the undirected
   channel and is measurable on Polaris.
 - **High burnup, thermalized tritons** (dhe3_f_T = 0.78 at burnup
-  0.15): the tier-2 rung reads 62.7 $/MWh and the tier-3 minimum
+  0.15): the extrapolation stack at the vendor chamber reads
+  62.7 $/MWh and the speculation device
   20.1 $/MWh, plant neutron power rises about 5x with a dominant
   14.1 MeV component, and the decay store shrinks to 0.2-0.3 t; these
   are floors, because the base wall audit checks surface heat only.
@@ -455,7 +459,7 @@ per reaction).
 
 ![The burnup axis](figures/fig4_burnup.svg)
 
-*Figure 4: LCOE at the tier-3 minimum machine across the per-pulse
+*Figure 4: LCOE at the speculation device across the per-pulse
 burnup axis, both species scaled together, under the two triton fates
 and three exhaust-recovery grades. The patent-density basis (dotted)
 is the hardest point for fuel recovery; the recovery grades converge
@@ -470,17 +474,17 @@ exposed package is levelized from the 14-MeV-equivalent neutron wall
 load (10 dpa per MW yr/m^2 in Fe-based structure; the 2.45 MeV D-D flux
 folded at 0.4) at tolerances of 20 dpa (the demonstrated RAFM database
 edge) and 50 dpa (the DEMO-class design target). The event carries both
-the wall and the close-coupled coils (106 + 14 M$ at the tier-3
-minimum), since nothing 0.10 m behind the wall outlives it. At the
+the wall and the close-coupled coils (106 + 14 M$ at the speculation
+device), since nothing 0.10 m behind the wall outlives it. At the
 patent basis the spectrum is pure 2.45 MeV D-D at a 14-MeV-equivalent
 load of 0.20 MW/m^2, and the replacement adder is modest
 (+0.3-1.2 $/MWh at 50-20 dpa). The damage story reopens only in the
 high-burnup counterfactuals: if the reactor-point density pushes
 per-pulse burnup toward the 0.1 regime with thermalized tritons, the
 all-in gap between prompt-loss and thermalized reaches 8-17 $/MWh,
-and at the tier-2 rung, whose wall is divertor-class at 2.5 M$/m^2,
-thermalized high-burnup replacement is prohibitive (+53 to
-+161 $/MWh). Keeping the tritium out of the burn is therefore free
+and on the extrapolation stack's divertor-class wall (2.5 M$/m^2, at
+the vendor chamber) thermalized high-burnup replacement is prohibitive
+(+53 to +161 $/MWh). Keeping the tritium out of the burn is therefore free
 insurance at the basis and worth double digits off it.
 
 Shielding cannot buy the machine out of this, because a pulsed
@@ -491,8 +495,9 @@ field implies about 0.26 m^3 of compression-section flux volume; a
 0.4 m shield under the compression coil multiplies the swept annulus
 by more than an order of magnitude, growing the store to several
 hundred MJ per pulse and dissipating tens of MJ per pulse at composite
-0.90: order 100 MW or more of recirculating loss at the tier-3 rep
-rate, and more than the module's output at the tier-2 composite. Eddy
+0.90: order 100 MW or more of recirculating loss at the speculation
+rep rate, and more than the module's output at the extrapolation
+composite. Eddy
 screening is the lesser problem (steel's skin depth at millisecond
 rise times is about 16 mm, so structure must be laminated; molten salt
 at about 200 S/m is magnetically transparent); the magnetized volume
@@ -540,8 +545,8 @@ Maybell Quantum agreements priced "at today's commercial market
 price"; TAE's unpriced Black Moon lunar supply option) sit at
 19-22 M$/kg on
 gram-to-kilogram volumes, 10x above the baseline price used here and 40x
-above the tier-3 entry, with every new entrant building toward the high
-price. At the observed spot the tier-2 minimum reads 150 $/MWh at the
+above the speculation entry, with every new entrant building toward the high
+price. At the observed spot the extrapolation device reads 150 $/MWh at the
 D-rich mix and 380 $/MWh lean under the model's accounting, against
 28.9 $/MWh at the full self-supply limit; the distance between those two numbers is
 the value of the crediting decision, coupled to Section 5.2 because the
@@ -572,11 +577,11 @@ a function of the separatrix-to-coil radius ratio alone,
 giving chi = 0.30 / 0.52 / 0.71 at x_s = 0.5 / 0.7 / 0.85. Fat FRCs
 are high-chi machines: good confinement physics pushes the derate up.
 The extra recirculating loss eta_dec chi (1 - f_pdv) p_driver is worth
-+3.2/+5.4/+7.4 $/MWh at the tier-2 minimum across that x_s span (the
-Q of order 2 machine circulates 1290 MW of driver power, and the
++3.2/+5.4/+7.4 $/MWh at the extrapolation device across that x_s span
+(the Q of order 2 machine circulates 1290 MW of driver power, and the
 radial-only f_pdv widens the uncaptured channel),
-+0.1 $/MWh at the tier-3 minimum, and order +10 $/MWh at the low-Q
-baseline rung. It is carried
++0.1 $/MWh at the speculation device, and order +10 $/MWh at the
+low-Q Helion device. It is carried
 as a reconciliation adder pending a model-level treatment.
 
 **The expansion-ratio bound, and the cycle it belongs to.** The
@@ -615,9 +620,10 @@ at gamma = 2 the lumped index would raise the cap; the channel-split
 Diesel-form ideal value 1-2 percentage points lower at the ratios
 used here (softened because the expansion work done during the burn
 pushes against the same crowbarred coil), so the enforced expression
-is a strict, slightly generous cap. Applied per point: the tier-2
-minimum's 10 m x 1.5 m chamber delivers a derived f_pdv of 0.78, and
-the tier-3 minimum's 30 m x 1.5 m chamber supports the claimed 0.947
+is a strict, slightly generous cap. Applied per point: the
+extrapolation device's 10 m x 1.5 m chamber delivers a derived f_pdv
+of 0.78, and
+the speculation device's 30 m x 1.5 m chamber supports the claimed 0.947
 (cap 0.989) only because the axial channel is granted there. The
 large chamber buys expansion ratio, not merely wall area, and
 recovery cannot be improved without more chamber.
@@ -644,7 +650,8 @@ can also be raised without switched circuits: static end-field
 gradients, which the published symmetric geometry's high-field end
 sections already provide, can suppress the axial channel and force
 the work radial, at the price of forced oblateness pressing on the
-tilt-stability boundary. The tier-2 to tier-3 recovery step is then
+tilt-stability boundary. The extrapolation-to-speculation recovery
+step is then
 exactly the claim that the axial channel is captured or suppressed,
 priced and measurable on the same shot sequence below.
 
@@ -658,7 +665,7 @@ ceiling; published excluded-flux radii pin chi per shot in the interim.
 
 ## 7. Plant architecture: modules, parks, and the small-plant penalty
 
-Two controlled sweeps at the tier-3 stack (constant gain, constant wall
+Two controlled sweeps at the speculation stack (constant gain, constant wall
 loading, driver and chamber scaled with module power) separate module
 count from plant size. **Module count at fixed plant size is nearly
 free, and mid-size modules carry a mild bonus**: a park of four
@@ -702,7 +709,7 @@ speculative stack.
 
 ## 8. What would have to be true to reach $10/MWh
 
-On top of the full tier-3 stack at 3 GWe (13.5 $/MWh), in decreasing order of
+On top of the full speculation stack at 3 GWe (13.5 $/MWh), in decreasing order of
 plausibility:
 
 - **He-3 at effectively zero cost** (10.9 $/MWh): a mature breeding
@@ -717,19 +724,19 @@ plausibility:
   reference fleet: the only mechanism that rewards the mass-produced
   small-unit strategy at all.
 
-None of these is in the evidence base at any tier. Within what this
-work can defend: records alone price the concept at about 173 $/MWh (above its own
-design baseline), defensible extrapolation supports about 41 $/MWh,
-and coherent speculation bottoms at 16.8 $/MWh (1 GWe) / 13.5 $/MWh
-(3 GWe).
+None of these is in the evidence base at any grade. Within what this
+work can defend: records alone price the concept at about 173 $/MWh,
+above the 113.5 $/MWh of Helion's own requirements; defensible
+extrapolation supports about 41 $/MWh, and coherent speculation
+bottoms at 16.8 $/MWh (1 GWe) / 13.5 $/MWh (3 GWe).
 
 ## 9. Caveats that survive into the headline
 
-- No tier-2 entry is a measured record: the two co-dominant levers
+- No extrapolation entry is a measured record: the two co-dominant levers
   (per-pulse fuel recovery, capacitor life) and the next two (rep
   rate, burn mix) are respectively an extrapolated analogy, a
   published target, a roadmap paraphrase, and a sweep endpoint.
-- The tier-3 stack is jointly, not just individually, heroic: 0.1 $/J
+- The speculation stack is jointly, not just individually, heroic: 0.1 $/J
   capacitors and 1e10-shot life together contradict the derating
   physics that connects capacitor cost to life; the composite sits at
   the theory optimum with zero margin; three-nines exhaust recovery
@@ -743,18 +750,18 @@ and coherent speculation bottoms at 16.8 $/MWh (1 GWe) / 13.5 $/MWh
 - Model gaps priced in the bands but excluded from the headline:
   HVDC-class switch duty, tritium-plant scope, driver thermalization.
   The main conservatism cuts the other way (no thermal bottoming in the
-  basis, worth -8.7 $/MWh at the tier-2 minimum).
+  basis, worth -8.7 $/MWh at the extrapolation device).
 
 ## 10. Relation to the Borealis mirror study
 
 Same framework, same evidence discipline, one ledger harmonized against
 the other (knob-by-knob divergence table in `docs/ledger.md`; every
 divergence carries a stated physics or technology reason). At the
-speculation tier the mirror is 2.4 $/MWh cheaper at 3 GWe (Borealis
-11.1 $/MWh, this work 13.5 $/MWh). At the extrapolation tier it is
+speculation grade the mirror is 2.4 $/MWh cheaper at 3 GWe (Borealis
+11.1 $/MWh, this work 13.5 $/MWh). At the extrapolation grade it is
 materially cheaper (16.9 against 41.0 $/MWh), chiefly because it needs no
 capacitor-life breakthrough, no tritium plant, and no rep-rate roadmap:
-its levers already sit in the evidence tiers. On the down-select axis
+its levers already sit at record and extrapolation grade. On the down-select axis
 "how much unpurchasable physics does the cheap number require", the
 mirror requires less; on the axis "how large is the speculative
 upside", the two are comparable.
@@ -783,7 +790,7 @@ gate:
    recovery (four nines required at the published operating point) fix
    the neutron spectrum, the wall-replacement schedule, and the
    fuel-cycle cost between them.
-3. **The recovery chain** (order 5 $/MWh at tier 2): the Polaris
+3. **The recovery chain** (order 5 $/MWh at the extrapolation grade): the Polaris
    vacuum / no-burn / burn shot triplet separates the circuit
    efficiency, the thermalization share chi(1 - f_pdv), and the
    fusion-inclusive composite in one campaign.
@@ -794,7 +801,7 @@ gate:
 The constructive reading for the concept: its floor is real and low by
 any thermal-plant standard, its architecture (factory modules, park
 deployment, swappable cores) is well matched to the failure modes the
-physics imposes, and the measurements that would move its ladder rungs
+physics imposes, and the measurements that would move its ladder
 from speculation to evidence are all available on hardware the
 developer is already building.
 
@@ -805,10 +812,11 @@ text from the configuration files in `config/`, against the `1costingfe`
 cost model at commit `44434d9` (which guarantees the cylinder wall
 audit, rep-rate sizing, shot-cycled replacement scope,
 physics-consistent recovery-store markup, and per-pulse fuel-cycle
-semantics this work relies on). Eighteen regression tests in
-`tests/test_study.py` pin every ladder rung, both coherent minima, the
-tritium-burn closure, and the chi(x_s) equilibrium anchors, and fail
-loudly if the model moves under this work.
+semantics this work relies on). Nineteen regression tests in
+`tests/test_study.py` pin all four devices at both plant sizes, the
+stack evaluations at the vendor configuration, the tritium-burn
+closure, and the chi(x_s) equilibrium anchors, and fail loudly if the
+model moves under this work.
 
 ## References
 

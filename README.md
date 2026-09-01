@@ -23,26 +23,30 @@ adiabat-priced coils, shot-cycled replacement scope).
 
 The study is a floor hunt: it answers "how low can this concept's LCOE be
 pushed, and what would have to be true", against Helion's public $10/MWh
-target. The quoted story starts at the design baseline and the evidence
-ladder applies records, then labelled extrapolations, then labelled
-speculation on top (`config/best_case.yaml`, `config/tier2.yaml`,
-`config/tier3.yaml`). Six physics-coherence constraints are enforced
+target. Four devices are priced, sharing one architecture and one
+record-sourced financing/availability basis and differing only in the
+subsystem performance they are granted: citable records, Helion's own
+requirements taken at face value, labelled extrapolations, and labelled
+speculation (`config/baseline.yaml` carries the common basis and the
+vendor point; the stacks are `config/best_case.yaml`,
+`config/tier2.yaml`, `config/tier3.yaml`). Six physics-coherence constraints are enforced
 on every quoted point: the radiated fraction is coupled to the burn mix
 through the bremsstrahlung floor, recovery efficiency is capped as a
 composite (eta_dec x f_pdv), the wall must survive its steady flux and
 per-shot flash energy in the wall class it is costed at, a D-rich burn
 mix carries its tritium-plant consequences, the in-plasma tritium burn
 is floored by the burnup closure, and f_pdv is derived per point from
-the chamber's expansion ratio times the radial work share. The minimum at each evidence
-level is then found by a constrained design-space scan (chamber size,
-wall class, yield, burn mix), not by asserting an operating point.
+the chamber's expansion ratio times the radial work share. Every
+device except the vendor configuration is a constrained design-space
+scan optimum (chamber size, wall class, yield, burn mix), not an
+asserted operating point.
 
-Headline: coherent tier-3 speculation bottoms at about 16.8 $/MWh at
-1 GWe and 13.5 $/MWh at 3 GWe; the $10 target is not reached by any
-internally consistent stack. Records alone price the concept at about
-173 $/MWh (above its own design baseline: the recovery reversions
-outweigh the finance records); defensible extrapolation about
-41 $/MWh. See `docs/writeup.md` for the narrative results
+Headline ladder at 1 GWe: records 173, Helion's requirements 113.5,
+extrapolations 41.0, speculation 16.8 $/MWh (13.5 at 3 GWe); the $10
+target is not reached by any internally consistent stack. The records
+device tops the ladder because the vendor's per-pulse fuel recovery
+and recovery-share claims have no records and their reversion is worth
+about 104 $/MWh. See `docs/writeup.md` for the narrative results
 and `docs/ledger.md` for record-by-record sourcing, the tornado ranking,
 and the knob-by-knob consistency audit against the sister study
 `borealis_mirror_tea`.
@@ -81,7 +85,7 @@ cd scripts
 python3 run_baseline.py    # design-basis point (Helion's implied point)
 python3 tiers.py           # the evidence ladder at 1 and 3 GWe
 python3 coherent_min.py    # constrained minimum hunt (the headline numbers)
-python3 tornado.py         # one-at-a-time reversion from the tier-2 minimum
+python3 tornado.py         # one-at-a-time reversion from the extrapolation device
 python3 he3_scan.py        # He-3 price x burn-mix sweep
 python3 locus_scan.py      # (max_f_rep, yield) surface with coherence flags
 python3 module_scan.py     # module-count vs standalone-plant-size sweeps
