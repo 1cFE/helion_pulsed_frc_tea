@@ -370,7 +370,7 @@ an explicit leap. See `config/tier3.yaml` for the per-knob notes.
 | cap_shot_lifetime | 1e10 | required for coherence with 10 Hz; no source at any price; jointly heroic with the $/J entry below |
 | eta_dec x f_pdv | 0.95 x 0.947 = 0.90 | the theory-optimal composite taken at face value, zero engineering margin; f_pdv 0.947 additionally claims capture of the axial expansion channel (about 1/5 of boundary work), which the tier-2 radial-only bound excludes. The source figure (Kirtley DPP24, 'optimal burn cycles exceeding 90%') is unreproducible: its numerator is independently verified but its input-accounting denominator is defined in neither slide nor talk (docs/sources/kirtley_dpp24_formulas.md) |
 | c_cap_allin_per_joule | 0.1 | below the model's own documented range floor; contradicts the derating physics that buys the cap life above |
-| u_he3 | 5e5 $/kg | no fleet-scale He-3 market exists at any price. The only observed transactions are gram-to-kilogram scale at 19-22 M$/kg (2024 spot about $2,500/L per Edelgas; Interlune's 2025 DOE and Maybell Quantum agreements priced "at approximately today's commercial market price"; TAE's 2026 Black Moon lunar supply option discloses no price). This entry is 40x below every observed price, and the new entrants (lunar: Interlune, Black Moon; terrestrial: Pulsar Helium) are building toward the high price, not under it. |
+| u_he3 | 5e5 $/kg | no fleet-scale He-3 market exists at any price. The only observed transactions are gram-to-kilogram scale at 19-22 M$/kg (2024 spot about $2,500/L per Edelgas; Interlune's 2025 DOE and Maybell Quantum agreements priced "at approximately today's commercial market price"; TAE's 2026 Black Moon lunar supply option discloses no price). This entry is 40x below every observed price, and the new entrants (lunar: Interlune, Black Moon; terrestrial: Pulsar Helium) are building toward the high price, not under it. A dedicated deuterium breeder built from the same module (`scripts/breeder_loop.py`; writeup Section 5.6) prices the He-3 each device buys at 2.1-2.3 M$/kg on the records shot, 12-14 M$/kg on the vendor's, 0.8-1.1 M$/kg at the extrapolation grade and 0.2-0.7 M$/kg at speculation (1.27x more once the decay wait is financed): the baseline 2e6 is reproduced at the records grade, unexplainable at the vendor grade, conservative at the extrapolation grade, and this entry sits inside the speculation-grade band. |
 | dec_staged_recovery_factor | 0.5 | patent's unquantified "net reduction in cost and size", optimistic edge |
 | c_inv_per_kw_net | 50 $/kW | small lever |
 | multi_unit_labor_factor | 0.80 | small lever |
@@ -471,15 +471,16 @@ fraction (0.80 at the per-pulse basis: He-3 burns out of the loop 3.3x
 faster per pass than it leaks), but the decay store's He-3 return,
 0.42 atoms per primary event and equal to the prompt branch, is never
 netted against the purchased 1 - dd_frac per event. Without the decay
-return the machine imports about 45 kg/yr; crediting it flips the
+return the machine imports about 38 kg/yr; crediting it flips the
 plant to a net exporter. The u_he3 = 0 row (28.9 $/MWh) is the full
 steady-state self-supply limit. The distance between
 those two readings, 28.9 vs 150 at the same machine, is the value of an
 open accounting question: the study prices the decay store's capital,
 inventory, and licensing consequences but does not credit its product,
 which is conservative-incoherent in the same sense constraint 4 forbids
-optimistic-incoherence. Worth about 8 $/MWh at the study's u_he3 and
-80+ at the observed spot; item 6 below.
+optimistic-incoherence. Worth 12.1 $/MWh at the study's u_he3 (the whole
+purchased line, since the return exceeds the purchase) and about 120 at
+the observed spot; item 6 below.
 
 **The $10/MWh target is not reached by any coherent stack in this study.**
 The closest approaches: 13.5 at 3 GWe on full speculation, and 10.9
@@ -597,10 +598,17 @@ damage scan nor CAS72 currently prices.
    NOAK operation may net the decay store's He-3 return against primary
    D-He3 burn (costingfe credits prompt bred He-3 via the recycle
    fraction but charges 1 - dd_frac purchased He-3 per event with no
-   decay return). At the study's u_he3 this is an 8 $/MWh question; at
+   decay return). At the study's u_he3 this is a 12 $/MWh question, the
+   whole purchased line, since the return exceeds the purchase; at
    the observed 19-22 M$/kg spot it decides whether the concept works at
    all outside full self-sufficiency. Coupled to item 5: the decay
-   return only exists if the tritium survives the pulse.
+   return only exists if the tritium survives the pulse. The two-machine
+   embodiment (dedicated pure-D breeders, `scripts/breeder_loop.py`,
+   writeup Section 5.6) prices the decay return with the breeder's whole
+   cost inside the loop: a wash against self-supply from the
+   extrapolation grade down, dearer than purchased He-3 on the vendor
+   shot. The in-account crediting question for the self-supply device
+   stays open.
 7. The compression-field point: a stated reactor-point field (the
    basis is the patent's 22 T; each halving of B quarters the per-pulse
    burnup and tightens the recovery-nines requirement), and a fatigue
