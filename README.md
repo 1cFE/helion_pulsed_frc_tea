@@ -41,7 +41,7 @@ device except the vendor configuration is a constrained design-space
 scan optimum (chamber size, wall class, yield, burn mix), not an
 asserted operating point.
 
-Headline ladder at 1 GWe: records 173, Helion's requirements 113.5,
+Headline ladder at 1 GWe: records 173, Helion's requirements 118.6,
 extrapolations 41.0, speculation 16.8 $/MWh (13.5 at 3 GWe); the $10
 target is not reached by any internally consistent stack. The records
 device tops the ladder because the vendor's per-pulse fuel recovery

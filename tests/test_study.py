@@ -125,10 +125,10 @@ def test_helion_requirements_device(model, base_cfg):
     # the vendor configuration on the common plant-environment basis
     # (financing and availability shared by all four devices)
     diag = _ladder_lcoe(model, base_cfg)
-    assert diag["lcoe"] == pytest.approx(113.5, abs=0.2)
-    assert diag["n_mod"] == 24
+    assert diag["lcoe"] == pytest.approx(118.6, abs=0.2)
+    assert diag["n_mod"] == 28
     _, diag3 = run(model, dict(base_cfg["forward"], net_electric_mw=3000.0))
-    assert diag3["lcoe"] == pytest.approx(110.5, abs=0.2)
+    assert diag3["lcoe"] == pytest.approx(114.1, abs=0.2)
 
 
 def test_records_device(model, base_cfg):
@@ -148,7 +148,7 @@ def test_records_device(model, base_cfg):
 
 def test_tier1_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg, "best_case.yaml")
-    assert diag["lcoe"] == pytest.approx(217.9, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(227.3, abs=0.2)
 
 
 def test_tier2_rung(model, base_cfg):
@@ -206,8 +206,12 @@ def test_tier3_coherent_minimum(model, base_cfg):
 
 
 def test_tier_stacks_are_coherent(model, base_cfg):
-    """Every published rung must pass its own tier's coherence check."""
-    fwd = dict(base_cfg["forward"])
+    """Every published rung must pass its own tier's coherence check. The
+    records stack evaluated on the vendor's own 0.5 m chamber is a
+    controlled comparison, not a published device, and sits a few percent
+    over the wall flash bound there (the reverted recovery share dumps more
+    conversion waste on the wall), which is one reason the records device
+    moves to fat chambers."""
     for cfgs, tier in ((("best_case.yaml",), "tier2"),
                        (("best_case.yaml", "tier2.yaml"), "tier2"),
                        (TIER_CONFIGS, "tier3")):
@@ -215,7 +219,11 @@ def test_tier_stacks_are_coherent(model, base_cfg):
         for c in cfgs:
             apply_records(f, c)
         _, diag = run(model, f)
-        assert not coherence_violations(f, diag, tier), (cfgs, tier)
+        violations = coherence_violations(f, diag, tier)
+        if cfgs == ("best_case.yaml",):
+            assert violations and all("flash" in v for v in violations), violations
+        else:
+            assert not violations, (cfgs, tier)
 
 
 def test_tritium_in_pulse_burn_anchors():

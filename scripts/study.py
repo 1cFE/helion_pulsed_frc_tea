@@ -38,10 +38,13 @@ OUTPUT_DIR = Path(__file__).resolve().parents[1] / "outputs"
 # --- coherence constants (sources: docs/red_team_review.md) -----------------
 
 # Bremsstrahlung-consistent radiated fraction vs burn mix, at the study's own
-# calibration (baseline f_rad 0.163 at dd_frac 0.314 implies T_i about
-# 60-70 keV at T_e = T_i/2; Bosch-Hale reactivities + non-relativistic
-# bremsstrahlung). Linear interpolation between the review's two computed
-# anchors; relativistic corrections would raise it another 10-25%.
+# calibration: the blog-derived pair f_rad 0.163 at dd_frac 0.314 (a 3:1
+# D:He-3 plasma at its bremsstrahlung minimum) implies T_i about 60-70 keV
+# at T_e = T_i/2 under Bosch-Hale reactivities + non-relativistic
+# bremsstrahlung. Linear interpolation between the review's two computed
+# anchors; relativistic corrections would raise it another 10-25%. The
+# vendor's own point (baseline.yaml: 0.23 at 0.488, T_e = T_i) sits above
+# this floor, as a floor requires.
 _F_RAD_ANCHORS = ((0.314, 0.163), (0.85, 0.28))
 
 # Composite plasma-to-electricity recovery cap, eta_dec * f_pdv. The only
@@ -75,7 +78,10 @@ Q_LIM = {"panel": 2.0, "hhf": 10.0, "beam_dump": 20.0}
 # adder is a consequence, not an identity.
 TRITIUM_FIXED_MUSD = 50.0
 TRITIUM_MUSD_PER_MW_NEUTRON = 0.657
-DD_FRAC_TRITIUM_THRESHOLD = 0.5
+# The adder fires from the vendor's own catalyzed mix upward: the basis fuel
+# cycle (patent He3/D = 0.158, dd_frac 0.488 at 70 keV) stores bred tritium
+# by design, so any device at or above it is a bulk tritium facility.
+DD_FRAC_TRITIUM_THRESHOLD = 0.488
 
 # Chamber-coupled recovery bound (coherence constraint 6). The compressed
 # flux volume is estimated as all delivered driver energy stored at the
@@ -151,7 +157,7 @@ def run(model: CostModel, fwd: dict, tritium_adder: bool = True):
     fwd["f_pdv"] = min(f_pdv_claim, share * cap)
     overrides = None
     tritium_musd = 0.0
-    if tritium_adder and fwd.get("dhe3_dd_frac", 0.131) > DD_FRAC_TRITIUM_THRESHOLD:
+    if tritium_adder and fwd.get("dhe3_dd_frac", 0.131) >= DD_FRAC_TRITIUM_THRESHOLD:
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             probe = model.forward(size_from_power=True, **fwd)

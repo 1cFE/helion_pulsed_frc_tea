@@ -42,17 +42,21 @@ forward:
   indirect_fraction: 0.08
   noak: true
 
-  # --- Burn point (the D-rich direction Helion's own materials describe) ---
-  # dhe3_dd_frac 0.314 with f_rad 0.163: the D-rich grounding point from the
-  # design doc. The pair is CALIBRATION-CONSISTENT: 0.163 at mix 0.314
-  # implies T_i about 60-70 keV (T_e = T_i/2) under Bosch-Hale + brems,
-  # which anchors the f_rad_floor() coupling every other burn mix must obey.
-  # (The concept YAML's shipped default, f_rad 0.05 at dd_frac 0.131, is
-  # itself below the bremsstrahlung floor; this baseline does not use it.)
+  # --- Burn point: the vendor's own (US 11,469,003 B2 operating table) ---
+  # The patent's tritium-removal column is a self-fueled catalyzed D-D
+  # plasma: He3/D = 0.158, n_D 0.75e22 m^-3, T_i = T_e = 70 keV, B = 22 T,
+  # bremsstrahlung fraction 0.23, neutron fraction 0.06, 72 MW at 1 Hz.
+  # dhe3_dd_frac is the D-D share of primary fusion events by count, not an
+  # ion ratio: He3/D = 0.158 at 70 keV (Bosch-Hale) is 0.488. f_rad 0.23 is
+  # the patent's own bremsstrahlung fraction at T_e = T_i; it sits above the
+  # study's f_rad_floor() at this mix (0.20, calibrated with T_e = T_i/2 on
+  # the blog-derived pair 0.163 at 0.314), so the vendor point is the more
+  # conservative of the two. (The concept YAML's shipped default, f_rad 0.05
+  # at dd_frac 0.131, is below the floor; this baseline does not use it.)
   # Vendor-implied per-pulse exhaust recovery (the closed-cycle fourth nine,
   # US 11,469,003 B2); the model default is the JET-ILW-analog 0.999, so the
   # vendor point carries its own value explicitly. Tier 1 reverts it, tier 2
   # re-grants it as a labelled extrapolation.
   fuel_recovery: 0.9999
-  dhe3_dd_frac: 0.314
-  f_rad: 0.163
+  dhe3_dd_frac: 0.488
+  f_rad: 0.23

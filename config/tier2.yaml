@@ -47,7 +47,7 @@ records:
 
   f_rad:
     value: 0.28
-    source: "Bremsstrahlung-consistent radiated fraction at dd_frac 0.85 under the study calibration (baseline 0.163 at 0.314 -> T_i 60-70 keV; Bosch-Hale + non-relativistic brems; relativistic corrections raise it further). Replaces the withdrawn 0.05, which was below the physical floor."
+    source: "Bremsstrahlung-consistent radiated fraction at dd_frac 0.85 under the study calibration (the blog-derived pair 0.163 at 0.314 -> T_i 60-70 keV; Bosch-Hale + non-relativistic brems; relativistic corrections raise it further). Replaces the withdrawn 0.05, which was below the physical floor."
   fuel_recovery:
     value: 0.9999
     source: "Labelled extrapolation, one nine beyond the JET-ILW retention record: the patent closed fuel cycle (US 2017/0011811) implies four-nines per-pulse recovery for the He-3 economy to close, and the physical argument (saturated walls, helium-dominated exhaust, direct re-injection without full reprocessing) points the right direction. No demonstration at any scale; each nine is first-order in the fuel line."
