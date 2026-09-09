@@ -26,20 +26,24 @@ forward:
   # --- Common plant-environment basis (shared by all four priced devices) ---
   # Financing and availability are not device properties: every rung is
   # financed on the same terms, so the ladder compares physics and
-  # technology, not interest rates. Sources (graded in docs/ledger.md):
-  # 4.25% nominal WACC (Apostoleris et al. 2021, sovereign-backed
-  # long-term-offtake generation analog) against the 2% Fed longer-run
-  # inflation backdrop; 2.5 yr construction (Siemens Energy 1200 MWe CCGT
-  # block in about 30 months); 8% EPCM indirects (US DOE/NETL QGESS low
-  # end); availability 0.95 (US DOE geothermal baseload analog derated
-  # for staggered capacitor-bank swaps; diverges from Borealis 0.98 with
-  # that stated technology reason).
+  # technology, not interest rates. The environment is the series
+  # convention, in constant dollars (real framing: inflation_rate 0, so
+  # capital, replacements, and operating costs are all discounted at
+  # one real rate). Sources (docs/ledger.md): 7% real discount rate
+  # (IEA/NEA Projected Costs of Generating Electricity 2020, central
+  # case); 2.5 yr construction (Siemens Energy 1200 MWe CCGT block in
+  # about 30 months); EPCM indirects 8% of direct cost (US DOE/NETL
+  # QGESS low end), entered as 0.192 because the model scales CAS30 by
+  # construction_time_yr / 6 yr and the NETL fraction already belongs to
+  # a short build; availability 0.95 (US DOE geothermal baseload analog
+  # derated for staggered capacitor-bank swaps; diverges from Borealis
+  # 0.98 with that stated technology reason).
   availability: 0.95
   lifetime_yr: 30.0           # standard TEA book life; 80 yr is an ANTI-record here (see ledger)
   construction_time_yr: 2.5
-  interest_rate: 0.0425
-  inflation_rate: 0.02
-  indirect_fraction: 0.08
+  interest_rate: 0.07         # real; IEA/NEA 2020 central case
+  inflation_rate: 0.0         # constant-dollar framing
+  indirect_fraction: 0.192    # 8% effective at 2.5 yr (CAS30 = f x CAS20 x T/6)
   noak: true
 
   # --- Burn point: the vendor's own (US 11,469,003 B2 operating table) ---

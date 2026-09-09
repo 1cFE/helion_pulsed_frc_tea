@@ -89,7 +89,7 @@ _INTERCEPT_MWE = 250.0
 DEVICES = {
     "records": dict(configs=("best_case.yaml",),
                     overrides=dict(dhe3_dd_frac=0.85, f_rad=0.28, chamber_length=10.0,
-                                   plasma_t=1.5, r_bore=1.6, fw_class="panel")),
+                                   plasma_t=1.0, r_bore=1.1, fw_class="panel")),
     "helion": dict(configs=(), overrides={}),
     "extrap": dict(configs=("best_case.yaml", "tier2.yaml"),
                    overrides=dict(chamber_length=10.0, plasma_t=1.5, r_bore=1.6,

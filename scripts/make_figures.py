@@ -59,7 +59,7 @@ def fig1_ladder(model, cfg):
     # speculation devices are their stacks' design-optimized machines;
     # Helion's requirements is the vendor configuration on the design basis.
     TIER1_MIN = dict(dhe3_dd_frac=0.85, f_rad=0.28, chamber_length=10.0,
-                     plasma_t=1.5, r_bore=1.6, fw_class="panel")
+                     plasma_t=1.0, r_bore=1.1, fw_class="panel")
     # The speculation design is power-dependent: the 500 MJ single-module
     # machine trips the wall audit at 3 GWe when the module count snaps, so
     # the 3 GWe bar uses the coherent 200 MJ design (coherent_min.py footer).

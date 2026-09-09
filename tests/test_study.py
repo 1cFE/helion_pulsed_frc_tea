@@ -125,10 +125,10 @@ def test_helion_requirements_device(model, base_cfg):
     # the vendor configuration on the common plant-environment basis
     # (financing and availability shared by all four devices)
     diag = _ladder_lcoe(model, base_cfg)
-    assert diag["lcoe"] == pytest.approx(118.6, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(121.4, abs=0.2)
     assert diag["n_mod"] == 28
     _, diag3 = run(model, dict(base_cfg["forward"], net_electric_mw=3000.0))
-    assert diag3["lcoe"] == pytest.approx(114.1, abs=0.2)
+    assert diag3["lcoe"] == pytest.approx(116.9, abs=0.2)
 
 
 def test_records_device(model, base_cfg):
@@ -138,22 +138,22 @@ def test_records_device(model, base_cfg):
     fwd = dict(base_cfg["forward"])
     apply_records(fwd, "best_case.yaml")
     fwd.update(dhe3_dd_frac=0.85, f_rad=0.28, chamber_length=10.0,
-               plasma_t=1.5, r_bore=1.6, fw_class="panel")
+               plasma_t=1.0, r_bore=1.1, fw_class="panel")
     _, diag = run(model, fwd)
-    assert diag["lcoe"] == pytest.approx(173.0, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(172.3, abs=0.2)
     assert not coherence_violations(fwd, diag, "tier2")
     _, diag3 = run(model, dict(fwd, net_electric_mw=3000.0))
-    assert diag3["lcoe"] == pytest.approx(169.6, abs=0.2)
+    assert diag3["lcoe"] == pytest.approx(168.7, abs=0.2)
 
 
 def test_tier1_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg, "best_case.yaml")
-    assert diag["lcoe"] == pytest.approx(227.3, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(206.2, abs=0.2)
 
 
 def test_tier2_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg, "best_case.yaml", "tier2.yaml")
-    assert diag["lcoe"] == pytest.approx(49.2, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(55.9, abs=0.2)
     # D-rich mix carries its plant; the adder is unit-priced
     # (50 M$ + 0.657 M$/MW of plant neutron power), so the rung's value is a
     # consequence of its throughput, not an identity
@@ -172,7 +172,7 @@ def test_tritium_adder_scales_with_throughput(model, base_cfg):
 
 def test_tier3_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg, *TIER_CONFIGS)
-    assert diag["lcoe"] == pytest.approx(18.3, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(20.3, abs=0.2)
 
 
 def test_tier2_coherent_minimum(model, base_cfg):
@@ -181,10 +181,10 @@ def test_tier2_coherent_minimum(model, base_cfg):
     apply_records(fwd, "tier2.yaml")
     fwd.update(chamber_length=10.0, plasma_t=1.5, r_bore=1.6, fw_class="panel")
     _, diag = run(model, fwd)
-    assert diag["lcoe"] == pytest.approx(41.0, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(45.1, abs=0.2)
     assert not coherence_violations(fwd, diag, "tier2")
     _, diag3 = run(model, dict(fwd, net_electric_mw=3000.0))
-    assert diag3["lcoe"] == pytest.approx(37.3, abs=0.2)
+    assert diag3["lcoe"] == pytest.approx(41.1, abs=0.2)
 
 
 def test_tier3_coherent_minimum(model, base_cfg):
@@ -194,14 +194,14 @@ def test_tier3_coherent_minimum(model, base_cfg):
     fwd.update(yield_per_shot_mj=500.0, chamber_length=30.0, plasma_t=1.5,
                r_bore=1.6, fw_class="panel")
     _, diag = run(model, fwd)
-    assert diag["lcoe"] == pytest.approx(16.8, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(18.6, abs=0.2)
     assert not coherence_violations(fwd, diag, "tier3")
     assert diag["e_flash_mj_m2"] < E_FLASH_MELT_MJ_M2
     # the 3 GWe park uses the 200 MJ design: larger shots trip the wall
     # audit once the integer module count snaps down
     fwd3 = dict(fwd, yield_per_shot_mj=200.0, net_electric_mw=3000.0)
     _, diag3 = run(model, fwd3)
-    assert diag3["lcoe"] == pytest.approx(13.5, abs=0.2)
+    assert diag3["lcoe"] == pytest.approx(15.4, abs=0.2)
     assert not coherence_violations(fwd3, diag3, "tier3")
 
 

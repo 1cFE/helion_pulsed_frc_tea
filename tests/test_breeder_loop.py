@@ -99,15 +99,15 @@ def test_two_machine_economy_pins(helion, extrap):
     lean, _ = run(model, dict(fwd, dhe3_dd_frac=0.314, f_rad=f_rad_floor(0.314), u_he3=0.0))
     br = breeder_module(model, res, "extract")
     loop = close_loop(lean, br, per_module_costs(res), "rpe", res.params["interest_rate"])
-    assert loop["eq"]["lcoe"] == pytest.approx(156.2, abs=0.2)
-    assert loop["eq"]["he3_musd_kg"] == pytest.approx(5.64, abs=0.02)
+    assert loop["eq"]["lcoe"] == pytest.approx(178.8, abs=0.2)
+    assert loop["eq"]["he3_musd_kg"] == pytest.approx(6.49, abs=0.02)
 
     model, fwd, res = extrap
     lean, _ = run(model, dict(fwd, dhe3_dd_frac=0.131, f_rad=f_rad_floor(0.131), u_he3=0.0))
     br = breeder_module(model, res, "extract")
     loop = close_loop(lean, br, per_module_costs(res), "rpe", res.params["interest_rate"])
-    assert loop["eq"]["lcoe"] == pytest.approx(33.8, abs=0.2)
-    assert loop["eq"]["he3_musd_kg"] == pytest.approx(0.75, abs=0.02)
+    assert loop["eq"]["lcoe"] == pytest.approx(42.5, abs=0.2)
+    assert loop["eq"]["he3_musd_kg"] == pytest.approx(1.00, abs=0.02)
 
 
 def test_neutron_power_per_he3_bred_is_the_dd_branch_identity(extrap):
@@ -159,10 +159,10 @@ def test_unit_cost_pins(helion, extrap):
     model, fwd, res = helion
     br = breeder_module(model, res, "extract")
     u, lcoe = device_at_breeder_price(model, fwd, res, br, per_module_costs(res), "rpe", 1.0)
-    assert u == pytest.approx(7.66e6, rel=0.01)
-    assert lcoe == pytest.approx(219.3, abs=0.3)
+    assert u == pytest.approx(8.22e6, rel=0.01)
+    assert lcoe == pytest.approx(204.2, abs=0.3)
     model, fwd, res = extrap
     br = breeder_module(model, res, "extract")
     u, lcoe = device_at_breeder_price(model, fwd, res, br, per_module_costs(res), "rpe", 1.0)
-    assert u == pytest.approx(0.76e6, rel=0.01)
-    assert lcoe == pytest.approx(33.5, abs=0.2)
+    assert u == pytest.approx(1.02e6, rel=0.01)
+    assert lcoe == pytest.approx(40.7, abs=0.2)

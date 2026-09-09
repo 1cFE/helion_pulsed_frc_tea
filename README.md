@@ -24,7 +24,9 @@ adiabat-priced coils, shot-cycled replacement scope).
 The study is a floor hunt: it answers "how low can this concept's LCOE be
 pushed, and what would have to be true", against Helion's public $10/MWh
 target. Four devices are priced, sharing one architecture and one
-record-sourced financing/availability basis and differing only in the
+plant environment (the series convention: 7% real discount rate in
+constant dollars, held fixed so the ladder compares technology, not
+financing) and differing only in the
 subsystem performance they are granted: citable records, Helion's own
 requirements taken at face value, labelled extrapolations, and labelled
 speculation (`config/baseline.yaml` carries the common basis and the
@@ -41,12 +43,12 @@ device except the vendor configuration is a constrained design-space
 scan optimum (chamber size, wall class, yield, burn mix), not an
 asserted operating point.
 
-Headline ladder at 1 GWe: records 173, Helion's requirements 118.6,
-extrapolations 41.0, speculation 16.8 $/MWh (13.5 at 3 GWe); the $10
+Headline ladder at 1 GWe: records 172, Helion's requirements 121.4,
+extrapolations 45.1, speculation 18.6 $/MWh (15.4 at 3 GWe); the $10
 target is not reached by any internally consistent stack. The records
 device tops the ladder because the vendor's per-pulse fuel recovery
 and recovery-share claims have no records and their reversion is worth
-about 104 $/MWh. See `docs/writeup.md` for the narrative results
+about 85 $/MWh. See `docs/writeup.md` for the narrative results
 and `docs/ledger.md` for record-by-record sourcing, the tornado ranking,
 and the knob-by-knob consistency audit against the sister study
 `borealis_mirror_tea`.
