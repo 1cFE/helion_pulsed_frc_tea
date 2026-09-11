@@ -61,7 +61,7 @@ def sweep(model, fwd, plant_of_module):
         plant = plant_of_module(module)
         r, d = run(model, scaled(fwd, module, plant))
         c = r.costs
-        mwh = plant * 8760 * fwd["availability"]
+        mwh = plant * 8760 * float(r.params["availability"])
         rows.append(dict(
             module_mwe=module,
             plant_mwe=plant,

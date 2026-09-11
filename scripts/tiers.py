@@ -10,10 +10,13 @@ flagged in the output rather than silently reported.
 import csv
 
 from study import (
+    DEVICE_ORDER,
     OUTPUT_DIR,
+    PLANT_SIZES_MWE,
     apply_records,
     build_model,
     coherence_violations,
+    device_fwd,
     load_config,
     run,
 )
@@ -65,6 +68,35 @@ def ladder():
     return rows
 
 
+def devices():
+    """The four writeup devices at both plant sizes, each also priced at the
+    design-basis 7% real rate with everything else as the rung has it, so
+    the financing part of each rung (lcoe - lcoe_at_7pct) is quotable."""
+    model = build_model(load_config("baseline.yaml"))
+    rows = []
+    for name, label in DEVICE_ORDER:
+        for p in PLANT_SIZES_MWE:
+            _, fwd = device_fwd(name, p)
+            _, d = run(model, fwd)
+            _, d7 = run(model, dict(fwd, interest_rate=0.07))
+            rows.append(dict(
+                device=label, plant_mwe=p, lcoe=round(d["lcoe"], 1),
+                lcoe_at_7pct=round(d7["lcoe"], 1),
+                financing_part=round(d["lcoe"] - d7["lcoe"], 1),
+                interest_rate=fwd["interest_rate"], lifetime_yr=fwd["lifetime_yr"],
+                availability=round(d["availability"], 3),
+                outage_routine=round(d["outage_routine"], 4),
+                outage_bank=round(d["outage_bank"], 4),
+                outage_wall=round(d["outage_wall"], 4),
+                t_bank_yr=round(d["t_bank_yr"], 1), t_wall_yr=round(d["t_wall_yr"], 1),
+                lcoe_at_a085=round(run(model, dict(fwd, availability=0.85))[1]["lcoe"], 1),
+                lcoe_at_a095=round(run(model, dict(fwd, availability=0.95))[1]["lcoe"], 1),
+                n_mod=d["n_mod"], f_rep_hz=round(d["f_rep_hz"], 2),
+                tritium_adder_musd=round(d["tritium_adder_musd"], 1),
+            ))
+    return rows
+
+
 if __name__ == "__main__":
     rows = ladder()
     OUTPUT_DIR.mkdir(exist_ok=True)
@@ -83,3 +115,19 @@ if __name__ == "__main__":
         )
         if r["model_warnings"]:
             print(f"    model: {r['model_warnings'][:200]}")
+
+    dev = devices()
+    with open(OUTPUT_DIR / "devices.csv", "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(dev[0]))
+        w.writeheader()
+        w.writerows(dev)
+    print(f"\n{'device':<22} {'MWe':>5} {'LCOE':>6} {'at 7%':>6} {'fin.':>5} "
+          f"{'rate':>5} {'life':>5} {'avail':>6} {'rout.':>6} {'bank':>6} {'wall':>6} "
+          f"{'t_bank':>6} {'t_wall':>6} {'n_mod':>5} {'A=.85':>6} {'A=.95':>6}")
+    for r in dev:
+        print(f"{r['device']:<22} {r['plant_mwe']:>5.0f} {r['lcoe']:>6.1f} "
+              f"{r['lcoe_at_7pct']:>6.1f} {r['financing_part']:>+5.1f} "
+              f"{r['interest_rate']:>5.2f} {r['lifetime_yr']:>5.0f} "
+              f"{r['availability']:>6.3f} {r['outage_routine']:>6.4f} {r['outage_bank']:>6.4f} "
+              f"{r['outage_wall']:>6.4f} {r['t_bank_yr']:>6.1f} {r['t_wall_yr']:>6.1f} "
+              f"{r['n_mod']:>5} {r['lcoe_at_a085']:>6.1f} {r['lcoe_at_a095']:>6.1f}")

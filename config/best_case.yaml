@@ -8,10 +8,10 @@
 # Post-red-team composition: eta_dec 0.97 (patent prophetic band, not a
 # record) and cap_shot_lifetime 1e9 (published TARGET resting on a vendor
 # catalog extrapolation, not a life test) are REMOVED from this tier and
-# carried in tier2.yaml as labelled extrapolations. lifetime_yr is held at
-# 30: on this concept 80 years is an anti-record until capacitor life
-# reaches 1e9 (replacement accumulates faster than the capital-recovery
-# benefit), so it is adopted only in tier 3 where that condition holds.
+# carried in tier2.yaml as labelled extrapolations. The plant-environment
+# entries that step with the tiers (interest_rate, lifetime_yr,
+# wall_dpa_tolerance) have no tier-1 entry: no fusion plant has a record
+# for any of them, so this grade holds the design-basis values.
 
 records:
   fuel_recovery:

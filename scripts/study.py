@@ -96,6 +96,93 @@ B_COMPRESSION_T = 22.0
 _MU0 = 4e-7 * 3.141592653589793
 F_PDV_RADIAL_SHARE_DEFAULT = 1.0
 
+# --- availability from the replacement schedule ----------------------------
+# Availability is derived per point, not asserted: the US fission fleet's
+# availability outside its planned outages (availability_steady_state) less
+# the outage fraction of three planned events, one sourced duration each
+# (config/baseline.yaml): a routine maintenance bundle every cycle (the
+# fission refueling outage, which carries the fleet's routine work), the
+# capacitor-bank swap every cap_shot_lifetime shots at the solved rep rate,
+# and the wall-and-coil changeout when the 14-MeV-equivalent fluence
+# reaches the dpa tolerance. Shots per calendar year use the steady-state
+# availability; the correction of the outage on itself is second order.
+SECONDS_PER_YEAR = 8760.0 * 3600.0
+MEV_J = 1.602e-13
+E_N_DD_MEV = 2.45
+E_N_DT_MEV = 14.07
+# 1 MW/m^2 of 14 MeV neutron wall load produces about 10 dpa per full-power
+# year in Fe-based structure (standard fusion-materials figure); 2.45 MeV
+# D-D neutrons displace less per unit energy flux, folded in at 0.4.
+DPA_PER_MWY_M2_14MEV = 10.0
+DPA_REL_DD = 0.4
+STUDY_KEYS = ("availability_steady_state", "outage_days_routine",
+              "routine_cycle_yr", "outage_days_bank_swap",
+              "outage_days_wall", "wall_dpa_tolerance")
+
+
+def wall_load_14mev_equivalent(result) -> float:
+    """14-MeV-equivalent neutron wall load [MW/m^2] per module from the
+    model's own reaction rates: the D-D 2.45 MeV flux at DPA_REL_DD, the
+    D-T branch (in-pulse tritium burn, dhe3_f_T) at full weight."""
+    from tritium_burn import reaction_rates  # tritium_burn imports this module
+
+    rr = reaction_rates(result)
+    f_t = float(result.params.get("dhe3_f_T", 0.0))
+    p_n_dd_mw = 0.5 * rr["dd"] * E_N_DD_MEV * MEV_J / 1e6
+    p_n_dt_mw = f_t * 0.5 * rr["dd"] * E_N_DT_MEV * MEV_J / 1e6
+    return (p_n_dt_mw + DPA_REL_DD * p_n_dd_mw) / wall_area_m2(result.params)
+
+
+def replacement_intervals_yr(cap_shot_lifetime, f_rep_hz, wall_load_eq,
+                             dpa_tolerance, a0):
+    """(bank-swap, wall-changeout) intervals in calendar years."""
+    t_bank = cap_shot_lifetime / (f_rep_hz * SECONDS_PER_YEAR * a0)
+    dpa_per_fpy = DPA_PER_MWY_M2_14MEV * wall_load_eq
+    t_wall = dpa_tolerance / dpa_per_fpy / a0 if dpa_per_fpy > 0 else math.inf
+    return t_bank, t_wall
+
+
+def outage_fractions(outage_days_routine, routine_cycle_yr,
+                     outage_days_bank, t_bank_yr,
+                     outage_days_wall, t_wall_yr) -> dict:
+    """Fraction of calendar time lost to each planned event type."""
+    return dict(
+        routine=outage_days_routine / (365.0 * routine_cycle_yr),
+        bank=outage_days_bank / (365.0 * t_bank_yr),
+        wall=outage_days_wall / (365.0 * t_wall_yr),
+    )
+
+
+def derived_availability(a0, outage_days_routine, routine_cycle_yr,
+                         outage_days_bank, t_bank_yr,
+                         outage_days_wall, t_wall_yr) -> float:
+    f = outage_fractions(outage_days_routine, routine_cycle_yr,
+                         outage_days_bank, t_bank_yr,
+                         outage_days_wall, t_wall_yr)
+    return a0 * (1.0 - sum(f.values()))
+
+
+def replacement_schedule(result, study: dict) -> dict:
+    """Availability and the two replacement intervals of a sized machine."""
+    a0 = study["availability_steady_state"]
+    p = result.params
+    gamma = wall_load_14mev_equivalent(result)
+    t_bank, t_wall = replacement_intervals_yr(
+        float(p["cap_shot_lifetime"]), float(p["f_rep"]), gamma,
+        study["wall_dpa_tolerance"], a0)
+    f = outage_fractions(study["outage_days_routine"], study["routine_cycle_yr"],
+                         study["outage_days_bank_swap"], t_bank,
+                         study["outage_days_wall"], t_wall)
+    return dict(
+        availability=a0 * (1.0 - sum(f.values())),
+        t_bank_yr=t_bank,
+        t_wall_yr=t_wall,
+        wall_load_14mev_eq_mw_m2=gamma,
+        outage_routine=f["routine"],
+        outage_bank=f["bank"],
+        outage_wall=f["wall"],
+    )
+
 
 def f_pdv_cap(fwd: dict, model: CostModel) -> float:
     ed = model._eng_defaults
@@ -141,26 +228,103 @@ def wall_area_m2(fwd: dict) -> float:
     return 2.0 * math.pi * r_w * fwd.get("chamber_length", 10.0)
 
 
+# --- the four devices the writeup prices -----------------------------------
+# One machine per evidence grade. records, extrap and spec are the coherent
+# design-search optima (scripts/coherent_min.py); helion is the vendor
+# configuration on the design basis. The 3 GWe speculation park uses the
+# 200 MJ shot: larger shots trip the wall audit once the integer module
+# count snaps down (coherent_min.py footer). Every script and test builds
+# its forward dict from here, so a moved optimum is a one-place change.
+DEVICES = {
+    "records": dict(
+        configs=("best_case.yaml",),
+        overrides=dict(dhe3_dd_frac=0.85, f_rad=0.28, chamber_length=10.0,
+                       plasma_t=1.0, r_bore=1.1, fw_class="panel"),
+        size_overrides={},
+    ),
+    "helion": dict(configs=(), overrides={}, size_overrides={}),
+    "extrap": dict(
+        configs=("best_case.yaml", "tier2.yaml"),
+        overrides=dict(chamber_length=10.0, plasma_t=1.5, r_bore=1.6,
+                       fw_class="panel"),
+        size_overrides={},
+    ),
+    "spec": dict(
+        configs=("best_case.yaml", "tier2.yaml", "tier3.yaml"),
+        overrides=dict(yield_per_shot_mj=500.0, chamber_length=30.0,
+                       plasma_t=1.5, r_bore=1.6, fw_class="panel"),
+        size_overrides={3000.0: dict(yield_per_shot_mj=200.0)},
+    ),
+}
+DEVICE_ORDER = (
+    ("records", "citable records"),
+    ("helion", "Helion's requirements"),
+    ("extrap", "extrapolations"),
+    ("spec", "speculation"),
+)
+PLANT_SIZES_MWE = (1000.0, 3000.0)
+
+
+def device_fwd(name: str, net_electric_mw: float) -> tuple[dict, dict]:
+    """(baseline cfg, forward dict) for one of the four devices at a plant
+    size. Sizes other than PLANT_SIZES_MWE have no device definition (the
+    speculation design is size-dependent) and raise KeyError."""
+    if net_electric_mw not in PLANT_SIZES_MWE:
+        raise KeyError(f"no device definition at {net_electric_mw} MWe")
+    cfg = load_config("baseline.yaml")
+    fwd = dict(cfg["forward"])
+    dev = DEVICES[name]
+    for c in dev["configs"]:
+        apply_records(fwd, c)
+    fwd.update(dev["overrides"])
+    fwd.update(dev["size_overrides"].get(net_electric_mw, {}))
+    fwd["net_electric_mw"] = net_electric_mw
+    return cfg, fwd
+
+
 def run(model: CostModel, fwd: dict, tritium_adder: bool = True):
     """Forward with rep-rate sizing; returns (result, diagnostics dict).
 
-    Captures the model's audit warnings rather than letting them scroll by,
-    and computes the wall metrics the coherence checks need. When the burn
-    mix is D-rich (dd_frac > threshold) the fuel-handling account C220500 is
-    raised by TRITIUM_PLANT_MUSD via cost_overrides (probe run first, since
-    overrides replace rather than add).
+    A probe forward sizes the machine (rep rate, module count, reaction
+    rates); from it the runner derives availability (replacement_schedule)
+    unless the caller pins `availability` explicitly, and raises the
+    fuel-handling account C220500 by the tritium-plant adder when the burn
+    mix is D-rich (dd_frac >= threshold; cost_overrides replace rather than
+    add, hence the probe). The study-only keys (STUDY_KEYS,
+    f_pdv_radial_share) never reach the model, which rejects unknown
+    parameters. Captures the model's audit warnings and computes the wall
+    metrics the coherence checks need.
     """
     fwd = dict(fwd)
     share = fwd.pop("f_pdv_radial_share", F_PDV_RADIAL_SHARE_DEFAULT)
+    study = {k: fwd.pop(k) for k in STUDY_KEYS if k in fwd}
+    derive = "availability" not in fwd
+    if derive:
+        missing = [k for k in STUDY_KEYS if k not in study]
+        if missing:
+            raise KeyError(
+                f"availability derivation needs {missing} in the forward "
+                f"dict (config/baseline.yaml carries them)")
     cap = f_pdv_cap(fwd, model)
     f_pdv_claim = fwd.get("f_pdv", float(model.cc.f_pdv))
     fwd["f_pdv"] = min(f_pdv_claim, share * cap)
+
+    # The probe sizes the machine; availability does not enter the sizing,
+    # so the probe runs at the steady-state value when deriving.
+    probe_fwd = (dict(fwd, availability=study["availability_steady_state"])
+                 if derive else fwd)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        probe = model.forward(size_from_power=True, **probe_fwd)
+
+    schedule = {}
+    if derive:
+        schedule = replacement_schedule(probe, study)
+        fwd["availability"] = schedule["availability"]
+
     overrides = None
     tritium_musd = 0.0
     if tritium_adder and fwd.get("dhe3_dd_frac", 0.131) >= DD_FRAC_TRITIUM_THRESHOLD:
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            probe = model.forward(size_from_power=True, **fwd)
         base_c220500 = float(probe.cas22_detail["C220500"])
         p_neutron_total = float(probe.power_table.p_neutron) * int(probe.solved_n_mod)
         tritium_musd = (
@@ -186,6 +350,13 @@ def run(model: CostModel, fwd: dict, tritium_adder: bool = True):
         "f_pdv_eff": fwd["f_pdv"],
         "f_pdv_cap": cap,
         "tritium_adder_musd": tritium_musd,
+        "availability": float(result.params["availability"]),
+        "t_bank_yr": schedule.get("t_bank_yr", float("nan")),
+        "t_wall_yr": schedule.get("t_wall_yr", float("nan")),
+        "wall_load_14mev_eq_mw_m2": schedule.get("wall_load_14mev_eq_mw_m2", float("nan")),
+        "outage_routine": schedule.get("outage_routine", float("nan")),
+        "outage_bank": schedule.get("outage_bank", float("nan")),
+        "outage_wall": schedule.get("outage_wall", float("nan")),
         "warnings": sorted({str(w.message) for w in caught}),
     }
     return result, diag
@@ -239,3 +410,22 @@ def coherence_violations(fwd: dict, diag: dict, tier: str) -> list[str]:
     if diag["e_flash_mj_m2"] > E_FLASH_MELT_MJ_M2:
         v.append(f"per-shot flash {diag['e_flash_mj_m2']:.2f} MJ/m^2 over tungsten melt bound {E_FLASH_MELT_MJ_M2}")
     return v
+
+
+def lcoe_segments(result) -> dict:
+    """The three parts of a device's LCOE [$ /MWh], an exact partition of
+    the model's own figure, LCOE = (CAS90 + CAS70 + CAS80) / annual MWh:
+    the overnight cost recovered straight-line over the book life, the
+    cost of money (CAS90 less that: interest during construction and on
+    the capital), and operating costs (CAS70 O&M with scheduled
+    replacement, CAS80 fuel). The annual MWh is taken from the model's own
+    ratio so the partition is exact whatever derate the model applies."""
+    c, p = result.costs, result.params
+    annual_musd = float(c.cas90) + float(c.cas70) + float(c.cas80)
+    usd_per_mwh_per_musd = float(c.lcoe) / annual_musd
+    straight_musd = float(c.overnight_cost) / float(p["lifetime_yr"])
+    return dict(
+        straight_line=straight_musd * usd_per_mwh_per_musd,
+        cost_of_money=(float(c.cas90) - straight_musd) * usd_per_mwh_per_musd,
+        operating=(float(c.cas70) + float(c.cas80)) * usd_per_mwh_per_musd,
+    )

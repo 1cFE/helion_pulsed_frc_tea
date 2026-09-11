@@ -16,9 +16,11 @@ self-sufficiency (price-insensitivity is the test).
 import csv
 
 from study import (
+    DEVICES,
     OUTPUT_DIR,
     apply_records,
     build_model,
+    device_fwd,
     f_rad_floor,
     load_config,
     run,
@@ -26,8 +28,6 @@ from study import (
 
 U_HE3_USD_KG = (2e7, 2e6, 1e6, 5e5, 1e5, 0.0)
 DD_FRACS = (0.131, 0.314, 0.5, 0.7, 0.85, 0.95)
-TIER2_MIN_OVERRIDES = dict(
-    chamber_length=10.0, plasma_t=1.5, r_bore=1.6, fw_class="panel")
 
 if __name__ == "__main__":
     cfg = load_config("baseline.yaml")
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     fwd0 = dict(cfg["forward"])
     apply_records(fwd0, "best_case.yaml")
     apply_records(fwd0, "tier2.yaml")
-    fwd0.update(TIER2_MIN_OVERRIDES)
+    fwd0.update(DEVICES["extrap"]["overrides"])
 
     rows = []
     for u in U_HE3_USD_KG:
@@ -60,11 +60,7 @@ if __name__ == "__main__":
 
     # Super-speculation floor: the tier-3 coherent 3 GWe design
     # (coherent_min.py footer) with the He-3 price concession stacked on top.
-    fwd3 = dict(cfg["forward"])
-    for c in ("best_case.yaml", "tier2.yaml", "tier3.yaml"):
-        apply_records(fwd3, c)
-    fwd3.update(yield_per_shot_mj=200.0, chamber_length=30.0, plasma_t=1.5,
-                r_bore=1.6, fw_class="panel", net_electric_mw=3000.0)
+    _, fwd3 = device_fwd("spec", 3000.0)
     print("\ntier-3 coherent 3 GWe design, He-3 price concession on top:")
     for u in (5e5, 0.0):
         _, d3 = run(model, dict(fwd3, u_he3=u))

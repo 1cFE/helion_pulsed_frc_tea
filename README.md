@@ -24,9 +24,12 @@ adiabat-priced coils, shot-cycled replacement scope).
 The study is a floor hunt: it answers "how low can this concept's LCOE be
 pushed, and what would have to be true", against Helion's public $10/MWh
 target. Four devices are priced, sharing one architecture and one
-plant environment (the series convention: 7% real discount rate in
-constant dollars, held fixed so the ladder compares technology, not
-financing) and differing only in the
+plant environment in which build time and indirects are held, the cost
+of capital steps with the tiers (7/7/5/3% real), book life is an
+engineering entry (30/30/80/80 yr), and availability is derived from
+each rung's replacement schedule (Figure 1 and the ladder table's at-7%
+column keep the financing part of every rung separate from its physics
+and engineering), and differing only in the
 subsystem performance they are granted: citable records, Helion's own
 requirements taken at face value, labelled extrapolations, and labelled
 speculation (`config/baseline.yaml` carries the common basis and the
@@ -43,9 +46,12 @@ device except the vendor configuration is a constrained design-space
 scan optimum (chamber size, wall class, yield, burn mix), not an
 asserted operating point.
 
-Headline ladder at 1 GWe: records 172, Helion's requirements 121.4,
-extrapolations 45.1, speculation 18.6 $/MWh (15.4 at 3 GWe); the $10
-target is not reached by any internally consistent stack. The records
+Headline ladder at 1 GWe: records 176.7, Helion's requirements 124.4,
+extrapolations 36.1 (42.9 at 7% real), speculation 12.0 (19.0 at 7%)
+$/MWh; at 3 GWe the speculation park reads 9.7 $/MWh (15.8 at 7%), so
+the $10 target is reached by one internally consistent stack and only
+through its 3% real cost of capital and a derived availability above
+about 0.90, not through any physics or engineering entry. The records
 device tops the ladder because the vendor's per-pulse fuel recovery
 and recovery-share claims have no records and their reversion is worth
 about 85 $/MWh. See `docs/writeup.md` for the narrative results

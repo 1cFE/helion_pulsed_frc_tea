@@ -22,7 +22,7 @@
 records:
   cap_shot_lifetime:
     value: 1.0e+9
-    source: "Pacific Fusion AMPS (arXiv:2504.10680 sec 4.1): 100->35 kV derating projected to reach ~1e9 shots at ~9x lower energy density. A published NOAK TARGET resting on a vendor catalog extrapolation - tier 2, not the record grade an earlier draft gave it. At 3 Hz x 0.95 availability x 30 yr = 2.7e9 shots the bank is replaced ~1.7x, charged to CAS72 by the model."
+    source: "Pacific Fusion AMPS (arXiv:2504.10680 sec 4.1): 100->35 kV derating projected to reach ~1e9 shots at ~9x lower energy density. A published NOAK TARGET resting on a vendor catalog extrapolation - tier 2, not the record grade an earlier draft gave it. At about 3 Hz over the 80 yr book life the bank fires about 7e9 shots and is replaced about 7x, charged to CAS72 by the model at the derived availability."
 
   eta_dec:
     value: 0.90
@@ -51,3 +51,15 @@ records:
   fuel_recovery:
     value: 0.9999
     source: "Labelled extrapolation, one nine beyond the JET-ILW retention record: the patent closed fuel cycle (US 2017/0011811) implies four-nines per-pulse recovery for the He-3 economy to close, and the physical argument (saturated walls, helium-dominated exhaust, direct re-injection without full reprocessing) points the right direction. No demonstration at any scale; each nine is first-order in the fuel line."
+
+  wall_dpa_tolerance:
+    value: 50.0
+    source: "DEMO-class RAFM first-wall design target, against the 20 dpa demonstrated database edge held at the records grade. Enters the ladder only through the wall-and-coil changeout interval in the derived availability; the wall replacement cost itself is priced in scripts/burnup_scan.py at both tolerances."
+
+  interest_rate:
+    value: 0.05
+    source: "Cost of capital (financing), real: federal loan guarantees blended with utility equity, a mechanism with precedent but no fusion record; between the IEA/NEA 2020 central (7%) and low (3%) cases. Financing steps with the tiers; Figure 1 and the at-7% column of the ladder table keep it separate from physics and engineering."
+
+  lifetime_yr:
+    value: 80.0
+    source: "Book life (engineering): US DOE hydropower civil-works lifespan (65-85 yr) with every core component replaced on its own schedule. An extrapolation with a mechanism here: the unreplaceable structure sees negligible neutron fluence (copper coils are replaced with the wall; D-D neutrons only). Capacitor-bank and wall replacements are priced at every rung (CAS72, scripts/burnup_scan.py), so the model shows where 80 yr is unfavorable rather than the ledger asserting it. 30 yr at the design basis and records grades is the model default and the low end of the fusion literature's 30-40 yr cluster (Böhnlein et al. 2026 survey of 43 assumptions; ARIES 40)."

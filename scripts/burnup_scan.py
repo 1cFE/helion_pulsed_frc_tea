@@ -20,9 +20,16 @@ declared fuel_recovery 0.99 and a tier-3-grade 0.999.
 """
 import csv
 
-from study import OUTPUT_DIR, build_model, load_config, run, wall_area_m2
+from study import (
+    DPA_PER_MWY_M2_14MEV,
+    OUTPUT_DIR,
+    build_model,
+    load_config,
+    run,
+    wall_load_14mev_equivalent,
+)
 
-from tritium_burn import POINTS, f_t_from_burnup, point_fwd, reaction_rates
+from tritium_burn import POINTS, f_t_from_burnup, point_fwd
 
 from costingfe.layers.reactivity import sigv_dd_n, sigv_dd_p, sigv_dhe3
 
@@ -39,30 +46,18 @@ MWH_PER_YR = 1000.0 * 8760.0  # at 1 GWe net; scaled by availability below
 
 # Neutron-damage repricing (study-side; the model's core_lifetime knob is
 # inert for this concept, so wall replacement under neutron load is charged
-# here with the model's own levelized-replacement closed form).
-# 1 MW/m^2 of 14 MeV neutron wall load produces about 10 dpa per full-power
-# year in Fe-based structure (standard fusion-materials figure); 2.45 MeV
-# D-D neutrons displace less per unit energy flux, folded in at 0.4
-# 14-MeV-equivalent. Tolerance band: 20 dpa is the demonstrated RAFM
-# database edge, 50 dpa the DEMO-class design target; both are quoted, no
-# advanced-material speculation is taken.
-DPA_PER_MWY_M2_14MEV = 10.0
-DPA_REL_DD = 0.4
+# here with the model's own levelized-replacement closed form). The dpa
+# rate comes from study.wall_load_14mev_equivalent. Tolerance band: 20 dpa
+# is the demonstrated RAFM database edge, 50 dpa the DEMO-class design
+# target; both are quoted, no advanced-material speculation is taken.
 DPA_TOLERANCE = (20.0, 50.0)
-E_N_DD_MEV = 2.45
-E_N_DT_MEV = 14.07
-MEV = 1.602e-13
 
 
-def wall_damage_adder(result, f_t, fwd, mwh):
+def wall_damage_adder(result, fwd, mwh):
     """Levelized neutron-driven first-wall replacement [$ /MWh] at each
     dpa tolerance, from the machine's own reaction rates and wall area."""
-    rr = reaction_rates(result)
     n_mod = int(result.solved_n_mod)
-    area = wall_area_m2(result.params)
-    p_n_dd_mw = 0.5 * rr["dd"] * E_N_DD_MEV * MEV / 1e6  # per module
-    p_n_dt_mw = f_t * 0.5 * rr["dd"] * E_N_DT_MEV * MEV / 1e6
-    gamma_eq = (p_n_dt_mw + DPA_REL_DD * p_n_dd_mw) / area  # 14 MeV-equiv MW/m^2
+    gamma_eq = wall_load_14mev_equivalent(result)
     dpa_per_fpy = DPA_PER_MWY_M2_14MEV * gamma_eq
     # The coil bore sits 0.10 m behind the wall (r_bore = plasma_t + vacuum_t,
     # no blanket), so the close-coupled copper coils see the same fluence and
@@ -72,7 +67,7 @@ def wall_damage_adder(result, f_t, fwd, mwh):
         + float(result.cas22_detail["C220103"])
     ) * n_mod
     i, n = fwd["interest_rate"], fwd["lifetime_yr"]
-    avail = fwd["availability"]
+    avail = float(result.params["availability"])
     out = {}
     for tol in DPA_TOLERANCE:
         t_cal = tol / dpa_per_fpy / avail if dpa_per_fpy > 0 else float("inf")
@@ -84,8 +79,6 @@ def wall_damage_adder(result, f_t, fwd, mwh):
 def scan_point(name, spec):
     cfg, fwd0 = point_fwd(spec)
     model = build_model(cfg)
-    avail = fwd0["availability"]
-    mwh = MWH_PER_YR * avail
     rows = []
     for fr in FUEL_RECOVERY:
         print(f"\n== {name} at fuel_recovery {fr} "
@@ -102,7 +95,8 @@ def scan_point(name, spec):
                     fwd0, burn_fraction=bf,
                     burn_fraction_he3=min(0.95, HE3_OVER_DD * bf),
                     fuel_recovery=fr, dhe3_f_T=dhe3_f_t))
-                dmg, gamma = wall_damage_adder(r, dhe3_f_t, fwd0, mwh)
+                mwh = MWH_PER_YR * float(r.params["availability"])
+                dmg, gamma = wall_damage_adder(r, fwd0, mwh)
                 out[branch] = dict(
                     lcoe=d["lcoe"],
                     fuel=float(r.costs.cas80) * 1e6 / mwh,

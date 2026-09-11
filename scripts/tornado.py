@@ -10,21 +10,13 @@ from study import (
     OUTPUT_DIR,
     apply_records,
     build_model,
+    device_fwd,
     load_config,
     run,
 )
 
-TIER2_MIN_OVERRIDES = dict(
-    chamber_length=10.0, plasma_t=1.5, r_bore=1.6, fw_class="panel")
-
-
 def tier2_fwd():
-    cfg = load_config("baseline.yaml")
-    fwd = dict(cfg["forward"])
-    apply_records(fwd, "best_case.yaml")
-    apply_records(fwd, "tier2.yaml")
-    fwd.update(TIER2_MIN_OVERRIDES)
-    return cfg, fwd
+    return device_fwd("extrap", 1000.0)
 
 
 if __name__ == "__main__":
@@ -56,7 +48,9 @@ if __name__ == "__main__":
             reverted["f_rad"] = tier1_fwd["f_rad"]
         _, diag = run(model, reverted)
         rows.append(dict(knob=knob, lcoe=diag["lcoe"],
-                         delta=diag["lcoe"] - diag0["lcoe"]))
+                         delta=diag["lcoe"] - diag0["lcoe"],
+                         kind=("financing" if knob == "interest_rate"
+                               else "engineering")))
 
     rows.sort(key=lambda r: -abs(r["delta"]))
     OUTPUT_DIR.mkdir(exist_ok=True)
@@ -65,4 +59,4 @@ if __name__ == "__main__":
         w.writeheader()
         w.writerows(rows)
     for r in rows:
-        print(f"{r['knob']:<24} revert -> {r['lcoe']:>6.1f}  ({r['delta']:+.1f})")
+        print(f"{r['knob']:<24} revert -> {r['lcoe']:>6.1f}  ({r['delta']:+.1f})  [{r['kind']}]")

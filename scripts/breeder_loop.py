@@ -60,12 +60,14 @@ import math
 import warnings
 
 from study import (  # noqa: I001  sets COSTINGFE_BACKEND before costingfe imports
+    DEVICES,
     OUTPUT_DIR,
     TRITIUM_FIXED_MUSD,
     TRITIUM_MUSD_PER_MW_NEUTRON,
     _T_I_CALIB_KEV,
     apply_records,
     build_model,
+    device_fwd as _device_fwd,
     f_rad_floor,
     load_config,
     run,
@@ -85,28 +87,9 @@ FLEET_DEVICES = (1, 2, 5, 10, 20)
 _FIXED_POINT_ITERS = 4
 _INTERCEPT_MWE = 250.0
 
-# The four ladder devices, as tests/test_study.py pins them.
-DEVICES = {
-    "records": dict(configs=("best_case.yaml",),
-                    overrides=dict(dhe3_dd_frac=0.85, f_rad=0.28, chamber_length=10.0,
-                                   plasma_t=1.0, r_bore=1.1, fw_class="panel")),
-    "helion": dict(configs=(), overrides={}),
-    "extrap": dict(configs=("best_case.yaml", "tier2.yaml"),
-                   overrides=dict(chamber_length=10.0, plasma_t=1.5, r_bore=1.6,
-                                  fw_class="panel")),
-    "spec": dict(configs=("best_case.yaml", "tier2.yaml", "tier3.yaml"),
-                 overrides=dict(yield_per_shot_mj=500.0, chamber_length=30.0,
-                                plasma_t=1.5, r_bore=1.6, fw_class="panel")),
-}
-
-
 def device_fwd(name: str):
-    cfg = load_config("baseline.yaml")
-    fwd = dict(cfg["forward"])
-    for c in DEVICES[name]["configs"]:
-        apply_records(fwd, c)
-    fwd.update(DEVICES[name]["overrides"])
-    return cfg, fwd
+    """(cfg, fwd) at 1 GWe; the breeder loop prices the 1 GWe devices."""
+    return _device_fwd(name, 1000.0)
 
 
 def _kg_per_atom_s(res) -> float:
@@ -381,13 +364,13 @@ if __name__ == "__main__":
     print("== He-3 unit cost from a breeder of the same grade (M$/kg) and the device at that price ==")
     print(f"{'device':<8} {'LCOE':>6} {'bought':>7} {'line':>5} {'gain':>5} "
           f"{'rpe eq':>7} {'rpe pv':>7} {'full eq':>8} {'full pv':>8} "
-          f"{'LCOE rpe eq':>11} {'full pv':>8}")
+          f"{'LCOE rpe eq':>11} {'full eq':>8} {'full pv':>8}")
     for x in unit:
         print(f"{x['device']:<8} {x['ladder_lcoe']:>6.1f} {x['he3_bought_kg_yr']:>7.1f} "
               f"{x['he3_line_ledger']:>5.1f} {x['breeder_gain']:>5.2f} "
               f"{x['unit_rpe_eq_musd_kg']:>7.2f} {x['unit_rpe_pv_musd_kg']:>7.2f} "
               f"{x['unit_full_eq_musd_kg']:>8.2f} {x['unit_full_pv_musd_kg']:>8.2f} "
-              f"{x['lcoe_rpe_eq']:>11.1f} {x['lcoe_full_pv']:>8.1f}")
+              f"{x['lcoe_rpe_eq']:>11.1f} {x['lcoe_full_eq']:>8.1f} {x['lcoe_full_pv']:>8.1f}")
     print("\n== breakdown, co-sited breeder, equilibrium store (M$/kg) ==")
     print(f"{'device':<8} {'output':>7} {'p_n MW':>7} {'own':>6} {'T-plant':>8} {'power':>6} "
           f"{'MWh/kg':>7} {'total':>6}")

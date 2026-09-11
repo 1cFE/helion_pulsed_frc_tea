@@ -10,18 +10,27 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 from pathlib import Path  # noqa: E402
 
-from study import apply_records, build_model, load_config, run  # noqa: E402
+from study import (  # noqa: E402
+    DEVICES,
+    DEVICE_ORDER,
+    PLANT_SIZES_MWE,
+    apply_records,
+    build_model,
+    device_fwd,
+    lcoe_segments,
+    load_config,
+    run,
+)
 from tritium_burn import f_t_from_burnup  # noqa: E402
 
-BLUE, ORANGE, AQUA, RED = "#2a78d6", "#eb6834", "#1baf7a", "#e34948"
+BLUE, ORANGE, AQUA, RED, GREY = "#2a78d6", "#eb6834", "#1baf7a", "#e34948", "#a6a5a1"
 INK, INK2, GRID, SURFACE = "#0b0b0b", "#52514e", "#e5e4e0", "#fcfcfb"
 FIGDIR = Path(__file__).resolve().parents[1] / "docs" / "figures"
 
-TIER2_MIN = dict(chamber_length=10.0, plasma_t=1.5, r_bore=1.6, fw_class="panel")
-TIER3_MIN = dict(yield_per_shot_mj=500.0, chamber_length=30.0, plasma_t=1.5,
-                 r_bore=1.6, fw_class="panel")
 TIERS = (("best_case.yaml",), ("best_case.yaml", "tier2.yaml"),
          ("best_case.yaml", "tier2.yaml", "tier3.yaml"))
+TIER2_MIN = DEVICES["extrap"]["overrides"]
+TIER3_MIN = DEVICES["spec"]["overrides"]
 
 
 def style(ax):
@@ -54,42 +63,42 @@ def stack(cfg, *tier_cfgs, **over):
     return fwd
 
 
+SEGMENTS = (
+    ("straight_line", BLUE, "overnight cost recovered straight-line over the book life"),
+    ("cost_of_money", ORANGE, "cost of money: interest during construction and on the capital"),
+    ("operating", GREY, "O&M, fuel and scheduled replacement"),
+)
+
+
 def fig1_ladder(model, cfg):
-    # One device per evidence grade: the records, extrapolation, and
-    # speculation devices are their stacks' design-optimized machines;
-    # Helion's requirements is the vendor configuration on the design basis.
-    TIER1_MIN = dict(dhe3_dd_frac=0.85, f_rad=0.28, chamber_length=10.0,
-                     plasma_t=1.0, r_bore=1.1, fw_class="panel")
-    # The speculation design is power-dependent: the 500 MJ single-module
-    # machine trips the wall audit at 3 GWe when the module count snaps, so
-    # the 3 GWe bar uses the coherent 200 MJ design (coherent_min.py footer).
-    TIER3_MIN_3GWE = dict(TIER3_MIN, yield_per_shot_mj=200.0)
-    rows = [
-        ("citable records", TIERS[0], TIER1_MIN, TIER1_MIN),
-        ("Helion's requirements", (), {}, {}),
-        ("extrapolations", TIERS[1], TIER2_MIN, TIER2_MIN),
-        ("speculation", TIERS[2], TIER3_MIN, TIER3_MIN_3GWE),
-    ]
-    vals = {1000.0: [], 3000.0: []}
-    for label, cfgs, over1, over3 in rows:
-        for p, over in ((1000.0, over1), (3000.0, over3)):
-            _, d = run(model, stack(cfg, *cfgs, net_electric_mw=p, **over))
-            vals[p].append(d["lcoe"])
-    labels = [r[0] for r in rows]
-    y = np.arange(len(labels))[::-1]
-    fig, ax = plt.subplots(figsize=(7.2, 2.9))
+    # One device per evidence grade, each bar split into the three parts of
+    # its LCOE (study.lcoe_segments), so the financing part of each rung is
+    # visible against its physics and engineering.
+    rows = []
+    for name, label in DEVICE_ORDER:
+        for p in PLANT_SIZES_MWE:
+            _, fwd = device_fwd(name, p)
+            r, d = run(model, fwd)
+            rows.append((label, p, d["lcoe"], lcoe_segments(r)))
+    labels = [label for _, label in DEVICE_ORDER]
+    y_dev = np.arange(len(labels))[::-1]
+    fig, ax = plt.subplots(figsize=(7.6, 3.4))
     h = 0.34
-    b1 = ax.barh(y + h / 2 + 0.02, vals[1000.0], height=h, color=BLUE, label="1 GWe")
-    b3 = ax.barh(y - h / 2 - 0.02, vals[3000.0], height=h, color=ORANGE, label="3 GWe")
-    for bars in (b1, b3):
-        for b in bars:
-            ax.text(b.get_width() + 2, b.get_y() + b.get_height() / 2,
-                    f"{b.get_width():.1f}", va="center", ha="left",
-                    fontsize=8, color=INK)
-    ax.set_yticks(y, labels)
+    for i, (label, p, lcoe, seg) in enumerate(rows):
+        offset = h / 2 + 0.02 if p == PLANT_SIZES_MWE[0] else -(h / 2 + 0.02)
+        yy = y_dev[i // len(PLANT_SIZES_MWE)] + offset
+        left = 0.0
+        for key, color, legend in SEGMENTS:
+            ax.barh(yy, seg[key], left=left, height=h, color=color,
+                    edgecolor=SURFACE, linewidth=1.2,
+                    label=legend if i == 0 else None)
+            left += seg[key]
+        ax.text(left + 2, yy, f"{lcoe:.1f}   {p / 1000:.0f} GWe",
+                va="center", ha="left", fontsize=8, color=INK)
+    ax.set_yticks(y_dev, labels)
     ax.set_xlabel("LCOE (\\$/MWh)")
-    ax.set_xlim(0, max(vals[1000.0]) * 1.14)
-    ax.legend(frameon=False, loc="lower right", labelcolor=INK)
+    ax.set_xlim(0, max(r[2] for r in rows) * 1.24)
+    ax.legend(frameon=False, loc="lower right", fontsize=7.5, labelcolor=INK)
     ax.set_axisbelow(True)
     ax.grid(axis="x", color=GRID, linewidth=0.8)
     style(ax)
@@ -114,11 +123,12 @@ def fig2_tornado(model, cfg):
         _, dd = run(model, reverted)
         rows.append((knob, dd["lcoe"] - d0["lcoe"]))
     rows.sort(key=lambda r: abs(r[1]))
-    labels = [k for k, _ in rows]
+    labels = [f"{k} (financing)" if k == "interest_rate" else k for k, _ in rows]
     deltas = [v for _, v in rows]
     y = np.arange(len(rows))
-    fig, ax = plt.subplots(figsize=(7.2, 3.4))
-    colors = [BLUE if v >= 0 else RED for v in deltas]
+    fig, ax = plt.subplots(figsize=(7.2, 3.8))
+    colors = [GREY if k == "interest_rate" else (BLUE if v >= 0 else RED)
+              for k, v in rows]
     bars = ax.barh(y, deltas, height=0.55, color=colors)
     for b, v in zip(bars, deltas):
         ax.text(v + (0.8 if v >= 0 else -0.8), b.get_y() + b.get_height() / 2,
@@ -229,7 +239,7 @@ def fig5_plant_size(model, cfg):
     ax.plot(sizes, park, color=BLUE, linewidth=2, marker="o",
             markersize=5, label="same module in a 1 GWe park")
     ax.text(sizes[0], stand[0] + 2, f"{stand[0]:.1f}", fontsize=8, color=INK)
-    ax.text(sizes[0], park[0] - 5, f"{park[0]:.1f}", fontsize=8, color=INK)
+    ax.text(sizes[0], park[0] + 1.5, f"{park[0]:.1f}", fontsize=8, color=INK)
     ax.set_xscale("log")
     ax.set_xticks(sizes, [f"{s:.0f}" for s in sizes])
     ax.set_xlabel("module size (MWe)")

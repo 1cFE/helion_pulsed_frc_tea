@@ -49,6 +49,6 @@ records:
     value: 0.80
     source: "SPECULATION: fleet installation-labor learning beyond the modeled 0.92. Small lever."
 
-  lifetime_yr:
-    value: 80.0
-    source: "Adopted only at this tier: 80 yr becomes favourable once cap_shot_lifetime is high enough that replacement no longer accumulates faster than the capital-recovery benefit (it is an anti-record at tiers 1-2). Borealis's civil-works record travels only under that condition."
+  interest_rate:
+    value: 0.03
+    source: "SPECULATION: cost of capital at the IEA/NEA 2020 low case, sovereign-class capital with no mechanism that delivers it to a first-of-a-kind fusion fleet."

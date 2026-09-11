@@ -38,6 +38,7 @@ Anatomy: top capital accounts at each point, so the writeup can name what
 carries the floor instead of gesturing at it.
 """
 from study import (
+    DEVICES,
     OUTPUT_DIR,
     apply_records,
     build_model,
@@ -47,16 +48,10 @@ from study import (
 
 # Coherent-minimum design points (scripts/coherent_min.py argmin rows).
 POINTS = {
-    "tier2_min": dict(
-        tier_cfgs=("best_case.yaml", "tier2.yaml"),
-        overrides=dict(chamber_length=10.0, plasma_t=1.5, r_bore=1.6,
-                       fw_class="panel"),
-    ),
-    "tier3_min": dict(
-        tier_cfgs=("best_case.yaml", "tier2.yaml", "tier3.yaml"),
-        overrides=dict(yield_per_shot_mj=500.0, chamber_length=30.0,
-                       plasma_t=1.5, r_bore=1.6, fw_class="panel"),
-    ),
+    "tier2_min": dict(tier_cfgs=DEVICES["extrap"]["configs"],
+                      overrides=DEVICES["extrap"]["overrides"]),
+    "tier3_min": dict(tier_cfgs=DEVICES["spec"]["configs"],
+                      overrides=DEVICES["spec"]["overrides"]),
 }
 
 HVDC_MUSD_PER_GW = 100.0  # continuous-commutation silicon, HVDC valve class
@@ -96,7 +91,7 @@ def analyze(label, spec):
     d22 = {k: float(v) for k, v in result.cas22_detail.items()}
     n_mod = diag["n_mod"]
     i, n = fwd["interest_rate"], fwd["lifetime_yr"]
-    avail = fwd["availability"]
+    avail = float(result.params["availability"])
     mwh_per_year = 1000.0 * 8760.0 * avail  # plant MWh/yr at 1 GWe net
 
     print(f"\n=== {label}: LCOE {diag['lcoe']:.1f} $/MWh, n_mod {n_mod}, "
@@ -113,6 +108,30 @@ def analyze(label, spec):
         v = getattr(c, name, None)
         if v is not None and float(v) > 1.0:
             print(f"    {name}: {float(v):.0f} M$")
+    # Levelized weight of each capital account: the model's own annualized
+    # capital (CAS90, at the rung's rate and book life) per M$ of total
+    # capital, per MWh, so the writeup's anatomy table can quote $/MWh.
+    lev = float(c.cas90) / float(c.total_capital) * 1e6 / mwh_per_year
+    print(f"  levelized capital: {lev * 1e3:.3f} $/MWh per G$ of total capital "
+          f"(CAS90 {float(c.cas90):.1f} M$/yr over {mwh_per_year / 1e6:.2f} TWh/yr)")
+    for label, musd in (
+        ("buildings (CAS21)", float(c.cas21)),
+        ("CAS50 incl. decommissioning", float(c.cas50)),
+        ("fuel handling + tritium plant (C220500)", d22["C220500"] * n_mod),
+        ("heat rejection + electrical plant (CAS24-26)",
+         float(c.cas24) + float(c.cas25) + float(c.cas26)),
+        ("vacuum + exhaust (C220106)", d22["C220106"] * n_mod),
+        ("first wall (C220101)", d22["C220101"] * n_mod),
+        ("DEC power electronics (C220109)", d22["C220109"] * n_mod),
+        ("coils (C220103)", d22["C220103"] * n_mod),
+    ):
+        print(f"    {label:<46} {musd:7.0f} M$  {musd * lev:5.2f} $/MWh")
+    print(f"    {'O&M (CAS70)':<46} {float(c.cas70):7.0f} M$/yr  "
+          f"{float(c.cas70) * 1e6 / mwh_per_year:5.2f} $/MWh")
+    print(f"    {'fuel (CAS80)':<46} {float(c.cas80):7.0f} M$/yr  "
+          f"{float(c.cas80) * 1e6 / mwh_per_year:5.2f} $/MWh")
+    print(f"    {'annualized capital, all-in (CAS90)':<46} {float(c.cas90):7.0f} M$/yr  "
+          f"{float(c.cas90) * 1e6 / mwh_per_year:5.2f} $/MWh")
 
     # --- adders ---
     f_rep = diag["f_rep_hz"]

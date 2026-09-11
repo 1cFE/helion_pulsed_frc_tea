@@ -22,9 +22,8 @@ concept YAML's conversion parameters. At the vendor's own burn point
 37 MWe per module, so the 1 GWe vendor device carries 28 modules.
 Reproducing the 50 MWe power-purchase figure would need 128 MJ per shot
 (gain 2.56), which on the vendor's 0.5 m chamber puts 1.75 MJ/m^2 per
-shot on the wall against the 1.5 tungsten bound, and would move the
-records and extrapolation devices to 151.1 and 38.4 $/MWh. The shot is
-held as the design point; the power-purchase figure is a commercial
+shot on the wall against the 1.5 tungsten bound. The shot is held as
+the design point; the power-purchase figure is a commercial
 commitment, not a physics disclosure.
 
 All numbers at costingfe `44434d9` (cylinder geometry + wall-flux audit
@@ -35,24 +34,30 @@ in `tests/test_study.py`. The tier stacks are `config/best_case.yaml`,
 `config/tier2.yaml`, `config/tier3.yaml`; `scripts/tiers.py` reproduces the
 ladder end to end.
 
-The writeup presents one device per evidence grade, all on one
-plant environment, the series convention (see the common-basis section below):
+The writeup presents one device per evidence grade, all on the plant
+environment of the held-and-stepped section below:
 **citable records** is the tier-1 stack design-optimized, **Helion's
 requirements** is the vendor configuration on the design basis,
 **extrapolations** and **speculation** are the tier-2 and tier-3
 stacks design-optimized. Devices at 1 / 3 GWe:
 
-| device | 1 GWe | 3 GWe |
-|---|---|---|
-| citable records (tier-1 stack, optimized) | 172.3 | 168.7 |
-| Helion's requirements (vendor configuration) | 121.4 | 116.9 |
-| extrapolations (tier-2 stack, optimized) | 45.1 | 41.1 |
-| speculation (tier-3 stack, optimized) | 18.6 | 15.4 |
+| device | 1 GWe | at 7% real | 3 GWe | at 7% real |
+|---|---|---|---|---|
+| citable records (tier-1 stack, optimized) | 176.7 | 176.7 | 172.9 | 172.9 |
+| Helion's requirements (vendor configuration) | 124.4 | 124.4 | 119.7 | 119.7 |
+| extrapolations (tier-2 stack, optimized) | 36.1 | 42.9 | 33.0 | 39.1 |
+| speculation (tier-3 stack, optimized) | 12.0 | 19.0 | 9.7 | 15.8 |
+
+The at-7% columns price the same machine at the design-basis cost of
+capital with everything else as its rung has it (`scripts/tiers.py`,
+`outputs/devices.csv`), so the financing part of each rung is the
+difference: 6.8 and 6.2 $/MWh at extrapolations, 7.1 and 6.1 at
+speculation, zero at the two 7% rungs.
 
 Stack evaluations at the vendor configuration (concept-YAML chamber),
-kept as internal regression pins: records 206.2 / 202.6 (a few
+kept as internal regression pins: records 209.6 / 205.8 (a few
 percent over the wall flash bound on the vendor chamber),
-extrapolations 55.9 / 51.7, speculation 20.3 / 17.1. The records
+extrapolations 44.7 / 41.4, speculation 13.5 / 11.1. The records
 device sits above Helion's requirements because reverting the vendor's
 per-pulse fuel recovery to the JET-analog three nines and the recovery
 share to radial-only is worth about 85 $/MWh at matched
@@ -63,12 +68,12 @@ The optimized devices choose chamber, wall class, and burn mix by
 `scripts/coherent_min.py` under the physics-consistency constraints in
 `scripts/study.py`; every grade gets the design search. Reconciliation
 bands around them (model gaps and conservatisms,
-`scripts/reconciliation.py`): extrapolations within 34.8-54.3,
-speculation within 17.1-20.5 at 1 GWe. With the coils
+`scripts/reconciliation.py`): extrapolations within 27.6-43.0,
+speculation within 11.0-12.9 at 1 GWe. With the coils
 priced along the expansion adiabat (conductor ~ L^(1/3)), the design
 search trades length for radius: the minima are fat short chambers. The dominant open
 band is the compression field: the burnup basis is the patent's 22 T
-point, and a 10 T / 5 T machine adds +6.1 / +32.0 $/MWh at the
+point, and a 10 T / 5 T machine adds +4.1 / +21.3 $/MWh at the
 speculation device.
 
 ## Coherence constraints (enforced, not advisory)
@@ -302,15 +307,20 @@ neutrons, the adders are more likely low than high.
 coils + vessel shell, 155 of about 370 M$ per-module reactor hardware
 at the speculation device) crosses from maintenance into machine-
 replacement when the wall-and-coil event (120 M$) recurs faster than
-event / (CRF x module hardware), about 8 years: under that, the
+event / (CRF x module hardware), about 10 years at the speculation
+grade's 3% real (5 at 7%): under that, the
 reactor line is replacement-dominated and the machine is opex. At the
-patent basis (D-D spectrum) the interval is 10-26 years at 20-50 dpa,
-a capital asset though near the line at the RAFM database edge; the
+patent basis (D-D spectrum) the interval is about 10 to 25 years at
+20 to 50 dpa, a capital asset at the design target and at the line at
+the RAFM database edge (the derived availability carries this
+changeout: 25 years at the speculation device, 51 at extrapolations,
+27 at the records device); the
 consumable core (1-3 yr intervals, half the module's value swapped
 near-annually) is the high-burnup thermalized counterfactual. In that regime the honest
 design is Helion's factory logic taken to its conclusion: a swappable
 irradiated cartridge with hot-spare bays (a single-module 1 GWe plant
-cannot hold availability 0.95 through annual month-scale swaps; a
+cannot hold its derived 0.92 availability through annual month-scale
+swaps; a
 multi-module park can, at roughly one spare module of extra capital), a
 refurbishment line, and a few hundred tonnes per year of activated
 steel and copper that neither the CAS50 decommissioning provision
@@ -319,25 +329,55 @@ core economics are marginal-manufacturing economics, which is where the
 missing fleet-learning term (gap 1 of the alignment note) would finally
 bind on something real.
 
-## Common plant-environment basis (all four devices)
+## Plant environment: held and stepped
 
-Financing and availability are not device properties: every device,
-including the vendor configuration, is priced on the same environment
-(carried in `config/baseline.yaml`), so the ladder compares physics and
-technology, not interest rates. The environment is the series
-convention in constant dollars, not a record: the discount rate is the
-central case of the standard international LCOE convention, and the
-build time, indirects, and availability are analog transfers with the
-reasons stated below. The financing sensitivity is recorded once here
-and appears nowhere in the results.
+The plant environment is priced in constant dollars (real framing) and
+its entries fall in three classes. Held at every rung, carried in
+`config/baseline.yaml`: the build time and the indirects, analog
+transfers with the reasons below. Stepped with the tiers, as records in
+`config/tier2.yaml` and `config/tier3.yaml`: the cost of capital, which
+is financing (a change of risk-bearer, not of technology, and the one
+entry that Figure 1 and the ladder table's at-7% column keep separate
+from physics and engineering), and the book life, which is engineering
+(what cannot be replaced sets it; nothing escalates with time in the
+real framing). Derived at every point, never asserted: availability,
+from the replacement schedule the model already prices.
+
+Held at every rung:
 
 | knob | repo default | value | analog class | why it applies | source | grade |
 |------|----------|-------|--------------|----------------|--------|-------|
-| interest_rate | 0.07 (code default, used as nominal) | 0.07 real | Series convention, not a record | Financing is a change of risk-bearer, not a technology, so it is held out of the ladder by construction and set at the central case of the standard convention; no cross-study comparison turns on it. Financing sensitivity, recorded here only: the record-low project rate is the 4.25% blended WACC implied by the Dubai MBR3 solar PPA (Apostoleris, Al Ghaferi, and Chiesa, Prog. Photovolt. 29, 638-648, 2021), about 2.2% real against a 2% inflation backdrop if that figure is nominal (the paper backs it out of a flat tariff, so nominal is the likely reading; unverified against the text); state export loans for nuclear builds have been signed near 3% nominal. At 2.2% real the speculation device reads about 10 $/MWh at 1 GWe; at the 3% real IEA/NEA low case, 11.5. | IEA/NEA, Projected Costs of Generating Electricity, 2020 edition: 3%, 7%, 10% real discount rates, 7% central, 85% capacity factor for dispatchable plants. | convention |
 | inflation_rate | 0.02 (code default) | 0.0 | Constant-dollar framing | With inflation_rate 0 the model discounts capital, replacement events, and operating costs at one real rate. The code default escalates only the operating costs (the overnight cost and replacement events are never escalated), a hybrid in which the nominal rate acts as a real rate on capital and the operating costs carry a 23% levelization premium at 30 years. Constant dollars is the IEA/NEA, EIA AEO, and NREL ATB practice. | Framing choice; see interest_rate. | convention |
 | construction_time_yr | 6.0 | 2.5 | Large single-block CCGT | Applies more strongly here than to the mirror: the plant is an integer count of factory-built modules, closer to CCGT block construction than to a single large bespoke machine. | Siemens Energy, 1200 MW CCGT block in about 30 months. | strong |
 | indirect_fraction | 0.20 | 0.192 (8% effective) | Large industrial/power-plant EPC | Same cost-basis scope as NETL's EPCM line (fraction of total direct cost); 8% is the low end of the cited 8-10% band, for plants built in about 3 years. The model computes CAS30 = fraction x CAS20 x (construction_time_yr / 6 yr), so entering 0.08 at 2.5 yr would give an effective 3.3% and count the short schedule twice; 0.192 = 0.08 x 6 / 2.5 restores the effective 8%. | US DOE/NETL QGESS. | strong |
-| availability | 0.85 | 0.95 | Geothermal baseload, derated for shot-cycled hardware | Geothermal's 97-98% has no analogue for a machine that swaps a multi-thousand-unit capacitor bank every few years (2.7e9 shots fired at the extrapolation point against a 1e9-shot bank). Staggered bank swaps plausibly cost 0.5-1.5%: 0.95 is the defensible figure. DIVERGES from Borealis's 0.98 with this stated technology reason. | US DOE Geothermal FAQs, derated per red-team Finding 9. | moderate |
+
+Stepped with the tiers:
+
+| knob | design basis | records | extrapolations | speculation | what it is | source |
+|---|---|---|---|---|---|---|
+| interest_rate (real) | 0.07 | 0.07 | 0.05 | 0.03 | financing: the cost of capital, the one entry that is a change of risk-bearer rather than of technology; Figure 1 and the at-7% column keep it separate. No fusion plant has a record for it at any grade: 7% is the central case of the standard convention, 5% a loan-guarantee blend with precedent, 3% sovereign-class capital with no mechanism | IEA/NEA, Projected Costs of Generating Electricity 2020 (3%, 7%, 10% real cases, 7% central) |
+| lifetime_yr | 30 | 30 | 80 | 80 | engineering: what cannot be replaced sets it, and nothing escalates with time in the real framing. Capacitor-bank and wall replacements are priced at every rung (CAS72, `scripts/burnup_scan.py`), so the model shows where 80 yr pays: worth 4.2 $/MWh at the extrapolation device against 30 yr, with the bank turned over about 7x | 30: model default and the low end of the fusion literature's cluster (Böhnlein et al. 2026: median 30-40 yr across 43 lifetime assumptions; ARIES 40); 80: US DOE hydropower lifespan 65-85 yr, with every core component on its own replacement schedule |
+| availability | derived | derived | derived | derived | 0.98, the US fission fleet's availability outside its planned outages, less three planned outages: a routine maintenance bundle (34 d every 2 yr, the refueling outage that carries the fleet's routine work), the bank swaps (34 d each, every cap_shot_lifetime shots at the solved rep rate) and the wall-and-coil changeouts (84 d each, when the 14-MeV-equivalent fluence reaches the dpa tolerance); `scripts/study.py` `replacement_schedule` | 0.98: the US fleet's capacity factor (over 90% since 2002, 92% in 2024; WNA, EIA) less refueling outages of 34-38 d per 18-24 month cycle leaves 1-3% of unplanned loss, and the fleet's unplanned capability loss factor on PRIS data is 1.6% against a 4.1% world average (Glorian, WEC/Solomon; IAEA RDS-2 2025 gives 4.2% world for 2022-2024). 34 d: EIA 2024 refueling outages; 24-month cycle: the long end of the fleet's 18-24 month range, this plant having no fuel reason to open. 84 d: Thea Energy Helios (arXiv 2512.08027), one planned outage every two years |
+| wall_dpa_tolerance | 20 | 20 | 50 | 50 | engineering: sets the changeout interval in the availability derivation (0.1 $/MWh at the extrapolation device) | 20 dpa: demonstrated RAFM database edge; 50 dpa: DEMO-class design target |
+
+Derived availability per device at 1 GWe (`outputs/devices.csv`; the
+3 GWe parks are within 0.001), with the three outage terms as fractions
+of calendar time:
+
+| device | availability | routine | bank swaps (every yr) | wall changeouts (every yr) |
+|---|---|---|---|---|
+| citable records | 0.898 | 4.7% | 2.9% (3.2) | 0.9% (27.2) |
+| Helion's requirements | 0.902 | 4.7% | 2.8% (3.3) | 0.5% (48.5) |
+| extrapolations | 0.922 | 4.7% | 0.8% (11.3) | 0.5% (51.4) |
+| speculation | 0.924 | 4.7% | 0.1% (91.6) | 0.9% (25.4) |
+
+The result sits just under the red-team review's 0.93-0.95 band and at
+the top of the fusion literature's 0.75-0.90. Sensitivity, with
+availability pinned instead of derived (`outputs/devices.csv`): the
+3 GWe speculation park reads 10.3 $/MWh at the model default 0.85 and
+9.5 at 0.95, so its $10/MWh crossing holds for availability above about
+0.90; the extrapolation device moves 37.8 to 35.5 $/MWh over the same
+span and the records device 181.1 to 172.3.
 
 ## Tier 1: records and published bounds
 
@@ -354,7 +394,7 @@ evidence-supported values.
 
 | knob | why not moved |
 |------|---------------|
-| lifetime_yr (30) | 80 years is an *anti-record* on this concept at tier-1 capacitor life: replacement accumulates faster than the capital-recovery benefit. Adopted in tier 3, where cap_shot_lifetime is high enough to invert the sign. The clearest case in the study of a record that does not travel between concepts. |
+| lifetime_yr (30) | No fusion plant has a book-life record, so the design-basis 30 yr holds here; the 80 yr civil-works entry is a tier-2 extrapolation. With the 1e8-shot bank at 1 Hz the bank turns over about eight times in 30 years, and the model prices every one of them. |
 | c_cap_allin_per_joule (0.5) | Already at the optimistic end of its own documented 0.5-4.0 range; the industry statement is that Hz-rate operation still requires a 5-10x cost reduction. No record below the baseline exists. |
 | eta_dec (0.85) | The 0.97 an earlier draft placed here is not tier-1-admissible: it is the top of a patent's prophetic circuit-only band (US 2024/0275198 A1), and Helion's "95% proven" statements trace to no-fusion circuit tests. Moved to tier 2 at 0.90 under the composite cap. |
 | cap_shot_lifetime (1e8) | The 1e9 figure is a published NOAK *target* (Pacific Fusion AMPS) resting on a vendor-catalog derating extrapolation, not a life test; the largest rep-rated MJ-class precedent is 1.3e4 shots. Tier-2 material by the study's own convention. |
@@ -372,6 +412,9 @@ evidence-supported values.
 | fw_class | panel | hhf | Machine-design purchase, not a record: divertor-grade monoblock wall (ITER divertor procurement anchor, 2.5 M$/m^2 NOAK, 10 MW/m^2 qualification) over the real 37.7 m^2 cylinder, about 94 M$/module, to make 3 Hz admissible in the concept-YAML chamber. The extrapolation device instead buys a fatter chamber with the cheaper panel wall (see coherent minimum below). | design purchase |
 | dhe3_dd_frac | 0.488 (the patent's He3/D = 0.158 at 70 keV, as a D-D event share; the earlier 0.314 was the blog's 3:1 bremsstrahlung minimum, kept only as the floor's calibration anchor) | 0.85 | D-rich operation to raise in-situ He-3 breeding (prompt D-D He-3 plus stored-tritium decay) and cut the purchased-fuel line; the concept's own stated direction, but 0.85 is the top of a sweep, not a derived operating point. Adopted only jointly with f_rad 0.28 and the tritium-plant adder (coherence constraints 1 and 4). | UNSOURCED |
 | f_rad | 0.163 | 0.28 | Bremsstrahlung-consistent radiated fraction at dd_frac 0.85 under the study calibration; relativistic corrections would raise it another 10-25%. Not an optimistic move: this knob *costs* 3.2 $/MWh against the incoherent alternative, and is the price of the fuel credit. | physics floor |
+| interest_rate | 0.07 real | 0.05 real | Cost of capital (financing): federal loan guarantees blended with utility equity, a mechanism with precedent but no fusion record, between the IEA/NEA 2020 central and low cases. The one entry that is financing rather than technology; Figure 1 and the at-7% column keep it separate (worth 6.8 $/MWh at this device against 7%). | mechanism with precedent |
+| lifetime_yr | 30 | 80 | Book life (engineering): US DOE hydropower lifespan (65-85 yr) with every core component replaced on its own schedule; the unreplaceable structure sees negligible neutron fluence (copper coils are replaced with the wall, D-D neutrons only). Bank and wall replacements are priced at every rung, so the model shows where 80 yr pays: 4.2 $/MWh here against 30 yr, with the bank turned over about 7x. | civil-works record |
+| wall_dpa_tolerance | 20 | 50 | DEMO-class RAFM first-wall design target against the demonstrated 20 dpa database edge; enters only through the changeout interval in the derived availability (0.1 $/MWh). | design target |
 
 **Held at baseline in tier 2, harmonized with the Borealis ledger:**
 om_cost_dhe3 (27.5: already the lowest documented CCGT fixed-O&M figure;
@@ -394,7 +437,7 @@ an explicit leap. See `config/tier3.yaml` for the per-knob notes.
 | dec_staged_recovery_factor | 0.5 | patent's unquantified "net reduction in cost and size", optimistic edge |
 | c_inv_per_kw_net | 50 $/kW | small lever |
 | multi_unit_labor_factor | 0.80 | small lever |
-| lifetime_yr | 80 | adopted only here, where cap life makes it favourable rather than an anti-record |
+| interest_rate | 0.03 real | IEA/NEA 2020 low case: sovereign-class capital with no mechanism that delivers it to a first-of-a-kind fleet; financing, shown separately (worth 7.1 $/MWh at 1 GWe and 6.1 at 3 GWe against 7%) |
 | yield_per_shot_mj | solved, not asserted | gain speculation is admitted, but the shot must be survivable in the chamber it is costed in: `coherent_min.py` solves yield and chamber jointly. The optimum is a broad plateau (300-750 MJ in a 30 m x 1.5 m single-module chamber, 2.3-5.9 Hz, panel wall at its flux limit). The earlier draft's Q = 40 (2000 MJ) in the 0.5 m x 10 m chamber deposits about 6.7 MJ/m^2 per shot, four times the tungsten flash-melt bound, and is excluded. |
 
 ## The coherent minimum, and the $10 question
@@ -405,10 +448,10 @@ constraints, at each evidence level:
 
 | device | LCOE | design |
 |---|---|---|
-| citable records, 1 GWe | **172.3** | cited shot, D-rich mix with tritium plant, 36 modules of 10 m x 1.0 m at 1 Hz (records-only optimum; the mix freedom every grade gets; the 1.5 m radius is 1.3 $/MWh behind) |
-| extrapolations, 1 GWe | **45.1** | cited shot (101.4 MJ), 9 modules at 2.9 Hz, 10 m x 1.5 m chambers, panel wall, D-rich mix with tritium plant |
-| speculation, 1 GWe | **18.6** | 300-750 MJ shots (500 MJ at 3.5 Hz carried), single module, 30 m x 1.5 m chamber, panel wall, D-rich. The scan's strict minimum is the He-3-lean mix (dd_frac 0.314) in a 20 m x 1.5 m chamber at 18.2, degenerate within precision; it rests on the tier-3 0.5 M$/kg He-3 entry, so the D-rich device whose fuel cycle the study prices is carried |
-| speculation, 3 GWe | **15.4** | 3 modules of the 200 MJ / 30 m design at 9.0 Hz (larger shots trip the wall audit once the integer module count snaps down); the lean mix ties at 15.4 |
+| citable records, 1 GWe | **176.7** | cited shot, D-rich mix with tritium plant, 36 modules of 10 m x 1.0 m at 1 Hz (records-only optimum; the mix freedom every grade gets; the 1.5 m radius is 1.2 $/MWh behind, the best lean row 11 behind) |
+| extrapolations, 1 GWe | **36.1** | cited shot (101.4 MJ), 9 modules at 2.9 Hz, 10 m x 1.5 m chambers, panel wall, D-rich mix with tritium plant (the best lean row, 46.6, is 11 behind) |
+| speculation, 1 GWe | **12.0** | 300-1000 MJ shots in the same 30 m x 1.5 m panel-wall chamber sit at 12.0-12.1, within model precision (500 MJ at 3.5 Hz carried: the plateau's middle, with a 0.54 MJ/m^2 flash margin), single module, D-rich. The He-3-lean mix (dd_frac 0.314) is 1.1 behind (13.1 in a 20 m x 1.5 m chamber) and rests on the tier-3 0.5 M$/kg He-3 entry |
+| speculation, 3 GWe | **9.7** | 3 modules of the 200 MJ / 30 m design at 9.0 Hz (larger shots trip the wall audit once the integer module count snaps down) |
 
 Chamber length is a design variable, not an evidence-tier entry, the
 same category as the wall class: nothing about a longer vessel with
@@ -441,12 +484,12 @@ these. The recovery-store/switch replacement gap and the over-sized
 recovery store are now inside costingfe (CAS72 replaces the shot-cycled
 C220109_cap and C220109_switch with the bank; markup_cap carries
 f_pdv (1 - f_rad)) and are priced in every number above. What remains
-outside: HVDC-class switch repricing (+2.3 extrapolation / +1.0
+outside: HVDC-class switch repricing (+1.5 extrapolation / +0.5
 speculation), the
-driver-thermalization derate (below), tritium-plant band (+-1.0 /
-+-0.8), and a thermal-bottoming basis change (-9.4 / -0.6): the
+driver-thermalization derate (below), tritium-plant band (+-0.6 /
++-0.4), and a thermal-bottoming basis change (-7.8 / -0.5): the
 extrapolation device
-lands in 34.8-54.3, the speculation device in 17.1-20.5 at 1 GWe.
+lands in 27.6-43.0, the speculation device in 11.0-12.9 at 1 GWe.
 
 The driver-thermalization derate closes a disposal channel the physics
 path misses: it recovers the entire delivered driver energy at flat
@@ -461,10 +504,10 @@ chi = 1.5 <beta> x_s^2 / (1.5 <beta> x_s^2 + 1 - x_s^2), a function of
 the separatrix-to-coil radius ratio alone: x_s 0.5/0.7/0.85 maps to
 chi 0.30/0.52/0.71, so fat FRCs are high-chi machines and good FRC
 confinement physics pushes the derate up. The extra recirculating loss
-eta_dec chi (1 - f_pdv) p_driver is worth +3.5/+6.0/+8.2 $/MWh at the
+eta_dec chi (1 - f_pdv) p_driver is worth +2.8/+4.8/+6.6 $/MWh at the
 extrapolation device across that x_s span (1290 MW of circulating driver
-power, widened by the radial-only f_pdv) and +0.1 at the speculation
-device; at the low-Q Helion device it
+power, widened by the radial-only f_pdv) and +0.03 to +0.08 at the
+speculation device; at the low-Q Helion device it
 would be order +10. The Polaris shot triplet (vacuum / plasma no-burn /
 burning) separates eta_dec, chi (1 - f_pdv), and the fusion composite,
 so the study's most-wanted measurement delivers chi as a by-product;
@@ -502,12 +545,16 @@ optimistic-incoherence. Worth 9.1 $/MWh at the study's u_he3 (the whole
 purchased line, since the return exceeds the purchase) and about 90 at
 the observed spot; item 6 below.
 
-**The $10/MWh target is not reached by any coherent stack in this study.**
-The closest approaches: 15.4 at 3 GWe on full speculation, and 13.9
-if He-3 is additionally free (u_he3 = 0, `scripts/he3_scan.py` footer),
-one more speculation than the stack
-already carries - and even that no longer breaks 10 once the tritium plant
-scales with the throughput that breeds the He-3. What carries the floor at
+**The $10/MWh target is reached by the full speculation stack as a 3 GWe
+park (9.7 $/MWh; 12.0 at 1 GWe), and by nothing below it.** What
+crosses it is the cost of capital, not a physics or engineering entry:
+the same machine at the design-basis 7% real reads 15.8 $/MWh (19.0 at
+1 GWe), so the 3% real sovereign-class rate is worth more than the whole
+distance to the target; the crossing also needs the derived
+availability of 0.92 (10.3 $/MWh at the model default 0.85). He-3 at
+zero price on top (u_he3 = 0, `scripts/he3_scan.py` footer) takes the
+3 GWe park to 8.2 $/MWh. What
+carries the floor at
 the speculation device is no longer the capacitor bank: it is buildings (CAS21
 286 M$), heat rejection and electrical plant (CAS24-26 about 170 M$), CAS50 (199 M$,
 of which 140 is the decommissioning provision), fuel handling plus the
@@ -517,29 +564,34 @@ small-plant-penalty analysis.
 
 ## Robustness of the extrapolation device
 
-One-at-a-time reversion from the 45.1 point (`scripts/tornado.py`):
+One-at-a-time reversion from the 36.1 point (`scripts/tornado.py`):
 
 | knob reverted | LCOE | delta |
 |---|---|---|
-| cap_shot_lifetime -> 1e8 | 86.6 | +41.5 |
-| fuel_recovery -> 0.999 (JET-analog) | 79.2 | +34.1 |
-| max_f_rep -> 1 Hz | 66.2 | +21.2 |
-| dhe3_dd_frac -> 0.488 (with its f_rad) | 55.0 | +9.9 |
-| eta_dec -> 0.85 | 49.0 | +3.9 |
-| f_rad -> 0.23 (incoherent: floor violated) | 42.4 | -2.7 |
-| eta_pin -> 0.95 | 46.3 | +1.3 |
+| cap_shot_lifetime -> 1e8 | 79.2 | +43.1 |
+| fuel_recovery -> 0.999 (JET-analog) | 69.3 | +33.2 |
+| max_f_rep -> 1 Hz | 51.0 | +14.9 |
+| dhe3_dd_frac -> 0.488 (with its f_rad) | 46.8 | +10.8 |
+| interest_rate -> 0.07 (financing) | 42.9 | +6.8 |
+| lifetime_yr -> 30 | 40.2 | +4.2 |
+| eta_dec -> 0.85 | 39.3 | +3.2 |
+| f_rad -> 0.23 (incoherent: floor violated) | 34.0 | -2.1 |
+| eta_pin -> 0.95 | 37.2 | +1.1 |
+| wall_dpa_tolerance -> 20 | 36.2 | +0.1 |
 
 The cap-life lever doubled when the CAS72 replacement event was widened
 to the full shot-cycled recovery chain (bank + store + switch): at 1e8
-shots everything that cycles is replaced about 8 times over plant life.
+shots everything that cycles is replaced about 0.8 times a year, some
+65 times over the 80-year book life.
 Four extrapolation entries carry the number: the capacitor life and
-the per-pulse fuel recovery dominate at +42 and +34 $/MWh (f_pdv no
+the per-pulse fuel recovery dominate at +43 and +33 $/MWh (f_pdv no
 longer appears: it is derived per point under constraint 6, not a
 knob) (an extrapolated
 nine beyond the JET retention record, and a published derating target),
 followed by the burn mix and the rep rate (an unsourced sweep endpoint
-and an unsourced roadmap band). None is a record. That is the honest
-quality of the 45.1 figure.
+and an unsourced roadmap band); the two environment entries come after
+them, the cost of capital (financing, +6.8) and the book life (+4.2).
+None is a record. That is the honest quality of the 36.1 figure.
 
 ## Consistency with the Borealis ledger
 
@@ -548,15 +600,15 @@ same ruling in both unless a physics or technology difference is stated.
 
 | knob | Borealis | Helion | divergence justified by |
 |---|---|---|---|
-| interest_rate | 0.07 real | 0.07 real | same: the series environment, held out of both ladders |
+| interest_rate | 0.07 real | 0.07 / 0.07 / 0.05 / 0.03 real by rung | **stated convention**: the cost of capital steps with the tiers as financing and is shown separately (Figure 1, the at-7% column); the same 7/7/5/3 ladder is specified for the mirror study |
 | inflation_rate | 0.0 | 0.0 | same: constant-dollar framing |
 | construction_time_yr | 2.5 | 2.5 | same; argument stronger here (factory modules) |
 | indirect_fraction | 0.192 (8% effective) | 0.192 (8% effective) | same normalization in both |
 | installation_frac | held 0.14 | held 0.14 | same |
 | om_cost | held | held | same; additionally forced here by the tritium facility |
 | f_rad_fus / f_rad | held | coupled variable | **stated physics reason**: here f_rad is a function of the burn mix (bremsstrahlung floor), not an independent knob; Borealis's photon fraction is set by its own burn physics and was held |
-| availability | 0.98 | 0.95 | **stated technology reason**: shot-cycled capacitor bank replaced about 1.7x over plant life; the geothermal analog has no such outage |
-| lifetime_yr | 80 | 30 through the extrapolation grade, 80 at speculation | **stated technology reason**: capacitor replacement makes 80 yr an anti-record until cap life reaches about 1e10 at the operating rep rate |
+| availability | 0.98 | derived per rung, 0.898 to 0.924 | **stated technology reason**: the US fission fleet's 0.98 outside planned outages and the same routine maintenance bundle, less the outages of the bank swaps and the unshielded wall's changeouts, replacement events the mirror does not have |
+| lifetime_yr | 80 | 30 / 30 / 80 / 80 by rung | **stated technology reason**: 80 yr is an engineering entry (civil works) where replacements are priced; here the 1e8-shot bank of the records grade turns over nine times in 30 years, and the civil-works life enters from the extrapolation grade |
 | eta_th | 0.53 (combined cycle) | 0 (basis), 0.30 as reconciliation add-back | **stated technology reason**: no thermal conversion path in the machine basis; the rejected-heat stream at the extrapolation grade makes bottoming worth -5 $/MWh, carried as an add-back exactly as Borealis carried its excluded-DEC add-back |
 | conductor_cost_rebco | held | not applicable | copper pulsed coils, no HTS |
 | fw_class / q_surface_max | hhf / 10 (machine design) | panel or hhf, design-optimized | same treatment: the wall package is machine design, not a record; here the wall is audited in-model against the declared class |
@@ -577,7 +629,7 @@ field, and the fuel-cycle burnup follows from its density companion:
 one operating point, used consistently. Two consequences are open
 items: (a) if the reactor-point field is lower, burnup falls as B^2
 and the recovery nines bind harder (the field/density RISK rows in
-reconciliation: +6.2 / +32.3 $/MWh at the speculation device for 10 T /
+reconciliation: +4.1 / +21.3 $/MWh at the speculation device for 10 T /
 5 T); (b) the magnetic pressure at 22 T is about 193 MPa, cycled
 1e9-1e10 times at the rep rate, at or above copper-alloy gigacycle
 fatigue strengths (100-150 MPa): the compression coil's replacement

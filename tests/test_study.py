@@ -1,9 +1,10 @@
 """Closure, config-integrity, and ladder-regression tests.
 
-Regression values are pinned at costingfe 44434d9 (cylinder geometry +
-wall audit, shot-cycled CAS72 scope, physics-consistent store markup,
-per-pulse fuel-cycle semantics). If costingfe moves and a number shifts, the ladder in
-docs/ledger.md must be re-based in the same change that updates the pin
+Regression values are pinned at costingfe 44434d9 with the plant
+environment of docs/ledger.md: cost of capital 7/7/5/3% real and book
+life 30/30/80/80 yr stepping with the tiers, availability derived from the
+replacement schedule. If costingfe moves and a number shifts, the ladder
+in docs/ledger.md must be re-based in the same change that updates the pin
 here - the red-team review's reproducibility finding is the reason this
 file exists.
 """
@@ -19,6 +20,7 @@ from study import (  # noqa: E402
     apply_records,
     build_model,
     coherence_violations,
+    device_fwd,
     f_rad_floor,
     load_config,
     run,
@@ -122,42 +124,39 @@ def _ladder_lcoe(model, base_cfg, *cfgs):
 
 
 def test_helion_requirements_device(model, base_cfg):
-    # the vendor configuration on the common plant-environment basis
-    # (financing and availability shared by all four devices)
+    # the vendor configuration on the design basis (7% real, 30 yr, derived
+    # availability)
     diag = _ladder_lcoe(model, base_cfg)
-    assert diag["lcoe"] == pytest.approx(121.4, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(124.4, abs=0.2)
     assert diag["n_mod"] == 28
     _, diag3 = run(model, dict(base_cfg["forward"], net_electric_mw=3000.0))
-    assert diag3["lcoe"] == pytest.approx(116.9, abs=0.2)
+    assert diag3["lcoe"] == pytest.approx(119.7, abs=0.2)
 
 
 def test_records_device(model, base_cfg):
     """The citable-records device: design-optimized under the record
     stack alone (the optimum is already the D-rich mix with its
     tritium plant, in fat panel-wall chambers)."""
-    fwd = dict(base_cfg["forward"])
-    apply_records(fwd, "best_case.yaml")
-    fwd.update(dhe3_dd_frac=0.85, f_rad=0.28, chamber_length=10.0,
-               plasma_t=1.0, r_bore=1.1, fw_class="panel")
+    _, fwd = device_fwd("records", 1000.0)
     _, diag = run(model, fwd)
-    assert diag["lcoe"] == pytest.approx(172.3, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(176.7, abs=0.2)
     assert not coherence_violations(fwd, diag, "tier2")
     _, diag3 = run(model, dict(fwd, net_electric_mw=3000.0))
-    assert diag3["lcoe"] == pytest.approx(168.7, abs=0.2)
+    assert diag3["lcoe"] == pytest.approx(172.9, abs=0.2)
 
 
 def test_tier1_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg, "best_case.yaml")
-    assert diag["lcoe"] == pytest.approx(206.2, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(209.6, abs=0.2)
 
 
 def test_tier2_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg, "best_case.yaml", "tier2.yaml")
-    assert diag["lcoe"] == pytest.approx(55.9, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(44.7, abs=0.2)
     # D-rich mix carries its plant; the adder is unit-priced
     # (50 M$ + 0.657 M$/MW of plant neutron power), so the rung's value is a
     # consequence of its throughput, not an identity
-    assert diag["tritium_adder_musd"] == pytest.approx(213.0, abs=1.0)
+    assert diag["tritium_adder_musd"] == pytest.approx(213.2, abs=1.0)
 
 
 def test_tritium_adder_scales_with_throughput(model, base_cfg):
@@ -172,36 +171,29 @@ def test_tritium_adder_scales_with_throughput(model, base_cfg):
 
 def test_tier3_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg, *TIER_CONFIGS)
-    assert diag["lcoe"] == pytest.approx(20.3, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(13.5, abs=0.2)
 
 
 def test_tier2_coherent_minimum(model, base_cfg):
-    fwd = dict(base_cfg["forward"])
-    apply_records(fwd, "best_case.yaml")
-    apply_records(fwd, "tier2.yaml")
-    fwd.update(chamber_length=10.0, plasma_t=1.5, r_bore=1.6, fw_class="panel")
+    _, fwd = device_fwd("extrap", 1000.0)
     _, diag = run(model, fwd)
-    assert diag["lcoe"] == pytest.approx(45.1, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(36.1, abs=0.2)
     assert not coherence_violations(fwd, diag, "tier2")
     _, diag3 = run(model, dict(fwd, net_electric_mw=3000.0))
-    assert diag3["lcoe"] == pytest.approx(41.1, abs=0.2)
+    assert diag3["lcoe"] == pytest.approx(33.0, abs=0.2)
 
 
 def test_tier3_coherent_minimum(model, base_cfg):
-    fwd = dict(base_cfg["forward"])
-    for c in TIER_CONFIGS:
-        apply_records(fwd, c)
-    fwd.update(yield_per_shot_mj=500.0, chamber_length=30.0, plasma_t=1.5,
-               r_bore=1.6, fw_class="panel")
+    _, fwd = device_fwd("spec", 1000.0)
     _, diag = run(model, fwd)
-    assert diag["lcoe"] == pytest.approx(18.6, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(12.0, abs=0.2)
     assert not coherence_violations(fwd, diag, "tier3")
     assert diag["e_flash_mj_m2"] < E_FLASH_MELT_MJ_M2
     # the 3 GWe park uses the 200 MJ design: larger shots trip the wall
     # audit once the integer module count snaps down
-    fwd3 = dict(fwd, yield_per_shot_mj=200.0, net_electric_mw=3000.0)
+    _, fwd3 = device_fwd("spec", 3000.0)
     _, diag3 = run(model, fwd3)
-    assert diag3["lcoe"] == pytest.approx(15.4, abs=0.2)
+    assert diag3["lcoe"] == pytest.approx(9.7, abs=0.2)
     assert not coherence_violations(fwd3, diag3, "tier3")
 
 
@@ -260,12 +252,135 @@ def test_chi_from_xs_equilibrium_anchors():
 def test_tritium_burn_floor_constraint(model, base_cfg):
     """dhe3_f_T = 0 at high per-pulse burnup must be flagged (coherent only
     under prompt triton loss); at the patent basis it passes."""
-    fwd = dict(base_cfg["forward"])
-    for c in TIER_CONFIGS:
-        apply_records(fwd, c)
-    fwd.update(yield_per_shot_mj=500.0, chamber_length=30.0, plasma_t=1.5,
-               r_bore=1.6, fw_class="panel")
+    _, fwd = device_fwd("spec", 1000.0)
     _, diag = run(model, fwd)
     assert not coherence_violations(fwd, diag, "tier3")
     v = "; ".join(coherence_violations(dict(fwd, burn_fraction=0.15), diag, "tier3"))
     assert "in-pulse burn floor" in v
+
+
+# --- device definitions ------------------------------------------------------
+
+def test_device_fwd_matches_the_pinned_definitions(base_cfg):
+    """study.DEVICES is the single source of the four devices; the 3 GWe
+    speculation park swaps to its 200 MJ design and nothing else changes."""
+    from study import DEVICES, DEVICE_ORDER, device_fwd
+
+    assert [name for name, _ in DEVICE_ORDER] == ["records", "helion", "extrap", "spec"]
+    cfg, fwd = device_fwd("extrap", 1000.0)
+    assert cfg == base_cfg
+    assert fwd["net_electric_mw"] == 1000.0
+    assert fwd["chamber_length"] == DEVICES["extrap"]["overrides"]["chamber_length"]
+    _, f1 = device_fwd("spec", 1000.0)
+    _, f3 = device_fwd("spec", 3000.0)
+    assert f1["yield_per_shot_mj"] == 500.0
+    assert f3["yield_per_shot_mj"] == 200.0
+    assert f3["net_electric_mw"] == 3000.0
+    skip = ("yield_per_shot_mj", "net_electric_mw")
+    assert {k: v for k, v in f1.items() if k not in skip} == \
+        {k: v for k, v in f3.items() if k not in skip}
+    with pytest.raises(KeyError):
+        device_fwd("spec", 2000.0)
+
+
+# --- availability from the replacement schedule ----------------------------
+
+def test_replacement_intervals_anchor():
+    """A 1e8-shot bank at 1 Hz swaps every 3.24 calendar years at the 0.98
+    steady state; a 0.20 MW/m^2 14-MeV-equivalent wall at 20 dpa lasts
+    10.2 years (2 dpa per full-power year)."""
+    from study import replacement_intervals_yr
+
+    t_bank, t_wall = replacement_intervals_yr(1e8, 1.0, 0.20, 20.0, 0.98)
+    assert t_bank == pytest.approx(1e8 / (3.1536e7 * 0.98), rel=1e-6)
+    assert t_wall == pytest.approx(20.0 / 2.0 / 0.98, rel=1e-6)
+    _, t_inf = replacement_intervals_yr(1e8, 1.0, 0.0, 20.0, 0.98)
+    assert t_inf == float("inf")
+
+
+def test_derived_availability_anchor():
+    """Records-grade illustration: a 34-day routine outage every 2 yr, 34
+    days per swap every 3.2357 yr and 84 days per changeout every 10.204 yr
+    take 9.8% off the 0.98 steady state."""
+    from study import derived_availability, outage_fractions
+
+    f = outage_fractions(34.0, 2.0, 34.0, 3.2357, 84.0, 10.204)
+    assert f["routine"] == pytest.approx(34 / 730, rel=1e-9)
+    a = derived_availability(0.98, 34.0, 2.0, 34.0, 3.2357, 84.0, 10.204)
+    assert a == pytest.approx(0.98 * (1 - sum(f.values())), rel=1e-9)
+    assert a == pytest.approx(0.884, abs=0.001)
+    assert derived_availability(0.98, 34.0, 2.0, 34.0, 3.2357, 84.0, float("inf")) > a
+
+
+def test_run_derives_availability_and_pins_honored(model):
+    _, fwd = device_fwd("helion", 1000.0)
+    res, diag = run(model, fwd)
+    assert 0.85 < diag["availability"] < 0.98
+    assert float(res.params["availability"]) == pytest.approx(diag["availability"])
+    assert diag["t_bank_yr"] > 0 and diag["t_wall_yr"] > diag["t_bank_yr"]
+    assert diag["outage_routine"] + diag["outage_bank"] + diag["outage_wall"] == \
+        pytest.approx(1 - diag["availability"] / fwd["availability_steady_state"], rel=1e-9)
+    # the derivation is a fixed point: pinning the derived value reproduces
+    # the run exactly (the probe's capital accounts do not see availability)
+    _, diag2 = run(model, dict(fwd, availability=diag["availability"]))
+    assert diag2["lcoe"] == pytest.approx(diag["lcoe"], rel=1e-9)
+    assert diag2["tritium_adder_musd"] == pytest.approx(diag["tritium_adder_musd"], rel=1e-9)
+    # an explicit pin is honored and no study-only key reaches the model
+    _, diag3 = run(model, dict(fwd, availability=0.5))
+    assert diag3["availability"] == 0.5
+    assert "wall_dpa_tolerance" not in res.params
+
+
+def test_availability_rises_up_the_ladder(model):
+    """Longer capacitor life and higher rep rate stretch the bank-swap
+    interval: both cheaper devices sit above the records device."""
+    a = {}
+    for name in ("records", "extrap", "spec"):
+        _, fwd = device_fwd(name, 1000.0)
+        _, d = run(model, fwd)
+        a[name] = d["availability"]
+    assert a["records"] < min(a["extrap"], a["spec"]) < 0.98
+
+
+def test_missing_schedule_inputs_fail_loudly(model, base_cfg):
+    fwd = dict(base_cfg["forward"])
+    del fwd["outage_days_wall"]
+    with pytest.raises(KeyError, match="outage_days_wall"):
+        run(model, fwd)
+
+
+def test_financing_and_book_life_ladder():
+    """Cost of capital steps 7/7/5/3% real with the tiers; book life
+    30/30/80/80 yr is an engineering entry; nothing else in the environment
+    moves between rungs."""
+    from study import PLANT_SIZES_MWE
+
+    expect = {"records": (0.07, 30.0), "helion": (0.07, 30.0),
+              "extrap": (0.05, 80.0), "spec": (0.03, 80.0)}
+    held = ("inflation_rate", "construction_time_yr", "indirect_fraction",
+            "availability_steady_state", "outage_days_routine", "routine_cycle_yr",
+            "outage_days_bank_swap", "outage_days_wall")
+    _, base = device_fwd("helion", PLANT_SIZES_MWE[0])
+    for name, (rate, life) in expect.items():
+        _, fwd = device_fwd(name, PLANT_SIZES_MWE[0])
+        assert (fwd["interest_rate"], fwd["lifetime_yr"]) == (rate, life), name
+        assert "availability" not in fwd, name
+        for k in held:
+            assert fwd[k] == base[k], (name, k)
+
+
+def test_lcoe_segments_sum_to_the_lcoe(model):
+    """Figure 1's three parts are an exact partition of the model's LCOE:
+    overnight cost straight-line over the book life, the cost of money
+    (CAS90 less that), and operating costs (CAS70 + CAS80)."""
+    from study import lcoe_segments
+
+    for name in ("helion", "spec"):
+        _, fwd = device_fwd(name, 1000.0)
+        res, diag = run(model, fwd)
+        seg = lcoe_segments(res)
+        assert seg["straight_line"] + seg["cost_of_money"] + seg["operating"] == \
+            pytest.approx(diag["lcoe"], rel=1e-9), name
+        assert seg["straight_line"] > 0 and seg["operating"] > 0
+        # at any positive real rate the annuity exceeds straight-line recovery
+        assert seg["cost_of_money"] > 0

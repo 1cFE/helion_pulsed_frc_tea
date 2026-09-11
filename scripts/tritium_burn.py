@@ -34,7 +34,9 @@ import csv
 import math
 
 from study import (  # noqa: I001  sets COSTINGFE_BACKEND before costingfe imports
+    DEVICES,
     OUTPUT_DIR,
+    SECONDS_PER_YEAR,
     apply_records,
     build_model,
     coherence_violations,
@@ -45,7 +47,6 @@ from study import (  # noqa: I001  sets COSTINGFE_BACKEND before costingfe impor
 from costingfe.layers.physics import Q_DD_NHE3, Q_DD_PT, Q_DHE3, Q_DT
 from costingfe.layers.reactivity import sigv_dd_n, sigv_dd_p, sigv_dhe3, sigv_dt
 
-SECONDS_PER_YEAR = 8760.0 * 3600.0
 M_T_KG = 3.016 * 1.66054e-27  # triton mass
 T_MEAN_LIFE_YR = 12.33 / 0.6931  # decay store residence to He-3
 
@@ -61,10 +62,7 @@ POINTS = {
     "tier3_min": dict(
         tier="tier3",
         tier_cfgs=("best_case.yaml", "tier2.yaml", "tier3.yaml"),
-        overrides=dict(
-            yield_per_shot_mj=500.0, chamber_length=30.0, plasma_t=1.5,
-            r_bore=1.6, fw_class="panel",
-        ),
+        overrides=DEVICES["spec"]["overrides"],
     ),
 }
 # 0.78 is the thermalized-triton limit at per-pulse burnup 0.15, the

@@ -23,27 +23,43 @@ forward:
   # is a point on the scale scan, not the baseline.
   net_electric_mw: 1000.0
 
-  # --- Common plant-environment basis (shared by all four priced devices) ---
-  # Financing and availability are not device properties: every rung is
-  # financed on the same terms, so the ladder compares physics and
-  # technology, not interest rates. The environment is the series
-  # convention, in constant dollars (real framing: inflation_rate 0, so
-  # capital, replacements, and operating costs are all discounted at
-  # one real rate). Sources (docs/ledger.md): 7% real discount rate
-  # (IEA/NEA Projected Costs of Generating Electricity 2020, central
-  # case); 2.5 yr construction (Siemens Energy 1200 MWe CCGT block in
-  # about 30 months); EPCM indirects 8% of direct cost (US DOE/NETL
-  # QGESS low end), entered as 0.192 because the model scales CAS30 by
-  # construction_time_yr / 6 yr and the NETL fraction already belongs to
-  # a short build; availability 0.95 (US DOE geothermal baseload analog
-  # derated for staggered capacitor-bank swaps; diverges from Borealis
-  # 0.98 with that stated technology reason).
-  availability: 0.95
-  lifetime_yr: 30.0           # standard TEA book life; 80 yr is an ANTI-record here (see ledger)
+  # --- Plant environment: held and stepped ---
+  # Held at every rung (this file): constant-dollar framing (inflation_rate
+  # 0, so capital, replacements and operating costs are discounted at one
+  # real rate); 2.5 yr construction (Siemens Energy 1200 MWe CCGT block in
+  # about 30 months); EPCM indirects 8% of direct cost (US DOE/NETL QGESS
+  # low end), entered as 0.192 because the model scales CAS30 by
+  # construction_time_yr / 6 yr and the NETL fraction already belongs to a
+  # short build.
+  # Stepped with the tiers: the cost of capital (financing: 7% real here and
+  # at the records grade, the IEA/NEA 2020 central case; 5% at
+  # extrapolations, 3% at speculation, each a tier-2 or tier-3 record) and
+  # the book life (engineering: 30 yr here and at the records grade, the
+  # model default and the low end of the fusion literature's 30-40 yr
+  # cluster; 80 yr from the extrapolation grade, a civil-works record).
+  # Derived, never asserted: availability. scripts/study.py starts from the
+  # US fission fleet's availability outside its planned outages (0.98: a
+  # 92-93% capacity factor, EIA 2023-2024, less refueling outages of 34-38 d
+  # per 18-24 month cycle leaves 1-3% of unplanned loss; the fleet's
+  # unplanned capability loss factor is 1.6% against a 4.1% world average,
+  # WEC/Solomon 2006 on PRIS data) and removes three planned outages: a
+  # routine maintenance bundle every cycle, sized by the fission refueling
+  # outage that carries the fleet's routine work; a capacitor-bank swap
+  # every cap_shot_lifetime shots at the solved rep rate; and a
+  # wall-and-coil changeout when the 14-MeV-equivalent neutron fluence
+  # reaches the dpa tolerance (the coil bore sits 0.10 m behind the wall,
+  # so nothing there outlives it). One sourced duration per event.
+  availability_steady_state: 0.98   # US fission fleet outside planned outages (EIA capacity factor and refueling outages; WEC/Solomon 2006 UCL 1.6%)
+  outage_days_routine: 34.0         # routine maintenance bundle per cycle: US refueling outage, 34 d average in 2024 (EIA)
+  routine_cycle_yr: 2.0             # the 24-month cycle; US cycles run 18-24 months and this plant has no fuel reason to open
+  outage_days_bank_swap: 34.0       # per swap: a refueling-outage-class event, modular units swapped rack by rack (EIA, 34 d)
+  outage_days_wall: 84.0            # per changeout: Thea Helios budgets 84 days per biennial maintenance cycle (arXiv 2512.08027)
+  wall_dpa_tolerance: 20.0          # demonstrated RAFM database edge; the DEMO-class 50 dpa target is a tier-2 record
+  lifetime_yr: 30.0
   construction_time_yr: 2.5
-  interest_rate: 0.07         # real; IEA/NEA 2020 central case
-  inflation_rate: 0.0         # constant-dollar framing
-  indirect_fraction: 0.192    # 8% effective at 2.5 yr (CAS30 = f x CAS20 x T/6)
+  interest_rate: 0.07               # real; IEA/NEA 2020 central case
+  inflation_rate: 0.0               # constant-dollar framing
+  indirect_fraction: 0.192          # 8% effective at 2.5 yr (CAS30 = f x CAS20 x T/6)
   noak: true
 
   # --- Burn point: the vendor's own (US 11,469,003 B2 operating table) ---

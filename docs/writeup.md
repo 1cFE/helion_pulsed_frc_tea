@@ -13,7 +13,7 @@ working temperature of a conventional working fluid. The direct energy
 conversion system also replaces the conventional and expensive turbine
 island. The best fusion fuel for this purpose is deuterium-helium-3 (D-He3),
 whose fusion energy is carried largely by charged particles, and has relatively manageable photon emissions at fusion conditions.
-One of the best physical mechanism for directly interacting with the plasma
+One of the best physical mechanisms for directly interacting with the plasma
 is inductive recovery: a coil-driven magnetic field compresses the
 plasma, and the plasma then expands against that field much as the gas
 in an engine expands against a piston.
@@ -27,19 +27,12 @@ customer. Markedly, it stated a long-run ambition of electricity at
 1 cent/kWh ($10/MWh), and that figure is what the 1cFE residency at
 Astera is set on investigating.
 
-Helion realizes inductive recovery in a pulsed linear device:
-coils generate an external axial field, and the plasma
-is formed within it as two field-reversed configuration (FRC)
-plasmoids. These are accelerated toward each other and merged, the
-collision converting their directed kinetic energy into ion heat. The
-resulting single hot FRC is then compressed to fusion conditions by
-raising the external field. An important feature of the FRC is used
-here: radial and axial compression are coupled, so a radial compression of the FRC causes also an axial compression.
-The fusion heat released at burn causes an
-isobaric expansion. That expansion returns the driver energy and part
-of the fusion energy to the capacitor banks through the same coils.
-This is a Diesel-type thermodynamic cycle with an Atkinson
-over-expansion stroke, because the FRC is allowed to expand past its initial state.
+Helion realizes inductive recovery in a pulsed linear device: two
+field-reversed configuration (FRC) plasmoids are formed, merged, and
+magnetically compressed to burn, and the expanding plasma returns the
+driver energy and part of the fusion energy to the capacitor banks
+through the same coils, a Diesel-type cycle with an Atkinson
+over-expansion stroke (Sections 2 and 6).
 
 The costing uses the `1costingfe` bottom-up cost model, built on
 publicly available data and labeled extrapolations; the open-source
@@ -47,59 +40,47 @@ code is available [here](https://github.com/1cFE/1costingfe),
 with detailed documentation
 [here](https://files.1cf.energy/1costingfe_paper.pdf).
 
-This work is divided into the following parts: in Section 2 we first
-describe Helion's device and its subsystem requirements from the
-available published material. In Section 3 we define four devices which share that
-architecture and differ only in the subsystem performance they are
-granted. The first, citable records, grants every subsystem what
-existing technology has demonstrated. The second grants the
-performance Helion's own materials imply, taken at face value. The
-third and fourth, extrapolations and speculation, relax the evidence
-standard in two labeled steps. We use the same financing,
-construction, and availability estimates for all four devices, enforce
-physics constraints, and optimize each device to
-its best cost. In Section 4 we report the four costs. Sections 5 and 6
-then develop the two
-load-bearing subsystems, the tritium fuel cycle and the recovery
-physics of the driver energy, each gated by a small set of unmeasured
-plasma properties that the developer's own next machine could resolve.
+Section 2 describes Helion's device from the published material.
+Section 3 defines four devices that share that architecture and
+differ only in the subsystem performance they are granted: citable
+records, Helion's own requirements taken at face value, and two
+labeled relaxations, extrapolations and speculation, all on one plant
+environment (Section 3) and each optimized to its best cost under
+enforced physics constraints. Section 4 reports
+the four costs. Sections 5 and 6 develop the two load-bearing
+subsystems, the tritium fuel cycle and the recovery of the driver
+energy, each gated by a few unmeasured plasma properties that the
+developer's own next machine could resolve.
 
 The four devices form a descending ladder. The citable-records device
-prices the concept at about 172 $/MWh. The second device, Helion's own
+prices the concept at about 177 $/MWh. The second device, Helion's own
 configuration granted its two unrecorded performance claims (the
 fourth nine of per-pulse fuel recovery and the axial share of the
-expansion work), reads 121.4 $/MWh. The extrapolation device supports
-about 45 $/MWh, and the speculation device sets the coherent floor:
-18.6 $/MWh at 1 GWe and 15.4 $/MWh at 3 GWe. The $10/MWh target is not reached by any coherent stack,
-including He-3 at zero price (13.9 $/MWh at 3 GWe). The floor is carried
-by site and support infrastructure (buildings, heat rejection, staffing,
-decommissioning) and by the tritium fuel cycle, not by the capacitor
-driver; the machine has no turbine island at all.
+expansion work), reads 124.4 $/MWh. The extrapolation device supports
+about 36 $/MWh, and the speculation device sets the coherent floor:
+12.0 $/MWh at 1 GWe and 9.7 $/MWh at 3 GWe. The $10/MWh target is
+reached by that last device alone, and what carries it across is its
+financing rather than any physics or engineering entry: priced at the
+design-basis 7% real cost of capital the same machine reads 19.0 and
+15.8 $/MWh, and He-3 at zero price on top takes the 3 GWe park to
+8.2 $/MWh. Figure 1 and the ladder table keep that financing part
+visible at every rung. The floor is carried by site and support
+infrastructure (buildings, heat rejection, staffing, decommissioning)
+and by the tritium fuel cycle, not by the capacitor driver; the machine
+has no turbine island at all.
 
-The fuel cycle is anchored to the vendor's own patent (US 11,469,003
-B2), whose operating table (n_D = 0.75e22 m^-3, 70 keV, and a
-pressure-balance field of 22 T, adopted as the compression-field basis
-and priced into the coils) specifies tritium removal between pulses. At
-that point the per-pulse burnup is 1.2e-4 for deuterium and 4.1e-4 for
-He-3 and the in-pulse tritium burn is under 1%, so the He-3 supply can
-be idealized as self-supplied from stored tritium decay, but fuel
-transits the exhaust loop of order 1e3-1e4 times before burning.
-Per-pulse isotope separation at the repetition rate and per-pass fuel
-recovery of 0.9999 are therefore the load-bearing engineering requirements.
-That recovery is graded, not assumed: the JET-ILW retention analogy
-supports three nines (0.999), and the patent-implied 0.9999 enters only as a
-labeled extrapolation. A lower reactor-point field is the dominant open
-risk: burnup falls as B^2, and a 10 T machine adds 6 $/MWh to the
-floor, a 5 T machine 31 $/MWh. The He-3 each device buys anyway is
-repriced by a dedicated deuterium breeder built from the same module,
-which shows the ledger's 2 M$/kg to be an extrapolation-grade number
-(Section 5.6). The expansion-work recovery is likewise derived per
-design from its chamber's expansion ratio, never asserted (Section 6).
-
-Everything here is reproducible: the four evidence stacks are YAML
-configuration files, each figure is produced by a named script, and thirty
-regression tests pin the ladder to a fixed revision of the cost model
-(see Reproducibility).
+The fuel cycle is the vendor's own patented one: tritium bred in D-D
+is removed between pulses and stored to decay into the He-3 the plant
+burns, at a per-pulse burnup so low that fuel transits the exhaust
+loop thousands of times before burning. Hertz-rate isotope separation
+and per-pass fuel recovery of 0.9999 are therefore the load-bearing
+engineering requirements, and that recovery is graded rather than
+assumed: the JET-ILW retention analogy supports three nines, and the
+fourth enters only as a labeled extrapolation (Section 5). The He-3
+each device buys is repriced by a deuterium breeder built from the
+same module (Section 5.6), and the expansion-work recovery is derived
+per design from its chamber's expansion ratio, never asserted
+(Section 6).
 
 ## 2. Machine basis
 
@@ -136,20 +117,17 @@ target under a rep-rate ceiling.
 The fuel cycle is Helion's stated one (US 11,469,003 B2), and so is
 the vendor device's burn point: the patent's tritium-removal column,
 He3/D = 0.158 at T_i = T_e = 70 keV and 22 T, with a bremsstrahlung
-fraction of 0.23 and a neutron fraction of 0.06. In the model's terms
-that is dd_frac 0.49, where dd_frac is the D-D share of primary fusion
-events by count, not an ion ratio (a 1:1 D:He-3 plasma is 0.13, a 3:1
-plasma 0.31). Running deuterium-rich (dd_frac 0.85, the mix every
-design-optimized device chooses), half the D-D reactions breed tritium.
-Near zero of it burns in-pulse (dhe3_f_T near zero, taken as 0 in the
-basis; Section 5.2 derives the floor): the exhaust is pumped,
-isotope-separated,
-and the tritium is stored on getter beds to decay (12.3 yr half-life)
-into the He-3 the plant burns, alongside the prompt He-3 from the other
-D-D branch, which re-enters the fuel loop with a cumulative recycle
-fusion probability set by the per-shot burn fraction and the exhaust
-recovery efficiency. The plant therefore has no lithium anywhere; its
-tritium plant is an exhaust-processing and storage plant.
+fraction of 0.23 and a neutron fraction of 0.06 (dd_frac 0.49 in the
+model's terms; Section 3 defines the notation). Running
+deuterium-rich (dd_frac 0.85, the mix every design-optimized device
+chooses), half the D-D reactions breed tritium, near zero of which
+burns in-pulse (dhe3_f_T taken as 0 in the basis; Section 5.2 derives
+the floor): the exhaust is pumped and isotope-separated, and the
+tritium is stored on getter beds to decay (12.3 yr half-life) into the
+He-3 the plant burns, alongside the prompt He-3 from the other D-D
+branch, which re-enters the fuel loop. The plant therefore has no
+lithium anywhere; its tritium plant is an exhaust-processing and
+storage plant.
 
 ## 3. Method
 
@@ -183,14 +161,35 @@ path actually returns; and schedules replacement of the full
 shot-cycled recovery chain (driver bank, recovery store, switch stack)
 at the capacitor shot life.
 
-**Evidence ladder.** All four devices share one plant environment,
-the series convention held fixed so that the ladder compares physics
-and technology rather than financing: a 7% real discount rate in
-constant dollars (the central case of the IEA/NEA Projected Costs of
-Generating Electricity 2020), 2.5-year construction (Siemens Energy
-CCGT block precedent), indirects at 8% of direct cost (US DOE/NETL
-QGESS), and availability 0.95 (US DOE geothermal fleet data, derated
-for bank-swap outages). The records device holds the two performance claims that
+**Evidence ladder.** The plant environment is held in part and stepped
+in part. Held at every rung: constant-dollar framing, 2.5-year
+construction (Siemens Energy CCGT block precedent), and indirects at 8%
+of direct cost (US DOE/NETL QGESS). Stepped with the tiers: the cost of
+capital, 7% real at the design basis and records grades (the IEA/NEA
+2020 central case), 5% at extrapolations (a loan-guarantee blend with
+precedent) and 3% at speculation (the IEA/NEA low case, sovereign-class
+capital), the one entry that is financing rather than technology, which
+Figure 1 and the ladder table's at-7% column keep separate from the
+rest; and the book life, 30 years through the records grade (the model
+default and the low end of the fusion literature's 30-40 year cluster;
+Böhnlein et al. 2026) and 80 years from the extrapolation grade (the
+US DOE hydropower lifespan), an engineering entry, since every core
+component is replaced on its own schedule and the unreplaceable
+structure sees negligible fluence. Availability is derived, not
+asserted. The starting point is the US fission fleet's availability
+outside its planned outages, 0.98: a 92% capacity factor less refueling
+outages of 34 to 38 days per 18 to 24 month cycle leaves 1 to 3% of
+unplanned loss, and the fleet's unplanned capability loss factor on
+PRIS data is 1.6% against a 4.1% world average. Three planned outages
+come off it: a 34-day routine maintenance bundle every two years (the
+fission refueling outage, which carries the fleet's routine work), a
+34-day capacitor-bank swap every cap_shot_lifetime shots at the solved
+rep rate, and an 84-day wall-and-coil changeout (Thea Energy's Helios
+maintenance budget) when the fluence reaches the dpa tolerance, 20 dpa
+demonstrated through the records grade and the 50 dpa DEMO target above
+it. The result runs from 0.898 at the records device to 0.924 at
+speculation, just under the red-team review's 0.93 to 0.95 band and at
+the top of the fusion literature's 0.75 to 0.90. The records device holds the two performance claims that
 have no record at their evidence-supported values: per-pulse fuel
 recovery 0.999, the value the JET-ILW retention analogy supports
 (Brezinsek et al. 2013), and the recovery share at the radial-only 0.8
@@ -229,12 +228,9 @@ the fuel cycle and the driver-energy accounting.
 configuration is the argmin of a scan over shot yield (a free
 parameter only at speculation, where the scan chooses it; the records
 and extrapolation devices keep the cited shot), chamber length and
-radius, wall class, and burn mix, discarding
-any design that violates a constraint. At the speculation grade the
-He-3-lean and D-rich mixes are degenerate within model precision, and
-the D-rich device is carried because its fuel cycle is priced by this
-study (Section 5) rather than by the stack's He-3 price entry
-(Section 4).
+radius, wall class, and burn mix, discarding any design that violates
+a constraint (the D-rich mix is the strict optimum at every grade;
+Section 4 gives the lean mix's distance).
 Reconciliation then brackets each minimum with the model gaps it cannot
 price internally (HVDC-class switch duty, the tritium-plant band, the
 driver-thermalization derate) and its conservatisms (no thermal
@@ -242,77 +238,92 @@ bottoming), yielding an honest band rather than a point.
 
 ## 4. Results: the four devices and what carries the floor
 
-| device | 1 GWe ($/MWh) | 3 GWe ($/MWh) | stack and design |
-|---|---|---|---|
-| citable records | 172.3 | 168.7 | fuel recovery 0.999 (JET analog), radial-only recovery share; optimum: the cited 101.4 MJ shot at 1 Hz in 10 m x 1.0 m panel-wall modules, D-rich mix with its tritium plant |
-| Helion's requirements | 121.4 | 116.9 | the vendor configuration (50 MJ driver, 101.4 MJ yield, 1 Hz, the patent's catalyzed mix dd_frac 0.49 with its 0.23 bremsstrahlung fraction and tritium plant) granted its two unrecorded claims: fuel recovery 0.9999, full recovery share |
-| extrapolations | 45.1 | 41.1 | records + capacitor life 1e9, a 3 Hz ceiling, a purchasable divertor-class wall, fuel recovery 0.9999 (patent-implied fourth nine); optimum: nine of the same modules at 2.9 Hz, panel wall |
-| speculation | 18.6 | 15.4 | extrapolations + 10 Hz, axial-channel capture, capacitors at 0.1 $/J and 1e10 shots, He-3 at 0.5 M$/kg, 80-year life; optimum: 300-750 MJ of fusion yield per shot from the same 50 MJ driver (gain 6-15), chosen by the scan, in 30 m x 1.5 m chambers |
+| device | 1 GWe ($/MWh) | at 7% real | 3 GWe ($/MWh) | at 7% real | stack and design |
+|---|---|---|---|---|---|
+| citable records | 176.7 | 176.7 | 172.9 | 172.9 | fuel recovery 0.999 (JET analog), radial-only recovery share; 7% real, 30-year life; optimum: the cited 101.4 MJ shot at 1 Hz in 10 m x 1.0 m panel-wall modules, D-rich mix with its tritium plant |
+| Helion's requirements | 124.4 | 124.4 | 119.7 | 119.7 | the vendor configuration (50 MJ driver, 101.4 MJ yield, 1 Hz, the patent's catalyzed mix dd_frac 0.49 with its 0.23 bremsstrahlung fraction and tritium plant; 7% real, 30-year life) granted its two unrecorded claims: fuel recovery 0.9999, full recovery share |
+| extrapolations | 36.1 | 42.9 | 33.0 | 39.1 | records + capacitor life 1e9, a 3 Hz ceiling, a purchasable divertor-class wall, fuel recovery 0.9999 (patent-implied fourth nine), 5% real and the 80-year civil-works life; optimum: nine of the same modules at 2.9 Hz, panel wall |
+| speculation | 12.0 | 19.0 | 9.7 | 15.8 | extrapolations + 10 Hz, axial-channel capture, capacitors at 0.1 $/J and 1e10 shots, He-3 at 0.5 M$/kg, 3% real; optimum: 300-1000 MJ of fusion yield per shot from the same 50 MJ driver (gain 6-20; 500 MJ carried), chosen by the scan, in 30 m x 1.5 m chambers |
+
+The at-7% columns price each device at the design-basis cost of
+capital with everything else as its rung has it; the difference is the
+financing part of the rung, 6.8 and 6.2 $/MWh at extrapolations, 7.1
+and 6.1 at speculation, nothing at the two 7% rungs.
 
 With the coils priced along the expansion adiabat, the design search
 trades length for radius: fat short chambers buy expansion volume with
 less active structure. Reconciliation brackets the extrapolation
-device within 34.8-54.3 $/MWh and the speculation device within
-17.1-20.5 $/MWh at 1 GWe. At the speculation grade the scan's strict
-minimum is the He-3-lean mix (dd_frac 0.31) in a 20 m x 1.5 m chamber
-at 18.2 $/MWh, 0.4 $/MWh below the D-rich device at 1 GWe and tied
-with it at 3 GWe; that device buys its He-3 at the stack's 0.5 M$/kg
-entry, a price Section 5.5 shows no market supports, so the D-rich
-device, whose fuel cycle is priced here, is carried as the speculation
-device.
+device within 27.6-43.0 $/MWh and the speculation device within
+11.0-12.9 $/MWh at 1 GWe. The D-rich mix is the strict optimum at every grade: the He-3-lean
+mix (dd_frac 0.31) sits 1.1 $/MWh behind at speculation (13.1 $/MWh in
+a 20 m x 1.5 m chamber) and 11 $/MWh behind at extrapolations, buying
+its He-3 at the stack's price entries, which Section 5.5 shows no
+market supports.
 
 The records device tops the ladder, and the reason is exactly two
-claims. The headline gap (172.3 against 121.4 $/MWh) cannot show that
+claims. The headline gap (176.7 against 124.4 $/MWh) cannot show that
 by itself, because the two devices are different machines; the
 controlled comparison is to take Helion's machine unchanged and revert
 only its two unrecorded claims to their record-supported values. That
-alone raises its cost by 70%, from 121.4 to 206.2 $/MWh (a
+alone raises its cost by 68%, from 124.4 to 209.6 $/MWh (a
 counterfactual that also sits 4% over the wall flash bound on the
 vendor's 0.5 m chamber, one reason the records design moves to fat
 chambers); design freedom under the record stack (its optimum is
 already the D-rich mix with its tritium plant) buys back two fifths of the
-increase, to 172.3 $/MWh. The evidence premium is not diffuse conservatism but two
+increase, to 176.7 $/MWh. The evidence premium is not diffuse conservatism but two
 specific, measurable claims: the fourth nine of per-pulse fuel
 recovery and the axial share of the expansion work. On evidence alone
 the fuel cycle is uneconomic; the descent begins when the recovery
 extrapolations are granted. The records and Helion devices are also dominated by
 scheduled replacement: the entire shot-cycled recovery chain is
-replaced on the capacitor-life schedule, about eight times over plant
-life at the 1e8-shot record life.
+replaced on the capacitor-life schedule, about eight times over their
+30-year life at the 1e8-shot record life.
 
 ![The evidence ladder](figures/fig1_ladder.svg)
 
 *Figure 1: The four devices at 1 and 3 GWe, one machine per evidence
-grade; the records device sits above Helion's requirements because
+grade, each bar split into the overnight cost recovered straight-line
+over the book life (blue), the cost of money, interest during
+construction and on the capital (orange), and O&M, fuel and scheduled
+replacement (grey). Cost of capital 7% real at the records and Helion
+devices, 5% at extrapolations, 3% at speculation; book life 30, 30, 80,
+80 years. The records device sits above Helion's requirements because
 reverting the vendor's two unrecorded claims is worth about 85 $/MWh.*
 
 One-at-a-time reversion from the extrapolation device ranks the levers:
 
 | knob reverted | LCOE ($/MWh) | delta ($/MWh) |
 |---|---|---|
-| cap_shot_lifetime -> 1e8 | 86.6 | +41.5 |
-| fuel_recovery -> 0.999 (JET-analog) | 79.2 | +34.1 |
-| max_f_rep -> 1 Hz | 66.2 | +21.2 |
-| dhe3_dd_frac -> 0.49 (with its f_rad) | 55.0 | +9.9 |
-| eta_dec -> 0.85 | 49.0 | +3.9 |
-| f_rad -> 0.23 (incoherent) | 42.4 | -2.7 |
-| eta_pin -> 0.95 | 46.3 | +1.3 |
+| cap_shot_lifetime -> 1e8 | 79.2 | +43.1 |
+| fuel_recovery -> 0.999 (JET-analog) | 69.3 | +33.2 |
+| max_f_rep -> 1 Hz | 51.0 | +14.9 |
+| dhe3_dd_frac -> 0.49 (with its f_rad) | 46.8 | +10.8 |
+| interest_rate -> 0.07 (financing) | 42.9 | +6.8 |
+| lifetime_yr -> 30 | 40.2 | +4.2 |
+| eta_dec -> 0.85 | 39.3 | +3.2 |
+| f_rad -> 0.23 (incoherent) | 34.0 | -2.1 |
+| eta_pin -> 0.95 | 37.2 | +1.1 |
+| wall_dpa_tolerance -> 20 | 36.2 | +0.1 |
 
-Two levers dominate, at +42 and +34 $/MWh: the capacitor cycle life
-(a published derating target) and the per-pulse fuel recovery (an
-extrapolated nine beyond the JET retention analogy); the rep rate
-and the burn-mix package follow (f_pdv is absent from the table
-because it is derived per point under constraint 6, not a knob); see
-Figure 2. The conversion efficiencies,
-once capped as a composite, are worth little at the margin (an
-incoherent double-booking of eta_dec = 0.97 with f_pdv = 0.95 would
-claim tens of $/MWh and is excluded by construction).
+The capacitor cycle life (a published derating target) and the
+per-pulse fuel recovery (an extrapolated nine beyond the JET retention
+analogy) dominate, the rep rate and the burn mix follow, and the two
+environment entries come after them: the cost of capital (the grey
+financing bar) is worth 6.8 $/MWh and the 80-year book life 4.2 $/MWh.
+f_pdv is absent from the table because it is derived per point under
+constraint 6, not a knob. The conversion
+efficiencies, once capped as a composite, are worth little at the
+margin (an incoherent double-booking of eta_dec = 0.97 with
+f_pdv = 0.95 would claim tens of $/MWh and is excluded by
+construction).
 
 ![Tornado from the extrapolation device](figures/fig2_tornado.svg)
 
 *Figure 2: One-at-a-time reversion of each extrapolation entry to its
-record value, from the 45.1 $/MWh extrapolation device. Red bars are
-favorable reversions, the signature of anti-record entries.*
+record value, from the 36.1 $/MWh extrapolation device. Red bars are
+favorable reversions, the signature of anti-record entries; the grey
+bar is the financing entry (cost of capital 5% to 7%), every other bar
+is physics or engineering.*
 
 At the speculation device the capacitor-driver narrative is spent (the bank
 is 5 M$ of a 666 M$ reactor account) and the floor is carried by
@@ -322,17 +333,17 @@ are not a steam cycle):
 
 | item | M$ | $/MWh (approx) |
 |---|---|---|
-| buildings (CAS21) | 286 | 2.5 |
-| CAS50, of which decommissioning provision 140 | 199 | 1.8 |
-| fuel handling + tritium plant (C220500) | 190 | 1.7 |
-| heat rejection + electrical plant (CAS24-26) | 170 | 1.5 |
-| vacuum and exhaust (C220106), of which per-pulse pumping 78 | 107 | 1.0 |
-| first wall of the 30 m chamber (C220101) | 106 | 0.9 |
-| DEC power electronics (C220109) | 65 | 0.6 |
+| buildings (CAS21) | 286 | 1.2 |
+| CAS50, of which decommissioning provision 140 | 199 | 0.8 |
+| fuel handling + tritium plant (C220500) | 190 | 0.8 |
+| heat rejection + electrical plant (CAS24-26) | 170 | 0.7 |
+| vacuum and exhaust (C220106), of which per-pulse pumping 78 | 107 | 0.4 |
+| first wall of the 30 m chamber (C220101) | 106 | 0.4 |
+| DEC power electronics (C220109) | 65 | 0.3 |
 | adiabat-priced coils (C220103) | 14 | 0.1 |
-| O&M (CAS70), levelized in constant dollars | 33/yr | 4.0 |
-| fuel (CAS80) | 14/yr | 1.7 |
-| annualized capital, all-in | | about 13 |
+| O&M (CAS70), levelized in constant dollars | 34/yr | 4.3 |
+| fuel (CAS80) | 13/yr | 1.6 |
+| annualized capital, all-in (3% real, 80 years) | 49/yr | 6.1 |
 
 ![What carries the floor](figures/fig3_anatomy.svg)
 
@@ -348,11 +359,12 @@ At the speculation device the single module runs 7.7e20 D-D and 4.5e20
 D-He3 reactions per second; only 1.4e20/s of the D-He3 burns are fed by
 purchased He-3, the rest by recycled bred He-3 (cumulative fusion
 probability 0.80). The module breeds tritium at half the D-D rate:
-0.55 mg per shot, 58 kg/yr. The extrapolation device carries 225 MW of plant
-neutron power and breeds about 86 kg/yr. Store-for-decay fixes the
+0.55 mg per shot, 56 kg/yr. The extrapolation stack on the vendor
+chamber carries 248 MW of plant neutron power and breeds about
+91 kg/yr. Store-for-decay fixes the
 equilibrium inventory at production rate times the 17.8 yr mean life:
-about 1.5 tonnes of tritium, which is 1.4e10 Ci, about 500 kW of
-continuous decay heat, roughly 380x ITER's site authorization and 55x
+about 1.6 tonnes of tritium, which is 1.5e10 Ci, about 530 kW of
+continuous decay heat, roughly 400x ITER's site authorization and 60x
 the world's civilian tritium stock. The
 inventory is intrinsic to He-3 self-supply at this scale; shipping it to
 a central fuel facility relocates it (and can hold the reactor site near
@@ -445,9 +457,9 @@ triton loss, where the 1.01 MeV triton escapes the small-s plasmoid
 before thermalizing and preserves the store at any burnup for about
 1 MeV per breeding event; and high burnup with thermalized tritons
 (dhe3_f_T = 0.78 at burnup 0.15), where the extrapolation stack at the
-vendor chamber reads 75.2 $/MWh and the speculation device 24.0 $/MWh,
+vendor chamber reads 54.4 $/MWh and the speculation device 14.1 $/MWh,
 plant neutron power rises about 5x with a dominant 14.1 MeV component,
-and the decay store shrinks to 0.2-0.4 t. Which regime the
+and the decay store shrinks to 0.2-0.3 t. Which regime the
 reactor-scale machine occupies is set by its compression density, which
 the patent table may understate; Section 5.3 prices the full axis.
 
@@ -458,17 +470,21 @@ the axis is swept coherently: burn_fraction_he3 scales with
 burn_fraction at the fixed 70 keV reactivity ratio (3.3x). Figure 4
 shows the result under both triton fates at exhaust recovery 0.99,
 0.999, and 0.9999. At the patent-density basis the recovery nines
-carry everything: 18.6 $/MWh at fr = 0.9999, 25.3 at 0.999, 96.2 at
-0.99 (the fourth nine is worth 7 $/MWh, the third 71 $/MWh). Moving
-right along the axis, i.e. toward higher compression density, the
+carry everything: 12.0 $/MWh at fr = 0.9999, 18.3 at 0.999, 88.9 at
+0.99 (the fourth nine is worth 6 $/MWh, the third 71 $/MWh). The
+sweep starts at the basis; below it, a lower reactor-point field cuts
+per-pulse burnup as B^2 and is the dominant open risk: a 10 T reactor
+point adds about 4 $/MWh to the headline floor and a 5 T point about
+21 $/MWh. Moving right along the axis, i.e. toward higher compression
+density, the
 recovery requirement relaxes: above per-pulse burnup of about 3e-3
-the three- and four-nines curves converge near 17.1-17.3 $/MWh on
-the prompt-loss branch, and the axis minimum (17.0 $/MWh, at burnup 3e-2 to
-3e-1) sits about 1.6 $/MWh below the basis. The thermalized branch
+the three- and four-nines curves converge near 11.0-11.2 $/MWh on
+the prompt-loss branch, and the axis minimum (11.0 $/MWh, at burnup 0.15
+to 0.3) sits about 1 $/MWh below the basis. The thermalized branch
 turns up past burnup 0.01 as the tritium burn grows (13-90%), so the
 triton-fate question reopens exactly where the recovery question
 closes. Per-pulse exhaust pumping is priced across the axis and peaks
-at the basis (79 M$ per module at the floor: 8300 pumped particles
+at the basis (78 M$ per module at the floor: 8300 pumped particles
 per reaction).
 
 ![The burnup axis](figures/fig4_burnup.svg)
@@ -494,13 +510,13 @@ the wall and the close-coupled coils (106 + 14 M$ at the speculation
 device), since nothing 0.10 m behind the wall outlives it. At the
 patent basis the spectrum is pure 2.45 MeV D-D at a 14-MeV-equivalent
 load of 0.20 MW/m^2, and the replacement adder is modest
-(+0.2-1.0 $/MWh at 50-20 dpa). The damage story reopens only in the
+(+0.3-1.2 $/MWh at 50-20 dpa). The damage story reopens only in the
 high-burnup counterfactuals: if the reactor-point density pushes
 per-pulse burnup toward the 0.1 regime with thermalized tritons, the
-all-in gap between prompt-loss and thermalized reaches 9-17 $/MWh,
+all-in gap between prompt-loss and thermalized reaches 8-16 $/MWh,
 and on the extrapolation stack's divertor-class wall (2.5 M$/m^2, at
 the vendor chamber) thermalized high-burnup replacement is prohibitive
-(+61 to +163 $/MWh). Keeping the tritium out of the burn is therefore free
+(+63 to +164 $/MWh). Keeping the tritium out of the burn is therefore free
 insurance at the basis and worth double digits off it.
 
 Shielding cannot buy the machine out of this, because a pulsed
@@ -526,10 +542,14 @@ The replacement schedule has a structural threshold. The exposed
 package (wall, coils, vessel shell) is 155 of about 370 M$ of
 per-module reactor hardware; replacement of the wall-and-coil event
 (120 M$) outspends the module's own capital service when its interval
-falls below about 5 years. At the patent basis (D-D spectrum,
-0.20 MW/m^2 equivalent) the interval is 10-26 years at 20-50 dpa: a
-capital asset with a factor of two of margin even at the RAFM database
-edge. The
+falls below about 10 years at the speculation grade's 3% real cost of
+capital (5 years at 7%). At the patent basis (D-D spectrum,
+0.20 MW/m^2 equivalent) the interval is about 10 to 25 years at 20 to
+50 dpa: a capital asset at the design target, at the edge of one at the
+RAFM database edge. That interval also enters the plant's availability
+(Section 3): the 84-day changeout every 25 years at the speculation
+device costs 0.9% of its output, against every 27 years at the records
+device's 20 dpa and every 51 years at the extrapolation device. The
 consumable-core regime (1-3 year intervals, half the module's value
 swapped near-annually) belongs to the high-burnup thermalized
 counterfactual. In that regime the coherent design is a swappable
@@ -557,19 +577,19 @@ price"; TAE's unpriced Black Moon lunar supply option) sit at
 19-22 M$/kg on
 gram-to-kilogram volumes, 10x above the baseline price used here and 40x
 above the speculation entry, with every new entrant building toward the high
-price. At the observed spot the extrapolation device reads 127 $/MWh at the
-D-rich mix and 295 $/MWh lean under the model's accounting, against
-36.0 $/MWh at the full self-supply limit; the distance between those two numbers is
+price. At the observed spot the extrapolation device reads 118 $/MWh at the
+D-rich mix and 266 $/MWh lean under the model's accounting, against
+27.0 $/MWh at the full self-supply limit; the distance between those two numbers is
 the value of the crediting decision, coupled to Section 5.2 because the
 decay return exists only if the tritium survives the pulse. A
 by-product observation: at these prices a kilogram of He-3 burned at
-the floor produces about $2M of electricity but sells for $19-22M, so
+the floor produces about $1.8M of electricity but sells for $19-22M, so
 an early breeding plant maximizes value selling He-3 into the thin
 cryogenics and quantum market until fleet supply floods it.
 
 ### 5.6 The breeder as the price of He-3
 
-Every device buys the He-3 it does not breed (216, 111, 38, and 26 kg/yr
+Every device buys the He-3 it does not breed (205, 105, 37, and 25 kg/yr
 down the ladder) at the ledger's 2 M$/kg, 0.5 M$/kg at speculation, a
 price Section 5.5 shows no market supports. The patent lets the
 harvested He-3 fuel "the same or a different fusion reactor", so a
@@ -608,7 +628,7 @@ device's neutron power times 1.18 (the density gain from removing the
 He-3 ions) on the same chamber, 0.24 MW/m^2 in 14 MeV equivalent
 against the 0.20 of Section 5.4, whose conclusion it inherits: no
 shield in the compression section, sacrificial coils on the wall
-schedule, worth 0.02-0.08 M$/kg at the speculation breeder. The
+schedule, worth 0.01-0.04 M$/kg at the speculation breeder. The
 fraction bites on the energy balance instead, since a third of the
 fusion energy leaves as neutrons the inductive path cannot recover:
 the gain is 0.36 on the vendor shot, 0.61 on the extrapolation
@@ -620,72 +640,74 @@ device re-run at that price (a fixed point on the power price). The
 power term is a cost on the vendor shot, where the breeder consumes
 7 MW per module, marginal on the records shot, and a credit at the two
 higher grades. Financing the
-17.8-year wait at 7% real values the delayed half at 0.45 of prompt,
-which raises the unit cost by 1.4x, 1.5x at the vendor grade where
-the power price feeds back.
+17.8-year wait at the grade's own cost of capital values the delayed
+half at 0.45 of prompt at 7% real (0.53 at 5%, 0.65 at 3%), which
+raises the unit cost by 1.4x at the records grade and 1.5x at the
+vendor grade where the power price feeds back, 1.3x at extrapolations
+and 1.2x at speculation.
 
 | device | He-3 bought (kg/yr) | ledger price (M$/kg) | He-3 line at ledger price ($/MWh) | breeder unit cost (M$/kg) | LCOE at breeder price ($/MWh) | ladder LCOE ($/MWh) |
 |---|---|---|---|---|---|---|
-| citable records | 216 | 2.0 | 52.0 | 2.38-2.63 | 182.3-188.7 | 172.3 |
-| Helion's requirements | 111 | 2.0 | 26.6 | 8.2-9.0 | 204-215 | 121.4 |
-| extrapolations | 38 | 2.0 | 9.1 | 1.02-1.43 | 40.7-42.5 | 45.1 |
-| speculation | 26 | 0.5 | 1.5 | 0.37-0.87 | 18.2-19.7 | 18.6 |
+| citable records | 205 | 2.0 | 52.0 | 2.47-2.72 | 188.8-195.5 | 176.7 |
+| Helion's requirements | 105 | 2.0 | 26.6 | 8.5-9.3 | 210-222 | 124.4 |
+| extrapolations | 37 | 2.0 | 9.1 | 0.75-1.06 | 30.4-31.8 | 36.1 |
+| speculation | 25 | 0.5 | 1.5 | 0.18-0.52 | 11.0-12.0 | 12.0 |
 
 | device | breeder gain | He-3 output per module (kg/yr) | ownership (M$/kg) | tritium plant (M$/kg) | power (MWh/kg) | power at device LCOE (M$/kg) | unit cost (M$/kg) |
 |---|---|---|---|---|---|---|---|
-| citable records | 0.85 | 10.9 | 2.28 | 0.08 | +89 | +0.02 | 2.38 |
-| Helion's requirements | 0.36 | 4.5 | 5.57 | 0.09 | +12,600 | +2.57 | 8.22 |
-| extrapolations | 0.61 | 22.5 | 1.05 | 0.09 | -2,960 | -0.12 | 1.02 |
-| speculation | 3.0 | 137 | 0.51 | 0.08 | -12,000 | -0.22 | 0.37 |
+| citable records | 0.85 | 10.3 | 2.36 | 0.09 | +89 | +0.02 | 2.47 |
+| Helion's requirements | 0.36 | 4.3 | 5.73 | 0.09 | +12,600 | +2.64 | 8.46 |
+| extrapolations | 0.61 | 21.9 | 0.78 | 0.06 | -2,960 | -0.09 | 0.75 |
+| speculation | 3.0 | 133 | 0.27 | 0.04 | -12,000 | -0.13 | 0.18 |
 
 Bands run from a co-sited to a standalone breeder at an equilibrium
 store; the breakdown is the co-sited case, power positive when
-consumed. The unit cost is ownership per kilogram plus a power term
-whose sign follows the gain. The ledger's 2 M$/kg is close to what a
-records-grade breeder charges (2.4); at the vendor grade it is
-unexplainable by a factor of four, since a module that makes 4.5 kg/yr
-costs 5.6 M$/kg to own before its power bill; at the extrapolation
-grade a breeder charges about 1 M$/kg; and the 0.5 M$/kg speculation
-entry sits inside its band. Each 10 $/MWh on the breeder's power moves the
+consumed. The ledger's 2 M$/kg is close to what a
+records-grade breeder charges (2.5); at the vendor grade it is
+unexplainable by a factor of four, since a module that makes 4.3 kg/yr
+costs 5.7 M$/kg to own before its power bill; at the extrapolation
+grade a breeder charges about 0.75 M$/kg; and the 0.5 M$/kg speculation
+entry sits inside its band, near the top (0.18 co-sited, 0.52
+standalone). Each 10 $/MWh on the breeder's power moves the
 vendor-grade unit cost by 0.13 M$/kg and the speculation-grade one by
 0.12 M$/kg the other way.
 
 **Siting.** At the records and vendor grades a device needs 20-25
 breeder modules and siting changes nothing. At the two cheaper grades a
 central facility differs from a co-sited breeder in three ways:
-granularity (the speculation-grade module makes 137 kg/yr against a
-purchase of 26, so a co-sited whole module is five times oversized),
-the model's own standalone fixed cost (34-46 M$/yr with the
-tritium-plant core: 1.2-1.3 M$/kg over one device's purchase, about
+granularity (the speculation-grade module makes 133 kg/yr against a
+purchase of 25, so a co-sited whole module is five times oversized),
+the model's own standalone fixed cost (21-37 M$/yr with the
+tritium-plant core: 1.1-1.6 M$/kg over one device's purchase, about
 0.1 M$/kg by ten), and power valuation (the speculation breeder exports
 12,000 MWh per kilogram, so a facility selling above the park's own
 LCOE drives its He-3 line toward zero).
 
 | device | co-sited, marginal (M$/kg) | co-sited, whole modules (M$/kg) | central facility, 1 device | 5 devices | 20 devices |
 |---|---|---|---|---|---|
-| citable records | 2.38 | 2.42 (20 modules) | 2.57 | 2.43 | 2.40 |
-| Helion's requirements | 7.18 | 7.34 (25 modules) | 7.62 | 7.30 | 7.21 |
-| extrapolations | 1.01 | 1.34 (2 modules) | 2.42 | 1.33 | 1.09 |
-| speculation | 0.37 | 2.16 (1 module) | 3.29 | 0.66 | 0.46 |
+| citable records | 2.47 | 2.51 (20 modules) | 2.66 | 2.52 | 2.48 |
+| Helion's requirements | 7.39 | 7.55 (25 modules) | 7.85 | 7.51 | 7.41 |
+| extrapolations | 0.73 | 0.96 (2 modules) | 1.79 | 0.97 | 0.79 |
+| speculation | 0.17 | 0.98 (1 module) | 1.73 | 0.35 | 0.22 |
 
 One device is one GWe of self-supply plant; power at the ladder LCOE,
-so the vendor row reads 7.2 here and 8.2 at its fixed point. A
+so the vendor row reads 7.4 here and 8.5 at its fixed point. A
 facility needs about five devices behind it to match a co-sited
 breeder at the extrapolation grade and twenty to approach the marginal
 price; at the speculation grade the answer is a fleet facility of five
 devices or more. Surplus He-3 serves more plants, lets the burners run
-leaner (free He-3 makes the lean mix cheaper than the D-rich one, 29.2
-against 36.0 $/MWh at the extrapolation grade), or is banked, since
+leaner (free He-3 makes the lean mix cheaper than the D-rich one, 22.4
+against 27.0 $/MWh at the extrapolation grade), or is banked, since
 He-3 is stable and tritium can stay in the store. Banking is also the
 answer to the decay lag: a fleet growing at rate g receives the delayed
 half at lambda/(lambda + g), so breeders must lead the fleet by
 1.3-1.6x at 5-20%/yr growth.
 
 Closing the loop the other way, lean power modules fed by breeders
-inside the park, gives a similar reading: 40-55 $/MWh at the
-extrapolation grade against 45.1, 18-25 at speculation against
-18.6, 179-291 at the vendor grade against 121.4. The scheme relocates
-the tritium inventory rather than shrinking it (0.5-3.4 t per lean GWe
+inside the park, gives a similar reading: 30-40 $/MWh at the
+extrapolation grade against 36.1, 11-15 at speculation against
+12.0, 184-300 at the vendor grade against 124.4. The scheme relocates
+the tritium inventory rather than shrinking it (0.5-3.2 t per lean GWe
 moves to the breeder site), which is where Section 5.4's swappable
 cartridge and a single licensed bulk-tritium site belong. Three
 simplifications cut in known directions: the breeder inherits the power
@@ -715,11 +737,11 @@ a function of the separatrix-to-coil radius ratio alone,
 giving chi = 0.30 / 0.52 / 0.71 at x_s = 0.5 / 0.7 / 0.85. Fat FRCs
 are high-chi machines: good confinement physics pushes the derate up.
 The extra recirculating loss eta_dec chi (1 - f_pdv) p_driver is worth
-+3.5/+6.0/+8.2 $/MWh at the extrapolation device across that x_s span
++2.8/+4.8/+6.6 $/MWh at the extrapolation device across that x_s span
 (the Q of order 2 machine circulates 1290 MW of driver power, and the
 radial-only f_pdv widens the uncaptured channel),
-+0.1 $/MWh at the speculation device, and order +10 $/MWh at the
-low-Q Helion device. It is carried
++0.03 to +0.08 $/MWh at the speculation device, and order +10 $/MWh
+at the low-Q Helion device. It is carried
 as a reconciliation adder pending a model-level treatment.
 
 **The expansion-ratio bound, and the cycle it belongs to.** The
@@ -791,19 +813,19 @@ Two controlled sweeps at the speculation stack (constant gain, constant wall
 loading, driver and chamber scaled with module power) separate module
 count from plant size. **Module count at fixed plant size is nearly
 free, and mid-size modules carry a mild bonus**: a park of
-250 MWe modules reads 17.6 $/MWh against the single 1 GWe module's
-18.6 $/MWh (the adiabat-priced coils reward smaller compressed
-volumes), and even 50 MWe modules cost only a tenth of a dollar
-more, because buildings, supplementary capital, and balance of
+500 MWe modules reads 11.5 $/MWh against the single 1 GWe module's
+12.0 $/MWh (the adiabat-priced coils reward smaller compressed
+volumes; 250 MWe modules read 11.6), and even 50 MWe modules cost only
+three tenths of a dollar more (12.3), because buildings, supplementary capital, and balance of
 plant price plant totals; the only modularity tax is per-module fixed
 items, biting below about 100 MWe. **Standalone
 plant size is expensive**:
 
 | plant | LCOE ($/MWh) | $/kW | dominant penalties |
 |---|---|---|---|
-| 1 GWe | 18.6 | 1532 | - |
-| 250 MWe | 29.0 | 2330 | fixed site buildings, staffing^0.5 |
-| 50 MWe | 73.3 | 6513 | O&M 16.5 $/MWh (staffing law), 141 M$ of buildings, tritium-plant fixed core |
+| 1 GWe | 12.0 | 1488 | - |
+| 250 MWe | 18.9 | 2262 | fixed site buildings, staffing^0.5 |
+| 50 MWe | 44.6 | 6325 | O&M 17.2 $/MWh (staffing law), 141 M$ of buildings, tritium-plant fixed core |
 
 ![Module size, park vs standalone](figures/fig5_plant_size.svg)
 
@@ -825,22 +847,29 @@ is unambiguous: this concept's economics live in power parks, and a
 50 MWe module is a manufacturing choice the model neither rewards nor
 punishes at park scale.
 
-## 8. What would have to be true to reach $10/MWh
+## 8. What reaches $10/MWh, and what carries it
 
-On top of the full speculation stack at 3 GWe (15.4 $/MWh), in decreasing order of
+The full speculation stack reaches the target only as a 3 GWe park
+(9.7 $/MWh; 12.0 at 1 GWe), and the entry that carries it across is its
+financing: at the design-basis 7% real the same machine reads
+15.8 $/MWh (19.0 at 1 GWe), so the 3% real cost of capital,
+sovereign-class money with no mechanism behind it, is worth more than
+the whole distance to the target. No physics or engineering entry
+crosses it on its own, and the crossing also needs the derived
+availability of 0.92: at the model default of 0.85 the park reads
+10.3 $/MWh and at 0.95 it reads 9.5, so the target holds for
+availability above about 0.90. Beyond the stack, in decreasing order of
 plausibility:
 
-- **He-3 at effectively zero cost** (13.9 $/MWh): a mature breeding
-  economy or
-  an external supply two orders below the observed market. Even this
-  does not break 10 $/MWh, because the tritium plant scales with the breeding
-  throughput that funds the credit. Section 5.6 prices the breeding
-  economy itself: a speculation-grade breeder delivers He-3 at
-  0.2-0.7 M$/kg, and only a fleet facility that sells its power drives
-  the line toward zero.
-- **Gas-class site and decommissioning analogs** (about 2 $/MWh):
-  defensible only for the He-3-lean machine; the D-rich machine's
-  tonne-class tritium inventory argues the other way.
+- **He-3 at effectively zero cost** (8.2 $/MWh at 3 GWe): a mature
+  breeding economy or an external supply two orders below the observed
+  market. Section 5.6 prices the breeding economy itself: a
+  speculation-grade breeder delivers He-3 at 0.2-0.5 M$/kg, and only a
+  fleet facility that sells its power drives the line toward zero.
+- **Gas-class site and decommissioning analogs** (about 2 $/MWh at
+  1 GWe, the whole of the buildings and CAS50 lines): defensible only
+  for the He-3-lean machine; the D-rich machine's tonne-class tritium
+  inventory argues the other way.
 - **A real fleet-learning term** on equipment, anchored beyond the NOAK
   reference fleet: the only mechanism that rewards the mass-produced
   small-unit strategy at all.
@@ -849,6 +878,12 @@ None of these is in the evidence base at any grade.
 
 ## 9. Caveats that survive into the headline
 
+- The two cheaper devices carry their tier's cost of capital (5% and
+  3% real) and the 80-year civil-works book life. Their physics-and-
+  engineering reading is the at-7% column (42.9 and 19.0 $/MWh at
+  1 GWe), and it is the 3% rate, not a technology entry, that takes the
+  3 GWe speculation park under $10/MWh; the crossing also needs the
+  derived availability of 0.92 (10.3 $/MWh at the model default 0.85).
 - No extrapolation entry is a measured record: the two co-dominant levers
   (per-pulse fuel recovery, capacitor life) and the next two (rep
   rate, burn mix) are respectively an extrapolated analogy, a
@@ -860,25 +895,26 @@ None of these is in the evidence base at any grade.
   becomes load-bearing at low burnup.
 - The headline floor is conditional on the patent-basis compression
   field: per-pulse burnup falls as B^2, so a 10 T reactor point adds
-  about 6 $/MWh and a 5 T point about 31 $/MWh (Section 5.3). The
+  about 4 $/MWh and a 5 T point about 21 $/MWh (Section 5.3). The
   neutron-damage adders are more likely low than high
   (fission-spectrum dpa data, an order of magnitude more helium per
   dpa at 14 MeV, uniform-cylinder averaging over a localized burn).
 - Model gaps priced in the bands but excluded from the headline:
   HVDC-class switch duty, tritium-plant scope, driver thermalization.
   The main conservatism cuts the other way (no thermal bottoming in the
-  basis, worth -9.4 $/MWh at the extrapolation device).
+  basis, worth -7.8 $/MWh at the extrapolation device).
 
 ## 10. Relation to the Borealis mirror study
 
 Same framework, same evidence discipline, one ledger harmonized against
 the other (knob-by-knob divergence table in `docs/ledger.md`; every
-divergence carries a stated physics or technology reason). Both studies
-price every rung on the series plant environment. At the speculation
-grade the two are within a dollar of each other (Borealis 18.9 and
-14.5 $/MWh at 1 and 3 GWe against 18.6 and 15.4 here). At the
-extrapolation grade the mirror is materially cheaper (21.1 against
-45.1 $/MWh at 1 GWe), chiefly because it needs no capacitor-life
+divergence carries a stated physics or technology reason). The mirror study
+is quoted on a fixed 7% real environment with an 80-year book life at
+every rung, so the like-for-like Helion numbers are the at-7% column.
+At the speculation grade the two are within a dollar of each other
+(Borealis 18.9 and 14.5 $/MWh at 1 and 3 GWe against 19.0 and 15.8
+here). At the extrapolation grade the mirror is materially cheaper
+(21.1 against 42.9 $/MWh at 1 GWe), chiefly because it needs no capacitor-life
 breakthrough, no tritium plant, and no rep-rate roadmap: its levers
 already sit at record and extrapolation grade. On the down-select axis
 "how much unpurchasable physics does the cheap number require", the
@@ -888,16 +924,17 @@ upside", the two are comparable.
 ## 11. Conclusions and measurement priorities
 
 A Helion-class pulsed inductive plant, priced bottom-up with enforced
-physics coherence, bottoms out at about 18.6 $/MWh at 1 GWe and
-15.4 $/MWh at 3 GWe on full speculation; the public $10/MWh target is
-not reached by any internally consistent stack this work can
-construct. The cheap numbers rest on a small set of unmeasured
+physics coherence, bottoms out at 12.0 $/MWh at 1 GWe and 9.7 $/MWh
+at 3 GWe on full speculation, or 19.0 and 15.8 $/MWh at the
+design-basis cost of capital; the public $10/MWh target is reached by
+one internally consistent stack, the 3 GWe speculation park, and only
+through its 3% real financing. The cheap numbers rest on a small set of unmeasured
 properties, ranked here by the $/MWh they gate:
 
 1. **Capacitor cost-at-life** (tens of $/MWh): a sourced curve
    replacing the single derating target, resolving the joint optimism
    of 0.1 $/J with 1e10-shot life.
-2. **Per-pulse burnup, extraction, and fuel recovery** (7-17 $/MWh):
+2. **Per-pulse burnup, extraction, and fuel recovery** (6-16 $/MWh):
    the patent fixes the design intent, low per-pulse burnup with
    inter-pulse tritium removal, but a patent is design intent, not a
    measurement; the reactor-point compression density and field, the
@@ -928,30 +965,39 @@ the four evidence stacks in `config/`, the scripts in `scripts/` that
 produce every number and figure (the README says what each one does),
 the evidence ledger, the adversarial review, the capacitor evidence,
 and the vendor slide captures. The cost model is `1costingfe` at commit
-44434d9. Thirty regression tests pin all four devices at both plant
-sizes, the stack evaluations at the vendor configuration, the
-tritium-burn closure, the chi(x_s) anchors, and the breeder unit cost,
-and fail loudly if the model moves under this work.
+44434d9. Thirty-eight regression tests pin all four devices at both
+plant sizes, the stack evaluations at the vendor configuration, the
+tritium-burn closure, the chi(x_s) anchors, the breeder unit cost, the
+availability derivation, the financing ladder, and the three-part
+partition of the LCOE behind Figure 1, and fail loudly if the model
+moves under this work.
 
 ## References
 
-- Apostoleris, H., Al Ghaferi, A., and Chiesa, M. (2021). "What is
-  going on with Middle Eastern solar prices, and what does it mean for
-  the rest of us?" Progress in Photovoltaics: Research and Applications
-  29, 638-648, doi:10.1002/pip.3414 (the 4.25% WACC backed out of the
-  Dubai MBR3 PPA price of 2.99 cents/kWh).
+- Böhnlein, S., et al. (2026). "Too cheap to meter? A stochastic
+  analysis of projected future fusion costs." arXiv:2606.26536 (56
+  references surveyed; 43 plant-lifetime assumptions with medians of
+  30-40 years across maturity levels).
 - Bosch, H.-S., and Hale, G. M. (1992). "Improved formulas for fusion
   cross-sections and thermal reactivities." Nuclear Fusion 32, 611.
 - Brezinsek, S., et al. (2013). "Fuel retention studies with the ITER-
   Like Wall in JET." Nuclear Fusion 53, 083023.
 - Helion Energy. Technology and FAQ pages (helionenergy.com/technology,
-  /faq); Microsoft power purchase agreement announcement (2023); Nucor
-  500 MW facility announcement (2024).
+  /faq); Microsoft power purchase agreement announcement (2023).
 - Helion Energy (Slough, J., et al.). "Advanced fuel cycle and fusion
   reactors utilizing the same," published as US 2017/0011811, granted
   as US 11,469,003 B2 (2022): the breed-extract-store-decay fuel cycle
   and its operating table. Used as design intent, not as a record; see
   Section 5.2.
+- Glorian, D. "Power Plant Performance Improvement." World Energy
+  Council, Performance of Generating Plant Committee, with Solomon
+  Associates; OSTI ETDE 21062594 (US nuclear unplanned capability loss
+  factor 1.6% against a 4.1% world average, PRIS data).
+- IAEA (2025). Nuclear Power Reactors in the World, Reference Data
+  Series No. 2, 2025 edition (Table 18: world planned capability loss
+  12.3%, unit capability factor 83.5%, 2022-2024).
+- IEA/NEA (2020). Projected Costs of Generating Electricity, 2020
+  edition (3%, 7%, and 10% real discount rates, 7% central).
 - Kirtley, D. (2024). "Fundamental theory of the direct magnetic
   energy recovery in a thermonuclear field reversed configuration
   system." APS DPP 2024, abstract GO05.8; slide captures in
@@ -962,20 +1008,32 @@ and fail loudly if the model moves under this work.
   fusion plasmas." Journal of Fusion Energy 42, 30.
 - Langtry, A., et al. (2025). "Affordable, manageable, practical
   Z-pinch driver (AMPS)." arXiv:2504.10680 (capacitor derating and
-  shot-life target; MagLIF burn fraction).
+  shot-life target).
 - Rubin, T. (2026). 1costingfe: a bottom-up fusion power plant cost
   model. Repository at commit `44434d9`.
 - Spencer, R. L., Tuszewski, M., and Linford, R. K. (1983).
   "Adiabatic compression of elongated field-reversed configurations."
   Physics of Fluids 26, 1564 (the FRC adiabatic compression scalings
   behind the radial-axial work partition).
+- Thea Energy (2025). "Overview of the Helios Design: A Practical
+  Planar Coil Stellarator Fusion Power Plant." arXiv:2512.08027 (one
+  84-day planned outage every two years; coils shielded to a 40-year
+  minimum life).
 - Tuszewski, M. (1988). "Field reversed configurations." Nuclear
   Fusion 28, 2033 (FRC equilibrium, average-beta theorem, adiabatic
   scalings).
 - US DOE/NETL. Quality Guidelines for Energy System Studies: EPCM
   indirect-cost basis.
-- US DOE Geothermal Technologies Office. Geothermal FAQ (fleet
-  availability).
+- US DOE Water Power Technologies Office. Hydropower Basics (typical
+  lifespan 65-85 years).
+- US Energy Information Administration (2024). "U.S. summer nuclear
+  outages declined in 2024." Today in Energy (refueling outages
+  averaged 34 days in 2024 and 38 days in 2023).
+- US Energy Information Administration (2025). "Five countries account
+  for 71% of the world's nuclear generation capacity." Today in Energy
+  (US fleet capacity factor 92% in 2024).
+- World Nuclear Association. "Nuclear Power in the USA," country
+  profile (fleet capacity factor above 90% since 2002, 94% in 2019).
 - Edelgas Group (2024). Helium-3 market pricing, as reported in
   SpaceNews and Newsweek coverage of the Interlune agreements (2025);
   Interlune-DOE Isotope Program and Interlune-Maybell Quantum
