@@ -22,7 +22,7 @@ from study import (
 )
 
 MAX_F_REPS = (0.5, 1.0, 2.0, 3.0, 5.0, 7.0, 10.0)
-YIELDS_MJ = (50.0, 101.4, 150.0, 200.0, 300.0, 500.0, 1000.0, 2000.0)
+YIELDS_MJ = (50.0, 128.1, 150.0, 200.0, 300.0, 500.0, 1000.0, 2000.0)
 TIER2_MIN_OVERRIDES = dict(
     chamber_length=20.0, plasma_t=0.5, r_bore=0.6, fw_class="panel")
 

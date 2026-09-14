@@ -9,8 +9,10 @@ capacitor-bank driver (Polaris, sourced), inductive recovery of driver and
 PdV energy through the coil circuit (eta_th = 0; radiated and undirected
 charged energy is discarded, with a thermal-bottoming add-back carried in
 `scripts/reconciliation.py`), copper pulsed coils, in-situ plasmoid
-formation, and a per-shot yield back-derived from Helion's 50 MWe PPA claim
-rather than from any disclosed measurement. 1 GWe is the baseline anchor,
+formation, and a per-shot yield solved, not disclosed: the shot at which
+the model, at the patent's burn point, delivers Helion's 50 MWe PPA module
+at 1 Hz (128 MJ, gain 2.56), fired in the smallest chamber that survives
+it (0.61 m plasma radius). 1 GWe is the baseline anchor,
 built as an integer count of Helion-class modules; see
 `config/baseline.yaml` for the basis rationale.
 
@@ -46,15 +48,15 @@ device except the vendor configuration is a constrained design-space
 scan optimum (chamber size, wall class, yield, burn mix), not an
 asserted operating point.
 
-Headline ladder at 1 GWe: records 176.7, Helion's requirements 124.4,
-extrapolations 36.1 (42.9 at 7% real), speculation 12.0 (19.0 at 7%)
+Headline ladder at 1 GWe: records 151.5, Helion's requirements 108.4,
+extrapolations 33.6 (39.9 at 7% real), speculation 12.0 (19.0 at 7%)
 $/MWh; at 3 GWe the speculation park reads 9.7 $/MWh (15.8 at 7%), so
 the $10 target is reached by one internally consistent stack and only
 through its 3% real cost of capital and a derived availability above
 about 0.90, not through any physics or engineering entry. The records
 device tops the ladder because the vendor's per-pulse fuel recovery
 and recovery-share claims have no records and their reversion is worth
-about 85 $/MWh. See `docs/writeup.md` for the narrative results
+about 74 $/MWh. See `docs/writeup.md` for the narrative results
 and `docs/ledger.md` for record-by-record sourcing, the tornado ranking,
 and the knob-by-knob consistency audit against the sister study
 `borealis_mirror_tea`.

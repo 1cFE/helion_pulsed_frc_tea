@@ -39,7 +39,7 @@ records:
 
   fw_class:
     value: hhf
-    source: "Machine design purchase, not a record: divertor-grade monoblock wall (ITER divertor procurement anchor, 2.5 M$/m^2 NOAK, 10 MW/m^2 qualification) bought over the real 37.7 m^2 cylinder area to make 3 Hz admissible. ~94 M$/module."
+    source: "Machine design purchase, not a record: divertor-grade monoblock wall (ITER divertor procurement anchor, 2.5 M$/m^2 NOAK, 10 MW/m^2 qualification) bought over the real 44.6 m^2 design-basis cylinder area to make 3 Hz admissible. About 112 M$/module."
 
   dhe3_dd_frac:
     value: 0.85

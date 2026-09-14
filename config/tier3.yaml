@@ -1,8 +1,9 @@
 # config/tier3.yaml
 # Tier 3: labelled speculation, applied on top of tier 2. No entry here has
 # a source; each is the optimistic edge of a stated argument or an explicit
-# leap. Geometry note: this tier does NOT keep the 0.5 m x 10 m chamber.
-# Yield above ~150 MJ flash-melts that wall (per-shot areal energy over the
+# leap. Geometry note: this tier does NOT keep the design-basis 0.61 m x
+# 10 m chamber, sized to survive exactly the 128 MJ design-basis shot; any
+# larger yield flash-melts that wall (per-shot areal energy over the
 # tungsten bound), so scripts/coherent_min.py solves the chamber size and
 # yield jointly under the wall constraints instead of asserting Q = 40 in a
 # chamber that cannot survive it. yield_per_shot_mj therefore has no entry

@@ -2,10 +2,11 @@
 # Helion-class pulsed D-He3 FRC with inductive DEC - DESIGN BASELINE.
 # This is Helion's own implied operating point, not an independent design:
 # e_driver_mj = 50 is sourced (Polaris capacitor bank), max_f_rep = 1 Hz is
-# third-party (NRC filing ML21026A315, IEEE Spectrum), and the concept
-# YAML's yield (101.4 MJ) is back-derived so the model's own DEC chain
-# reproduces Helion's 50 MWe PPA claim at 1 Hz. The shot design point stays
-# at the concept-YAML values and is not overridden here.
+# third-party (NRC filing ML21026A315, IEEE Spectrum), and the per-shot
+# yield (128.1 MJ, gain 2.56) is solved so the model's own DEC chain, at the
+# patent's burn point below, reproduces Helion's 50 MWe PPA claim per module
+# at 1 Hz. The chamber is the smallest cylinder that survives that shot
+# under the tungsten flash bound (scripts/study.py E_FLASH_MELT_MJ_M2).
 #
 # Conversion is inductive DEC only, no turbine (eta_th = 0 is the concept
 # preset): radiated and non-recovered charged energy is discarded, not
@@ -22,6 +23,21 @@ forward:
   # with borealis_mirror_tea and the down-select. Helion's 50 MWe PPA unit
   # is a point on the scale scan, not the baseline.
   net_electric_mw: 1000.0
+
+  # --- Design-basis shot and chamber ---
+  # The yield is solved, not disclosed: 128.1 MJ per shot (gain 2.56 on the
+  # sourced 50 MJ driver) is the smallest value, to 0.1 MJ, at which one
+  # module at the patent burn point below nets the PPA's 50 MWe at the 1 Hz
+  # ceiling, so a 1 GWe plant is 20 modules at 1 Hz. The chamber radius is
+  # the smallest that survives the shot: at the concept preset's 0.5 m the
+  # per-shot wall flash is 1.75 MJ/m^2 against the 1.5 MJ/m^2 tungsten
+  # bound; 0.61 m (wall radius 0.71 m with the 0.10 m gap, the coil bore
+  # right behind it) brings it to 1.48. Length stays at the preset's 10 m.
+  # The concept preset's own yield pin (101.4 MJ) was made under its
+  # default 1:1 D:He-3 mix, which no source supports, and is not used.
+  yield_per_shot_mj: 128.1
+  plasma_t: 0.61
+  r_bore: 0.71
 
   # --- Plant environment: held and stepped ---
   # Held at every rung (this file): constant-dollar framing (inflation_rate

@@ -127,10 +127,10 @@ def test_helion_requirements_device(model, base_cfg):
     # the vendor configuration on the design basis (7% real, 30 yr, derived
     # availability)
     diag = _ladder_lcoe(model, base_cfg)
-    assert diag["lcoe"] == pytest.approx(124.4, abs=0.2)
-    assert diag["n_mod"] == 28
+    assert diag["lcoe"] == pytest.approx(108.4, abs=0.2)
+    assert diag["n_mod"] == 20
     _, diag3 = run(model, dict(base_cfg["forward"], net_electric_mw=3000.0))
-    assert diag3["lcoe"] == pytest.approx(119.7, abs=0.2)
+    assert diag3["lcoe"] == pytest.approx(104.7, abs=0.2)
 
 
 def test_records_device(model, base_cfg):
@@ -139,24 +139,24 @@ def test_records_device(model, base_cfg):
     tritium plant, in fat panel-wall chambers)."""
     _, fwd = device_fwd("records", 1000.0)
     _, diag = run(model, fwd)
-    assert diag["lcoe"] == pytest.approx(176.7, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(151.5, abs=0.2)
     assert not coherence_violations(fwd, diag, "tier2")
     _, diag3 = run(model, dict(fwd, net_electric_mw=3000.0))
-    assert diag3["lcoe"] == pytest.approx(172.9, abs=0.2)
+    assert diag3["lcoe"] == pytest.approx(147.7, abs=0.2)
 
 
 def test_tier1_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg, "best_case.yaml")
-    assert diag["lcoe"] == pytest.approx(209.6, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(181.9, abs=0.2)
 
 
 def test_tier2_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg, "best_case.yaml", "tier2.yaml")
-    assert diag["lcoe"] == pytest.approx(44.7, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(41.7, abs=0.2)
     # D-rich mix carries its plant; the adder is unit-priced
     # (50 M$ + 0.657 M$/MW of plant neutron power), so the rung's value is a
     # consequence of its throughput, not an identity
-    assert diag["tritium_adder_musd"] == pytest.approx(213.2, abs=1.0)
+    assert diag["tritium_adder_musd"] == pytest.approx(202.4, abs=1.0)
 
 
 def test_tritium_adder_scales_with_throughput(model, base_cfg):
@@ -177,10 +177,10 @@ def test_tier3_rung(model, base_cfg):
 def test_tier2_coherent_minimum(model, base_cfg):
     _, fwd = device_fwd("extrap", 1000.0)
     _, diag = run(model, fwd)
-    assert diag["lcoe"] == pytest.approx(36.1, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(33.6, abs=0.2)
     assert not coherence_violations(fwd, diag, "tier2")
     _, diag3 = run(model, dict(fwd, net_electric_mw=3000.0))
-    assert diag3["lcoe"] == pytest.approx(33.0, abs=0.2)
+    assert diag3["lcoe"] == pytest.approx(30.5, abs=0.2)
 
 
 def test_tier3_coherent_minimum(model, base_cfg):
@@ -199,7 +199,7 @@ def test_tier3_coherent_minimum(model, base_cfg):
 
 def test_tier_stacks_are_coherent(model, base_cfg):
     """Every published rung must pass its own tier's coherence check. The
-    records stack evaluated on the vendor's own 0.5 m chamber is a
+    records stack evaluated on the vendor's own 0.61 m chamber is a
     controlled comparison, not a published device, and sits a few percent
     over the wall flash bound there (the reverted recovery share dumps more
     conversion waste on the wall), which is one reason the records device

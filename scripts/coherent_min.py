@@ -9,9 +9,10 @@ within the bought wall class, per-shot flash energy under tungsten melt,
 tritium plant charged whenever the mix is D-rich.
 
 Two evidence levels:
-- tier2: the extrapolation stack; the shot is the cited one (101.4 MJ,
-  gain is evidence-anchored), so the only freedoms are geometry, wall
-  class, and burn mix.
+- tier2: the extrapolation stack; the shot is the design-basis one
+  (config/baseline.yaml: 128.1 MJ, the yield that reproduces the PPA at
+  the patent burn point), so the only freedoms are geometry, wall class,
+  and burn mix.
 - tier3: the speculation stack; yield is also free (gain speculation),
   because tier 3 already concedes it is unevidenced - but it must still be
   survivable in the chamber it is costed in.
@@ -42,7 +43,7 @@ BURN_BRANCHES = (
 FW_CLASSES = ("panel", "hhf")
 LENGTHS_M = (10.0, 15.0, 20.0, 30.0, 45.0, 60.0)
 RADII_M = (0.5, 0.75, 1.0, 1.5)
-YIELDS_MJ = (101.4, 150.0, 200.0, 300.0, 500.0, 750.0, 1000.0, 1500.0, 2000.0)
+YIELDS_MJ = (128.1, 150.0, 200.0, 300.0, 500.0, 750.0, 1000.0, 1500.0, 2000.0)
 
 _VACUUM_T = 0.10
 
@@ -73,7 +74,7 @@ def scan(tier: str):
     model = build_model(base_cfg)
 
     fwd0 = tier_fwd(tier)
-    yields = YIELDS_MJ if tier == "tier3" else (fwd0.get("yield_per_shot_mj", 101.4),)
+    yields = YIELDS_MJ if tier == "tier3" else (fwd0["yield_per_shot_mj"],)
     # tier-1 coherence uses the tier-2 cap set (no tier-1-specific caps exist)
     
 
