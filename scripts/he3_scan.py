@@ -5,8 +5,11 @@ The only observed transactions are gram-to-kilogram scale at about
 19-22 M$/kg (2024 spot about $2,500/L per Edelgas; Interlune's 2025 DOE
 and Maybell agreements reference "today's commercial market price"; the
 2026 TAE / Black Moon lunar option discloses no price), so the 2.0e+7
-row is the observed-market anchor and the baseline 2e6 $/kg is already a
-10x supply-at-scale concession against it. This sweep shows what each
+row is the recent commercial-spot anchor; the 4.5e6 row is the DOE
+Isotope Program's allocated price (600 $/L to federal users in the 2011
+allocation, CRS R41419, the second post's basis; commercial users paid
+1,000 $/L), 2011 data that the market has since left several-fold
+behind; and the baseline 2e6 $/kg is a concession against both. This sweep shows what each
 concession is worth across the burn-mix span, at the tier-2
 coherent-minimum machine. f_rad is coupled to the mix via the
 bremsstrahlung floor; the tritium adder fires on the D-rich side. The
@@ -26,7 +29,7 @@ from study import (
     run,
 )
 
-U_HE3_USD_KG = (2e7, 2e6, 1e6, 5e5, 1e5, 0.0)
+U_HE3_USD_KG = (2e7, 4.5e6, 2e6, 1e6, 5e5, 1e5, 0.0)
 DD_FRACS = (0.131, 0.314, 0.5, 0.7, 0.85, 0.95)
 
 if __name__ == "__main__":

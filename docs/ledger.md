@@ -433,7 +433,7 @@ an explicit leap. See `config/tier3.yaml` for the per-knob notes.
 | cap_shot_lifetime | 1e10 | required for coherence with 10 Hz; no source at any price; jointly heroic with the $/J entry below |
 | eta_dec x f_pdv | 0.95 x 0.947 = 0.90 | the theory-optimal composite taken at face value, zero engineering margin; f_pdv 0.947 additionally claims capture of the axial expansion channel (about 1/5 of boundary work), which the tier-2 radial-only bound excludes. The source figure (Kirtley DPP24, 'optimal burn cycles exceeding 90%') is unreproducible: its numerator is independently verified but its input-accounting denominator is defined in neither slide nor talk (docs/sources/kirtley_dpp24_formulas.md) |
 | c_cap_allin_per_joule | 0.1 | below the model's own documented range floor; contradicts the derating physics that buys the cap life above |
-| u_he3 | 5e5 $/kg | no fleet-scale He-3 market exists at any price. The only observed transactions are gram-to-kilogram scale at 19-22 M$/kg (2024 spot about $2,500/L per Edelgas; Interlune's 2025 DOE and Maybell Quantum agreements priced "at approximately today's commercial market price"; TAE's 2026 Black Moon lunar supply option discloses no price). This entry is 40x below every observed price, and the new entrants (lunar: Interlune, Black Moon; terrestrial: Pulsar Helium) are building toward the high price, not under it. A dedicated deuterium breeder built from the same module (`scripts/breeder_loop.py`; writeup Section 5.6) prices the He-3 each device buys at 2.1-2.3 M$/kg on the records shot, 7.7-8.5 M$/kg on the vendor's, 0.8-1.1 M$/kg at the extrapolation grade and 0.2-0.7 M$/kg at speculation (1.27x more once the decay wait is financed): the baseline 2e6 is reproduced at the records grade, unexplainable at the vendor grade, conservative at the extrapolation grade, and this entry sits inside the speculation-grade band. |
+| u_he3 | 5e5 $/kg | no fleet-scale He-3 market exists at any price. The government price is the DOE Isotope Program's allocation, 600 $/L to federal and 1,000 $/L to commercial users in 2011 (CRS R41419), 4.5-7.4 M$/kg, and that is 2011 data, since which prices have risen several-fold; the recent commercial transactions are gram-to-kilogram scale at 19-22 M$/kg (2024 spot about $2,500/L per Edelgas; Interlune's 2025 DOE and Maybell Quantum agreements priced "at approximately today's commercial market price"; TAE's 2026 Black Moon lunar supply option discloses no price). This entry is 9x below the 2011 allocation and 40x below the commercial spot, and the new entrants (lunar: Interlune, Black Moon; terrestrial: Pulsar Helium) are building toward the high price, not under it. A dedicated deuterium breeder built from the same module (`scripts/breeder_loop.py`; writeup Section 5.6) prices the He-3 each device buys at 2.1-2.3 M$/kg on the records shot, 7.7-8.5 M$/kg on the vendor's, 0.8-1.1 M$/kg at the extrapolation grade and 0.2-0.7 M$/kg at speculation (1.27x more once the decay wait is financed): the baseline 2e6 is reproduced at the records grade, unexplainable at the vendor grade, conservative at the extrapolation grade, and this entry sits inside the speculation-grade band. |
 | dec_staged_recovery_factor | 0.5 | patent's unquantified "net reduction in cost and size", optimistic edge |
 | c_inv_per_kw_net | 50 $/kW | small lever |
 | multi_unit_labor_factor | 0.80 | small lever |
@@ -525,10 +525,11 @@ extrapolation-to-speculation recovery step is exactly the axial-capture claim,
 resolvable by the Polaris shot triplet. Parallel particle streaming
 through the exhaust is captured by nothing at any grade.
 
-**The observed He-3 market makes the fuel accounting first-order.** At the
-observed 19-22 M$/kg spot (he3_scan's 2e7 row) the extrapolation
-device reads 127 $/MWh at dd_frac 0.85 and 295 $/MWh lean: no mix
-survives market-priced He-3. That reading follows from the model's fuel accounting: prompt bred
+**The He-3 market makes the fuel accounting first-order.** At the DOE
+Isotope Program's 2011 allocation of 4.5 M$/kg (he3_scan's 4.5e6 row) the
+extrapolation device reads 47.4 $/MWh at dd_frac 0.85 and 77.2 $/MWh
+lean; at the 19-22 M$/kg commercial spot it has since risen to (the 2e7
+row) 118 and 266: no mix survives market-priced He-3. That reading follows from the model's fuel accounting: prompt bred
 He-3 is credited through its species-resolved cumulative recycle
 fraction (0.80 at the per-pulse basis: He-3 burns out of the loop 3.3x
 faster per pass than it leaks), but the decay store's He-3 return,
@@ -542,8 +543,9 @@ open accounting question: the study prices the decay store's capital,
 inventory, and licensing consequences but does not credit its product,
 which is conservative-incoherent in the same sense constraint 4 forbids
 optimistic-incoherence. Worth 9.1 $/MWh at the study's u_he3 (the whole
-purchased line, since the return exceeds the purchase) and about 90 at
-the observed spot; item 6 below.
+purchased line, since the return exceeds the purchase), about 20 at the
+2011 DOE allocation of 4.5 M$/kg and about 90 at today's commercial
+spot; item 6 below.
 
 **The $10/MWh target is reached by the full speculation stack as a 3 GWe
 park (9.7 $/MWh; 12.0 at 1 GWe), and by nothing below it.** What
@@ -600,15 +602,15 @@ same ruling in both unless a physics or technology difference is stated.
 
 | knob | Borealis | Helion | divergence justified by |
 |---|---|---|---|
-| interest_rate | 0.07 real | 0.07 / 0.07 / 0.05 / 0.03 real by rung | **stated convention**: the cost of capital steps with the tiers as financing and is shown separately (Figure 1, the at-7% column); the same 7/7/5/3 ladder is specified for the mirror study |
+| interest_rate | 0.07 / 0.07 / 0.05 / 0.03 real by rung | same | same ladder: the cost of capital steps with the tiers as financing and is shown separately in both studies (composition figure, at-7% column) |
 | inflation_rate | 0.0 | 0.0 | same: constant-dollar framing |
 | construction_time_yr | 2.5 | 2.5 | same; argument stronger here (factory modules) |
 | indirect_fraction | 0.192 (8% effective) | 0.192 (8% effective) | same normalization in both |
 | installation_frac | held 0.14 | held 0.14 | same |
 | om_cost | held | held | same; additionally forced here by the tritium facility |
 | f_rad_fus / f_rad | held | coupled variable | **stated physics reason**: here f_rad is a function of the burn mix (bremsstrahlung floor), not an independent knob; Borealis's photon fraction is set by its own burn physics and was held |
-| availability | 0.98 | derived per rung, 0.898 to 0.924 | **stated technology reason**: the US fission fleet's 0.98 outside planned outages and the same routine maintenance bundle, less the outages of the bank swaps and the unshielded wall's changeouts, replacement events the mirror does not have |
-| lifetime_yr | 80 | 30 / 30 / 80 / 80 by rung | **stated technology reason**: 80 yr is an engineering entry (civil works) where replacements are priced; here the 1e8-shot bank of the records grade turns over nine times in 30 years, and the civil-works life enters from the extrapolation grade |
+| availability | derived per rung, 0.927 to 0.932 | derived per rung, 0.898 to 0.924 | same derivation (the fission fleet's 0.98 outside planned outages, less a 34-day routine bundle every two years and 84-day wall changeouts on the model's own schedule); **stated technology reason** for the gap: the shot-cycled bank swaps and the unshielded wall's fluence-limited changeouts, which the mirror does not have |
+| lifetime_yr | 30 / 30 / 80 / 80 by rung | same | same ladder: 30 yr (the model default and the literature's low end) through the records grade, the 80-year civil-works life from the extrapolation grade in both |
 | eta_th | 0.53 (combined cycle) | 0 (basis), 0.30 as reconciliation add-back | **stated technology reason**: no thermal conversion path in the machine basis; the rejected-heat stream at the extrapolation grade makes bottoming worth -5 $/MWh, carried as an add-back exactly as Borealis carried its excluded-DEC add-back |
 | conductor_cost_rebco | held | not applicable | copper pulsed coils, no HTS |
 | fw_class / q_surface_max | hhf / 10 (machine design) | panel or hhf, design-optimized | same treatment: the wall package is machine design, not a record; here the wall is audited in-model against the declared class |
@@ -672,7 +674,8 @@ damage scan nor CAS72 currently prices.
    fraction but charges 1 - dd_frac purchased He-3 per event with no
    decay return). At the study's u_he3 this is a 12 $/MWh question, the
    whole purchased line, since the return exceeds the purchase; at
-   the observed 19-22 M$/kg spot it decides whether the concept works at
+   the 2011 DOE allocation of 4.5 M$/kg, or the 19-22 M$/kg commercial
+   spot it has since risen to, it decides whether the concept works at
    all outside full self-sufficiency. Coupled to item 5: the decay
    return only exists if the tritium survives the pulse. The two-machine
    embodiment (dedicated pure-D breeders, `scripts/breeder_loop.py`,

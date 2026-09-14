@@ -32,7 +32,7 @@ field-reversed configuration (FRC) plasmoids are formed, merged, and
 magnetically compressed to burn, and the expanding plasma returns the
 driver energy and part of the fusion energy to the capacitor banks
 through the same coils, a Diesel-type cycle with an Atkinson
-over-expansion stroke (Sections 2 and 6).
+over-expansion stroke.
 
 The costing uses the `1costingfe` bottom-up cost model, built on
 publicly available data and labeled extrapolations; the open-source
@@ -40,65 +40,39 @@ code is available [here](https://github.com/1cFE/1costingfe),
 with detailed documentation
 [here](https://files.1cf.energy/1costingfe_paper.pdf).
 
-Section 2 describes Helion's device from the published material.
+This work is organized as follows: Section 2 describes Helion's device from the published material.
 Section 3 defines four devices that share that architecture and
 differ only in the subsystem performance they are granted: citable
 records, Helion's own requirements taken at face value, and two
 labeled relaxations, extrapolations and speculation, all on one plant
-environment (Section 3) and each optimized to its best cost under
-enforced physics constraints. Section 4 reports
-the four costs. Sections 5 and 6 develop the two load-bearing
-subsystems, the tritium fuel cycle and the recovery of the driver
-energy, each gated by a few unmeasured plasma properties that the
-developer's own next machine could resolve.
-
-The four devices form a descending ladder. The citable-records device
-prices the concept at about 177 $/MWh. The second device, Helion's own
-configuration granted its two unrecorded performance claims (the
-fourth nine of per-pulse fuel recovery and the axial share of the
-expansion work), reads 124.4 $/MWh. The extrapolation device supports
-about 36 $/MWh, and the speculation device sets the coherent floor:
-12.0 $/MWh at 1 GWe and 9.7 $/MWh at 3 GWe. The $10/MWh target is
-reached by that last device alone, and what carries it across is its
-financing rather than any physics or engineering entry: priced at the
-design-basis 7% real cost of capital the same machine reads 19.0 and
-15.8 $/MWh, and He-3 at zero price on top takes the 3 GWe park to
-8.2 $/MWh. Figure 1 and the ladder table keep that financing part
-visible at every rung. The floor is carried by site and support
-infrastructure (buildings, heat rejection, staffing, decommissioning)
-and by the tritium fuel cycle, not by the capacitor driver; the machine
-has no turbine island at all.
-
-The fuel cycle is the vendor's own patented one: tritium bred in D-D
-is removed between pulses and stored to decay into the He-3 the plant
-burns, at a per-pulse burnup so low that fuel transits the exhaust
-loop thousands of times before burning. Hertz-rate isotope separation
-and per-pass fuel recovery of 0.9999 are therefore the load-bearing
-engineering requirements, and that recovery is graded rather than
-assumed: the JET-ILW retention analogy supports three nines, and the
-fourth enters only as a labeled extrapolation (Section 5). The He-3
-each device buys is repriced by a deuterium breeder built from the
-same module (Section 5.6), and the expansion-work recovery is derived
-per design from its chamber's expansion ratio, never asserted
-(Section 6).
+environment and each optimized to its best cost under
+enforced physics constraints. Section 4 reports the cost of each of
+the four devices. Helium-3 is expensive: the DOE Isotope Program's
+allocated price was about 4.5 M$/kg in 2011 and the market has moved up
+substantially since; even at the 2 M$/kg this study charges, purchased fuel
+is a fifth of the vendor device's LCOE at first blush. In Section 5 we
+work out the He-3
+recycling, the system that takes the unburnt fuel out between shots
+and stores the bred tritium until it decays into the next He-3, and
+Section 6 deals with the recovery of the driver energy through the
+expanding plasma; each is gated by a few unmeasured plasma properties
+that the developer's own next machine could resolve.
 
 ## 2. Machine basis
 
 The machine follows Helion's published architecture at face value
 (Helion Energy technology and FAQ pages; Kirtley and Milroy 2023). Two
-FRC plasmoids are formed by theta-pinch field reversal in opposed
-formation sections, accelerated electromagnetically, and merged in a
-central compression section, where the collision converts their directed
-kinetic energy into ion heat; a subsequent magnetic compression performs
-adiabatic work to reach burn conditions. There is no auxiliary heating
-system of any kind: the pulsed-power driver is also the heater. After
-the burn, the plasma expands against the field, returning driver energy
-and charged fusion energy to the coil circuit as work; radiated
-power, undirected charged power, and neutrons are not converted
-(eta_th = 0 in the machine basis; a bottoming-cycle add-back is carried
-in reconciliation). The chamber is a cylinder with copper pulsed coils
-whose bore sits 0.10 m behind the first wall; there is no breeding
-blanket and no manufactured target (the plasmoid is formed in situ).
+FRC plasmoids, formed by theta-pinch field reversal in opposed formation
+sections, are accelerated and merged in a central compression section,
+the collision converting their directed kinetic energy into ion heat,
+and magnetic compression then does the adiabatic work to burn
+conditions. The pulsed-power driver is the only heater. After the burn
+the plasma expands against the field, returning driver energy and
+charged fusion energy to the coil circuit as work; radiated power,
+undirected charged power, and neutrons are not converted (eta_th = 0; a
+bottoming-cycle add-back is carried in reconciliation). The chamber is
+a cylinder of copper pulsed coils 0.10 m behind the first wall, with no
+breeding blanket and no manufactured target.
 
 The design-basis point takes the driver energy from the sourced Polaris
 capacitor bank (50 MJ per pulse) and back-derives the per-shot yield
@@ -569,22 +543,27 @@ per-pulse basis: He-3 burns out of the loop 3.3x faster per pass than
 it leaks). What it never credits is the decay store's He-3 return,
 0.42 atoms per primary event, equal to the prompt branch. Without it
 the machine imports about 38 kg/yr of He-3; crediting it flips the
-plant to a net exporter. The question is not academic,
-because the only observed He-3 transactions (2024-2026: spot near
+plant to a net exporter. The question is not academic. The government
+price is the DOE Isotope Program's allocation, 600 $/L to federal users
+and 1,000 $/L to commercial users in 2011 (CRS R41419), 4.5 and
+7.4 M$/kg, and that is 2011 data: prices have risen substantially
+since. The recent commercial transactions (2024-2026: spot near
 $2,500/L per the Edelgas Group; Interlune's DOE Isotope Program and
-Maybell Quantum agreements priced "at today's commercial market
-price"; TAE's unpriced Black Moon lunar supply option) sit at
-19-22 M$/kg on
-gram-to-kilogram volumes, 10x above the baseline price used here and 40x
-above the speculation entry, with every new entrant building toward the high
-price. At the observed spot the extrapolation device reads 118 $/MWh at the
-D-rich mix and 266 $/MWh lean under the model's accounting, against
-27.0 $/MWh at the full self-supply limit; the distance between those two numbers is
-the value of the crediting decision, coupled to Section 5.2 because the
-decay return exists only if the tritium survives the pulse. A
-by-product observation: at these prices a kilogram of He-3 burned at
-the floor produces about $1.8M of electricity but sells for $19-22M, so
-an early breeding plant maximizes value selling He-3 into the thin
+Maybell Quantum agreements priced "at today's commercial market price";
+TAE's unpriced Black Moon lunar supply option) sit at 19-22 M$/kg on
+gram-to-kilogram volumes, four to five times the 2011 allocation, with
+every new entrant building toward the high price. The 2 M$/kg used here
+sits below both, and the speculation entry 9x below the 2011
+allocation. At the 2011 allocation of 4.5 M$/kg the extrapolation
+device reads 47.4 $/MWh at the D-rich mix and 77.2 $/MWh
+lean under the model's accounting, at the commercial spot 118 and 266,
+against 27.0 $/MWh at the full self-supply limit; the distance between
+those numbers is the value of the crediting decision, coupled to
+Section 5.2 because the decay return exists only if the tritium survives
+the pulse. A by-product observation: a kilogram of He-3 burned at the
+floor produces about $1.8M of electricity but sold for $4.5M at the
+2011 allocation and sells for $19-22M on the commercial market today,
+so an early breeding plant maximizes value selling He-3 into the thin
 cryogenics and quantum market until fleet supply floods it.
 
 ### 5.6 The breeder as the price of He-3
@@ -904,24 +883,7 @@ None of these is in the evidence base at any grade.
   The main conservatism cuts the other way (no thermal bottoming in the
   basis, worth -7.8 $/MWh at the extrapolation device).
 
-## 10. Relation to the Borealis mirror study
-
-Same framework, same evidence discipline, one ledger harmonized against
-the other (knob-by-knob divergence table in `docs/ledger.md`; every
-divergence carries a stated physics or technology reason). The mirror study
-is quoted on a fixed 7% real environment with an 80-year book life at
-every rung, so the like-for-like Helion numbers are the at-7% column.
-At the speculation grade the two are within a dollar of each other
-(Borealis 18.9 and 14.5 $/MWh at 1 and 3 GWe against 19.0 and 15.8
-here). At the extrapolation grade the mirror is materially cheaper
-(21.1 against 42.9 $/MWh at 1 GWe), chiefly because it needs no capacitor-life
-breakthrough, no tritium plant, and no rep-rate roadmap: its levers
-already sit at record and extrapolation grade. On the down-select axis
-"how much unpurchasable physics does the cheap number require", the
-mirror requires less; on the axis "how large is the speculative
-upside", the two are comparable.
-
-## 11. Conclusions and measurement priorities
+## 10. Conclusions and measurement priorities
 
 A Helion-class pulsed inductive plant, priced bottom-up with enforced
 physics coherence, bottoms out at 12.0 $/MWh at 1 GWe and 9.7 $/MWh
@@ -1034,6 +996,10 @@ moves under this work.
   (US fleet capacity factor 92% in 2024).
 - World Nuclear Association. "Nuclear Power in the USA," country
   profile (fleet capacity factor above 90% since 2002, 94% in 2019).
+- Congressional Research Service (2011). "The Helium-3 Shortage: Supply,
+  Demand, and Options for Congress," R41419, updated October 6, 2011
+  (Table 2: DOE-allocated helium-3 prices, 600 $/L to federal users and
+  1,000 $/L to commercial users in 2011).
 - Edelgas Group (2024). Helium-3 market pricing, as reported in
   SpaceNews and Newsweek coverage of the Interlune agreements (2025);
   Interlune-DOE Isotope Program and Interlune-Maybell Quantum
