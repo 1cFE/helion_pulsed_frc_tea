@@ -32,8 +32,7 @@ Helion realizes inductive recovery in a pulsed linear device: two
 field-reversed configuration (FRC) plasmoids are formed, merged, and
 magnetically compressed to burn, and the expanding plasma returns the
 driver energy and part of the fusion energy to the capacitor banks
-through the same coils, a Diesel-type cycle with an Atkinson
-over-expansion stroke.
+through the same coils.
 
 **The findings, in brief.** Priced bottom-up under seven enforced
 physics couplings, the four devices read 151.5, 108.4, 33.6 and
@@ -97,9 +96,13 @@ undirected charged power, and neutrons are not converted.
 
 The design-basis shot is built from three public numbers: the driver
 delivers 50 MJ per pulse (the sourced Polaris capacitor bank), the plant
-fires at 1 Hz, and the power purchase agreement is for a plant rated at
-least 50 MWe after an initial ramp-up period, taken here as one module.
-The yield per shot is whatever makes the model turn that shot into
+fires at 1 Hz, and Orion is to supply Microsoft at least 50 MW, which
+the vendor describes as at least 50 MWe after an initial ramp-up period
+(Helion FAQ, June 2026). No public source says how many machines make
+up that plant. This work takes it as one module; the solved yield
+scales inversely with the count, while the cost at fixed plant size is
+nearly indifferent to the split (Section 7). The yield per shot is
+whatever makes the model turn that shot into
 50 MWe at 1 Hz at the burn point Helion's patent discloses: 128.1 MJ, a
 gain of 2.56. The gain is a consistency figure, not a disclosed
 measurement. The chamber radius is 0.61 m, the smallest at which a
@@ -137,10 +140,10 @@ exhaust-processing and storage plant.
 
 ## 3. Method
 
-**Notation.** Model knobs keep their configuration-file names. dd_frac
+**Notation.** 1costingfe model parameters keep their configuration-file
+names. dd_frac
 (dhe3_dd_frac) is the D-D share of primary fusion events by count, not
-an ion ratio: a 1:1 D:He-3 plasma at 70 keV is 0.13, a 3:1 plasma 0.31,
-the patent's He3/D = 0.158 plasma 0.49. dhe3_f_T is the fraction of
+an ion ratio (the patent's He3/D = 0.158 at 70 keV is 0.49). dhe3_f_T is the fraction of
 bred tritium that burns in-pulse. burn_fraction and burn_fraction_he3
 (bf) are the per-pass burn probabilities of deuterium and He-3 through
 the chamber, and fuel_recovery (fr) the per-pass fraction of unburned
@@ -165,78 +168,76 @@ shot-cycled recovery chain (driver bank, recovery store, switch stack)
 at the capacitor shot life.
 
 **Evidence ladder.** The plant environment is held in part and stepped
-in part. Held at every rung: constant-dollar framing, 2.5-year
-construction (Siemens Energy CCGT block precedent), and indirects at 8%
-of direct cost (US DOE/NETL QGESS). Stepped with the tiers: the cost of
-capital, 7% real at the design basis and records grades (the IEA/NEA
-2020 central case), 5% at extrapolations (a loan-guarantee blend with
-precedent) and 3% at speculation (the IEA/NEA low case, sovereign-class
-capital), the one entry that is financing rather than technology, which
-Figure 1 and the ladder table's at-7% column keep separate from the
-rest; and the book life, 30 years through the records grade (the model
-default and the low end of the fusion literature's 30-40 year cluster;
-Böhnlein et al. 2026) and 80 years from the extrapolation grade (the
-US DOE hydropower lifespan), an engineering entry, since every core
-component is replaced on its own schedule and the unreplaceable
-structure sees negligible fluence. Availability is derived, not
-asserted. The starting point is the US fission fleet's availability
-outside its planned outages, 0.98: a 92% capacity factor less refueling
-outages of 34 to 38 days per 18 to 24 month cycle leaves 1 to 3% of
-unplanned loss, and the fleet's unplanned capability loss factor on
-PRIS data is 1.6% against a 4.1% world average. Three planned outages
-come off it: a 34-day routine maintenance bundle every two years (the
-fission refueling outage, which carries the fleet's routine work), a
-34-day capacitor-bank swap every cap_shot_lifetime shots at the solved
-rep rate, and an 84-day wall-and-coil changeout (Thea Energy's Helios
-maintenance budget) when the fluence reaches the dpa tolerance, 20 dpa
-demonstrated through the records grade and the 50 dpa DEMO target above
-it. The result runs from 0.896 at the records device to 0.924 at
-speculation, just under the red-team review's 0.93 to 0.95 band and at
-the top of the fusion literature's 0.75 to 0.90. The records device holds two of the vendor's three
-unrecorded performance claims at their evidence-supported values:
-per-pulse fuel recovery 0.999, the value the JET-ILW retention analogy
-supports (Brezinsek et al. 2013), and the recovery share at the
-radial-only 0.8 of the adiabatic work partition. The third, the shot,
-has no evidence-supported value above zero: the vendor's own stated
-pulse returns under 1 MJ from the 50 MJ bank, so on
-evidence alone the records device makes no net power, and it is
-priced at the vendor's shot only so that a machine exists to cost. The
-Helion device grants the vendor's 0.9999, the full share, and the
-shot, which at the patent burn point is a burn of 0.3 to 0.7 s; the
-extrapolation and speculation stacks keep that grant and add the
-labeled entries listed with the results in Section 4, the largest
-being capacitor life 1e9 shots (the Pacific Fusion AMPS derating
-target; Langtry et al. 2025). Every entry carries a source and grade in
-the evidence ledger (`docs/ledger.md`); no extrapolation entry is a
+in part:
+
+- Held at every rung: constant-dollar framing, 2.5-year construction
+  (Siemens Energy CCGT block precedent), and indirects at 8% of direct
+  cost (US DOE/NETL QGESS).
+- Cost of capital, stepped: 7% real at the design basis and records
+  grades (the IEA/NEA 2020 central case), 5% at extrapolations (a
+  loan-guarantee blend with precedent), 3% at speculation (the IEA/NEA
+  low case, sovereign-class capital). It is the one entry that is
+  financing rather than technology, and Figure 1 and the ladder table's
+  at-7% column keep it separate.
+- Book life, stepped: 30 years through the records grade (the model
+  default and the low end of the fusion literature's 30-40 year cluster;
+  Böhnlein et al. 2026), 80 years from the extrapolation grade (the US
+  DOE hydropower lifespan). An engineering entry: every core component
+  is replaced on its own schedule and the unreplaceable structure sees
+  negligible fluence.
+- Availability, derived: 0.98 outside planned outages, less a routine
+  outage every two years, a capacitor-bank swap at the bank's shot life,
+  and a wall-and-coil changeout at the dpa tolerance (20 dpa through the
+  records grade, 50 above it): 0.896 at the records device, 0.924 at
+  speculation, at the top of the fusion literature's 0.75 to 0.90.
+
+The performance entries step the same way. The records device holds two
+of the vendor's three unrecorded claims at their evidence-supported
+values, per-pulse fuel recovery 0.999 (the JET-ILW retention analogy;
+Brezinsek et al. 2013) and the recovery share at the radial-only 0.8 of
+the adiabatic work partition; the third, the shot, has no
+evidence-supported value above zero, so on evidence alone the records
+device makes no net power, and it is priced at the vendor's shot only
+so that a machine exists to cost. The Helion device grants the vendor's
+0.9999, the full share, and the shot; the extrapolation and speculation
+stacks keep that grant and add the labeled entries listed with the
+results in Section 4, the largest being capacitor life 1e9 shots (the
+Pacific Fusion AMPS derating target; Langtry et al. 2025). Every entry
+carries a source and grade in the evidence ledger (`docs/ledger.md`,
+rendered to HTML alongside this page); no extrapolation entry is a
 measured record.
 
 **Coherence constraints.** Six couplings are enforced by the scripts on
 every quoted point, and a seventh, derived in Section 6, is applied to
-every quoted point in this text: (1) the radiated fraction is a function
-of the burn mix through a bremsstrahlung floor (f_rad = 0.28 at dd_frac
-0.85, not the lean-mix
-0.05); (2) recovery efficiency is capped as the composite
-eta_dec x f_pdv (0.80 through the extrapolation grade, 0.90 at
-speculation), because the only
-published figure speaks to the product; (3) the wall must survive both
-its steady flux (within the purchased wall class) and its per-shot flash
-energy (under the tungsten millisecond-melt bound); (4) a mix at or
-above the vendor's catalyzed 0.49 carries its tritium-plant
-consequences, priced as a fuel-handling adder of 50 M$ fixed plus
-0.657 M$ per MW of plant neutron power; (5) the in-plasma tritium burn dhe3_f_T
-is floored by the burnup closure of Section 5.2, so a low-burn claim at
-high per-pulse burnup is flagged as requiring prompt triton loss (at
-the patent basis the floor is 0.002 and the design's zero passes);
-(6) the expansion-work recovery fraction is derived per point, never
-asserted: f_pdv = min(claim, share x [1 - (V_i/V_f)^(2/3)]) with V_i
-the compressed flux volume at the 22 T basis field, V_f the chamber,
-and share the radial fraction of the boundary work (0.8 at the records
-and extrapolation grades, 1.0 at speculation and at the Helion device;
-Section 6); (7) the shot yield is bounded by the plasma energy and the
-burn time, gain <= chi x burn time / breakeven time, with the breakeven
-time that of the plasma at the burn point, so every quoted point
-carries the burn time its shot implies, and the shot is graded with the
-rung rather than shared as a basis.
+every quoted point in this text:
+
+1. The radiated fraction is a function of the burn mix through a
+   bremsstrahlung floor (f_rad = 0.28 at dd_frac 0.85, not the lean-mix
+   0.05).
+2. Recovery efficiency is capped as the composite eta_dec x f_pdv (0.80
+   through the extrapolation grade, 0.90 at speculation), because the
+   only published figure speaks to the product.
+3. The wall must survive both its steady flux (within the purchased
+   wall class) and its per-shot flash energy (under the tungsten
+   millisecond-melt bound).
+4. A mix at or above the vendor's catalyzed 0.49 carries its
+   tritium-plant consequences, priced as a fuel-handling adder of 50 M$
+   fixed plus 0.657 M$ per MW of plant neutron power.
+5. The in-plasma tritium burn dhe3_f_T is floored by the burnup closure
+   of Section 5.2, so a low-burn claim at high per-pulse burnup is
+   flagged as requiring prompt triton loss (at the patent basis the
+   floor is 0.002 and the design's zero passes).
+6. The expansion-work recovery fraction is derived per point, never
+   asserted: f_pdv = min(claim, share x [1 - (V_i/V_f)^(2/3)]) with V_i
+   the compressed flux volume at the 22 T basis field, V_f the chamber,
+   and share the radial fraction of the boundary work (0.8 at the
+   records and extrapolation grades, 1.0 at speculation and at the
+   Helion device; Section 6).
+7. The shot yield is bounded by the plasma energy and the burn time,
+   gain <= chi x burn time / breakeven time, with the breakeven time
+   that of the plasma at the burn point, so every quoted point carries
+   the burn time its shot implies, and the shot is graded with the rung
+   rather than shared as a basis.
 
 **Design search and reconciliation.** Each device except Helion's own
 configuration is the argmin of a scan over shot yield (a free
@@ -258,11 +259,12 @@ bottoming), yielding an honest band rather than a point.
 | extrapolations | 33.6 | 30.5 | 39.9 |
 | speculation | 12.0 | 9.7 | 19.0 |
 
-LCOE in $/MWh. The at-7% column prices each device at the design-basis
-cost of capital with everything else as its rung has it; the difference
-is the financing part of the rung, 6.3 $/MWh at extrapolations and 7.1
-at speculation at 1 GWe (5.7 and 6.1 at 3 GWe), nothing at the two 7%
-rungs. The stack and design behind each row:
+LCOE in $/MWh. The at-7% column reprices each device at 7% real with
+everything else unchanged, so the gap between it and the 1 GWe column is
+what the rung's cheaper money is worth: 6.3 $/MWh at extrapolations and
+7.1 at speculation (5.7 and 6.1 at 3 GWe). The records and vendor rungs
+already sit at 7%, so their two columns match. The stack and design
+behind each row:
 
 - **citable records**: fuel recovery 0.999 (JET analog), radial-only
   recovery share; 7% real, 30-year life; the vendor's 128 MJ shot
@@ -336,7 +338,7 @@ record value is no plant.*
 
 One-at-a-time reversion from the extrapolation device ranks the levers:
 
-| knob reverted | LCOE ($/MWh) | delta ($/MWh) |
+| parameter reverted | LCOE ($/MWh) | delta ($/MWh) |
 |---|---|---|
 | cap_shot_lifetime -> 1e8 | 70.9 | +37.3 |
 | fuel_recovery -> 0.999 (JET-analog) | 64.7 | +31.1 |
@@ -355,7 +357,7 @@ analogy) dominate, the rep rate and the burn mix follow, and the two
 environment entries come after them: the cost of capital (the grey
 financing bar) is worth 6.3 $/MWh and the 80-year book life 3.9 $/MWh.
 f_pdv is absent from the table because it is derived per point under
-constraint 6, not a knob; the shot is absent for the opposite reason,
+constraint 6, not a parameter; the shot is absent for the opposite reason,
 since its record value is no plant. The conversion
 efficiencies, once capped as a composite, are worth little at the
 margin (an incoherent double-booking of eta_dec = 0.97 with
@@ -549,7 +551,7 @@ fuel recovery.*
 ### 5.4 Neutron damage, the unshieldable throat, and the consumable core
 
 The base model cannot see neutron damage for this concept (its core
-lifetime knob is inert), so the scan reprices it: replacement of the
+lifetime parameter is inert), so the scan reprices it: replacement of the
 exposed package is levelized from the 14-MeV-equivalent neutron wall
 load (10 dpa per MW yr/m^2 in Fe-based structure; the 2.45 MeV D-D flux
 folded at 0.4) at tolerances of 20 dpa (the demonstrated RAFM database
@@ -1074,8 +1076,8 @@ them, are all available on hardware the developer is already building.
 Everything here is in the study repository at
 [github.com/1cFE/helion_pulsed_frc_tea](https://github.com/1cFE/helion_pulsed_frc_tea):
 the four evidence stacks in `config/`, the scripts in `scripts/` that
-produce every number, every figure and the HTML rendering (the README
-says what each one does),
+produce every number, every figure and the HTML renderings of this
+page and the ledger (the README says what each one does),
 the evidence ledger, the adversarial review, the capacitor evidence,
 and the vendor slide and FAQ captures. The cost model is `1costingfe` at commit
 44434d9. Fifty-one regression tests pin all four devices at both
@@ -1126,13 +1128,6 @@ startup.
   22 T, 72 MW at 1 Hz, confinement 0.157, 0.103 and 0.088 s across its
   three columns). Used as design intent, not as a record; see
   Section 5.2 and constraint 7.
-- Glorian, D. "Power Plant Performance Improvement." World Energy
-  Council, Performance of Generating Plant Committee, with Solomon
-  Associates; OSTI ETDE 21062594 (US nuclear unplanned capability loss
-  factor 1.6% against a 4.1% world average, PRIS data).
-- IAEA (2025). Nuclear Power Reactors in the World, Reference Data
-  Series No. 2, 2025 edition (Table 18: world planned capability loss
-  12.3%, unit capability factor 83.5%, 2022-2024).
 - IEA/NEA (2020). Projected Costs of Generating Electricity, 2020
   edition (3%, 7%, and 10% real discount rates, 7% central).
 - Kirtley, D. (2024). "Fundamental theory of the direct magnetic
@@ -1183,14 +1178,6 @@ startup.
   indirect-cost basis.
 - US DOE Water Power Technologies Office. Hydropower Basics (typical
   lifespan 65-85 years).
-- US Energy Information Administration (2024). "U.S. summer nuclear
-  outages declined in 2024." Today in Energy (refueling outages
-  averaged 34 days in 2024 and 38 days in 2023).
-- US Energy Information Administration (2025). "Five countries account
-  for 71% of the world's nuclear generation capacity." Today in Energy
-  (US fleet capacity factor 92% in 2024).
-- World Nuclear Association. "Nuclear Power in the USA," country
-  profile (fleet capacity factor above 90% since 2002, 94% in 2019).
 - Congressional Research Service (2011). "The Helium-3 Shortage: Supply,
   Demand, and Options for Congress," R41419, updated October 6, 2011
   (Table 2: DOE-allocated helium-3 prices, 600 $/L to federal users and

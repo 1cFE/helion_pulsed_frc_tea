@@ -28,3 +28,20 @@ def test_two_builds_are_byte_identical(tmp_path):
     build_html(WRITEUP_MD, a)
     build_html(WRITEUP_MD, b)
     assert a.read_bytes() == b.read_bytes()
+
+
+def test_ledger_html_carries_its_title_and_rendered_tables(tmp_path):
+    from make_html import LEDGER_MD, LEDGER_TITLE
+    out = tmp_path / "ledger.html"
+    build_html(LEDGER_MD, out, LEDGER_TITLE)
+    html = out.read_text(encoding="utf-8")
+    assert f"<title>{LEDGER_TITLE}</title>" in html
+    assert html.count("<table") >= 3
+    assert 'class="math' not in html
+
+
+def test_build_all_writes_the_writeup_and_the_ledger(tmp_path):
+    from make_html import build_all
+    written = build_all(tmp_path)
+    assert sorted(p.name for p in written) == ["ledger_notion.html", "writeup_notion.html"]
+    assert all(p.stat().st_size > 10_000 for p in written)

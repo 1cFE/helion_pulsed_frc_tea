@@ -105,7 +105,7 @@ python3 burnup_scan.py     # burn_fraction axis under both triton-fate limits
 python3 yield_bound.py     # constraint 7: the shot against the plasma energy and burn time
 python3 reconciliation.py  # adders/credits the model cannot price, honest bands
 python3 make_figures.py    # paper figures into docs/figures/
-python3 make_html.py       # docs/writeup.md -> outputs/writeup_notion.html, deterministic, figures embedded
+python3 make_html.py       # docs/writeup.md and docs/ledger.md -> outputs/*_notion.html, deterministic, figures embedded
 python3 -m pytest ../tests # closure, config-integrity, ladder regression
 ```
 
