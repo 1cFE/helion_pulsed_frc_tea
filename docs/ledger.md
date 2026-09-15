@@ -31,7 +31,7 @@ device is 20 modules at 1 Hz, the 3 GWe park 60. The power-purchase
 figure is a commercial commitment, not a physics disclosure; the model
 reproduces it only with this shot. The shot is also beyond the vendor's
 own stated pulse: at the patent burn point a millisecond burn returns
-under 0.4 MJ from the bank and 128 MJ implies a 0.3 to 0.7 s burn
+under half a megajoule from the bank and 128 MJ implies a 0.3 to 0.7 s burn
 (constraint 7), so the shot is a graded claim at every rung, and the
 records device is priced at it only so that a machine exists to cost.
 
@@ -484,7 +484,7 @@ an explicit leap. See `config/tier3.yaml` for the per-knob notes.
 | c_inv_per_kw_net | 50 $/kW | small lever |
 | multi_unit_labor_factor | 0.80 | small lever |
 | interest_rate | 0.03 real | IEA/NEA 2020 low case: sovereign-class capital with no mechanism that delivers it to a first-of-a-kind fleet; financing, shown separately (worth 7.1 $/MWh at 1 GWe and 6.1 at 3 GWe against 7%) |
-| yield_per_shot_mj | solved, not asserted; a graded claim at every rung (constraint 7) | no record supports any yield: the vendor's stated pulse returns under 0.4 MJ from the 50 MJ bank, the design-basis 128 MJ shot implies a 0.3 to 0.7 s burn and the speculation shot 1 to 3 s (`scripts/yield_bound.py`), so the records device is priced at the vendor's shot only so that a machine exists to cost. Gain speculation is admitted, but the shot must be survivable in the chamber it is costed in: `coherent_min.py` solves yield and chamber jointly. The optimum is a broad plateau (300-750 MJ in a 30 m x 1.5 m single-module chamber, 2.3-5.9 Hz, panel wall at its flux limit). Q = 40 (2000 MJ) in the concept preset's 0.5 m x 10 m chamber deposits about 6.7 MJ/m^2 per shot, four times the tungsten flash-melt bound, and is excluded. |
+| yield_per_shot_mj | solved, not asserted; a graded claim at every rung (constraint 7) | no record supports any yield: the vendor's stated pulse returns under half a megajoule from the 50 MJ bank, the design-basis 128 MJ shot implies a 0.3 to 0.7 s burn and the speculation shot 1 to 3 s (`scripts/yield_bound.py`), so the records device is priced at the vendor's shot only so that a machine exists to cost. Gain speculation is admitted, but the shot must be survivable in the chamber it is costed in: `coherent_min.py` solves yield and chamber jointly. The optimum is a broad plateau (300-750 MJ in a 30 m x 1.5 m single-module chamber, 2.3-5.9 Hz, panel wall at its flux limit). Q = 40 (2000 MJ) in the concept preset's 0.5 m x 10 m chamber deposits about 6.7 MJ/m^2 per shot, four times the tungsten flash-melt bound, and is excluded. |
 
 ## The coherent minimum, and the $10 question
 
@@ -689,7 +689,7 @@ damage scan nor CAS72 currently prices.
 
 1. The burning shot on Polaris: its yield at its measured dwell, read
    against constraint 7 (the whole plant hangs on it: at the vendor's
-   stated pulse the bank returns under 0.4 MJ), and its fusion-inclusive
+   stated pulse the bank returns under half a megajoule), and its fusion-inclusive
    round-trip recovery efficiency, separating the circuit factor from
    the PdV factor, which gates the composite-recovery entries directly
    and, through the wall-load budget, the honest rep-rate ceiling. Every
