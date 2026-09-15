@@ -38,6 +38,7 @@ Anatomy: top capital accounts at each point, so the writeup can name what
 carries the floor instead of gesturing at it.
 """
 from study import (
+    chi_from_xs,
     DEVICES,
     OUTPUT_DIR,
     apply_records,
@@ -62,19 +63,6 @@ ETA_TH_BOTTOMING = 0.30
 
 def crf(i, n):
     return i * (1 + i) ** n / ((1 + i) ** n - 1)
-
-
-def chi_from_xs(x_s: float) -> float:
-    """Plasma-thermal share of the in-tank driver energy at peak compression.
-
-    FRC radial equilibrium with the average-beta theorem <beta> = 1 - x_s^2/2
-    (x_s = separatrix/coil radius ratio): plasma internal energy
-    1.5 <beta> (B^2/2mu0) V_s against annulus field energy
-    (B^2/2mu0)(V_c - V_s). End-region field and coil overhang lower this;
-    profile and kinetic corrections are tens of percent."""
-    beta = 1.0 - 0.5 * x_s**2
-    u_p = 1.5 * beta * x_s**2
-    return u_p / (u_p + 1.0 - x_s**2)
 
 
 def analyze(label, spec):

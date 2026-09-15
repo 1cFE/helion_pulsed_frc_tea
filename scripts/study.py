@@ -96,6 +96,20 @@ B_COMPRESSION_T = 22.0
 _MU0 = 4e-7 * 3.141592653589793
 F_PDV_RADIAL_SHARE_DEFAULT = 1.0
 
+# Constraint 7 (the shot against the plasma energy and the burn time):
+# gain <= chi x tau_burn / tau_f. The patent burn point (US 11,469,003 B2
+# operating table, tritium-removal column) supplies the density and mix;
+# B_COMPRESSION_T and _T_I_CALIB_KEV below are the same point. The vendor's
+# stated pulse is "on the order of hundreds of microseconds to
+# milliseconds" (helionenergy.com/faq, June 2026 capture in docs/sources/);
+# 1 ms is its long edge. x_s 0.7 (chi 0.52) is the midpoint of the
+# reconciliation span 0.5 to 0.85 and is the single reference at which
+# every point reports the burn time its shot implies.
+N_D_PATENT_M3 = 0.75e22
+HE3_OVER_D_PATENT = 0.158
+VENDOR_PULSE_S = 1e-3
+X_S_REFERENCE = 0.7
+
 # --- availability from the replacement schedule ----------------------------
 # Availability is derived per point, not asserted: the US fission fleet's
 # availability outside its planned outages (availability_steady_state) less
@@ -118,6 +132,60 @@ DPA_REL_DD = 0.4
 STUDY_KEYS = ("availability_steady_state", "outage_days_routine",
               "routine_cycle_yr", "outage_days_bank_swap",
               "outage_days_wall", "wall_dpa_tolerance")
+
+
+def chi_from_xs(x_s: float) -> float:
+    """Plasma-thermal share of the in-tank driver energy at peak compression.
+
+    FRC radial equilibrium with the average-beta theorem <beta> = 1 - x_s^2/2
+    (x_s = separatrix/coil radius ratio): plasma internal energy
+    1.5 <beta> (B^2/2mu0) V_s against annulus field energy
+    (B^2/2mu0)(V_c - V_s). End-region field and coil overhang lower this;
+    profile and kinetic corrections are tens of percent."""
+    beta = 1.0 - 0.5 * x_s**2
+    u_p = 1.5 * beta * x_s**2
+    return u_p / (u_p + 1.0 - x_s**2)
+
+
+def breakeven_time_s(b_t: float = None, t_i_kev: float = None,
+                     n_d_m3: float = N_D_PATENT_M3,
+                     he3_over_d: float = HE3_OVER_D_PATENT,
+                     te_over_ti: float = 1.0) -> float:
+    """The plasma's energy breakeven time at the burn point: its energy
+    density at beta = 1, 1.5 B^2/2mu0, over its fusion power density
+    (D-He3 plus both D-D branches, Bosch-Hale rates, total reaction
+    energy). n_d_m3 is the ion density with thermalized electrons; at fixed
+    field, colder electrons admit (2 + 3r)/((1 + r) + (1 + 2r) te_over_ti)
+    times that density (r = He3/D), which enters the power squared."""
+    from costingfe.layers.physics import Q_DD_NHE3, Q_DD_PT, Q_DHE3
+    from costingfe.layers.reactivity import sigv_dd_n, sigv_dd_p, sigv_dhe3
+
+    b_t = B_COMPRESSION_T if b_t is None else b_t
+    t_i_kev = _T_I_CALIB_KEV if t_i_kev is None else t_i_kev
+    r = he3_over_d
+    n_d = n_d_m3 * (2.0 + 3.0 * r) / ((1.0 + r) + (1.0 + 2.0 * r) * te_over_ti)
+    n_he3 = r * n_d
+    p_fus = (n_d * n_he3 * float(sigv_dhe3(t_i_kev)) * Q_DHE3
+             + 0.5 * n_d * n_d * (float(sigv_dd_n(t_i_kev)) * Q_DD_NHE3
+                                  + float(sigv_dd_p(t_i_kev)) * Q_DD_PT)) * MEV_J
+    u = 1.5 * b_t**2 / (2.0 * _MU0)
+    return u / p_fus
+
+
+def yield_bound_mj(e_del_mj: float, x_s: float, tau_burn_s: float,
+                   tau_f_s: float = None) -> float:
+    """Largest shot yield the plasma can return in a burn of tau_burn_s:
+    chi(x_s) E_del tau_burn / tau_f."""
+    tau_f_s = breakeven_time_s() if tau_f_s is None else tau_f_s
+    return chi_from_xs(x_s) * e_del_mj * tau_burn_s / tau_f_s
+
+
+def implied_burn_s(yield_mj: float, e_del_mj: float, x_s: float,
+                   tau_f_s: float = None) -> float:
+    """Burn time a shot of yield_mj implies from a bank of e_del_mj: the
+    inverse of yield_bound_mj."""
+    tau_f_s = breakeven_time_s() if tau_f_s is None else tau_f_s
+    return yield_mj / (chi_from_xs(x_s) * e_del_mj) * tau_f_s
 
 
 def wall_load_14mev_equivalent(result) -> float:
@@ -349,6 +417,9 @@ def run(model: CostModel, fwd: dict, tritium_adder: bool = True):
         "capital_per_kw": float(result.costs.capital_per_kw),
         "f_pdv_eff": fwd["f_pdv"],
         "f_pdv_cap": cap,
+        "tau_burn_implied_s": implied_burn_s(
+            float(result.params["yield_per_shot_mj"]),
+            float(result.params["e_driver_mj"]), X_S_REFERENCE),
         "tritium_adder_musd": tritium_musd,
         "availability": float(result.params["availability"]),
         "t_bank_yr": schedule.get("t_bank_yr", float("nan")),

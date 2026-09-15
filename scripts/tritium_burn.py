@@ -10,8 +10,9 @@ of the dwell and burns with probability
 (the 1/2 averages over birth times; D-T reactivity is 30-40x D-D at these
 temperatures, so the triton is the most reactive species in the chamber
 the moment it is born). The cost model carries no dwell time or density,
-so both are scanned: Helion states the pulse lasts under a millisecond
-(helionenergy.com/faq), and the ARPA-E ALPHA retrospective quotes 2-5 ms
+so both are scanned: Helion states the required confinement is "on the
+order of hundreds of microseconds to milliseconds" (helionenergy.com/faq,
+June 2026 capture in docs/sources/), and the ARPA-E ALPHA retrospective quotes 2-5 ms
 at gain conditions for the transiting FRC (arXiv:1907.09921), giving a
 0.1-3 ms band; compression-peak densities 1e22-1e23 m^-3 span Trenta-class
 to reactor-class compression.

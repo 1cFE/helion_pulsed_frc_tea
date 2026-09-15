@@ -1,0 +1,724 @@
+Helion Energy FAQ, Wayback Machine capture 2026-06-05 22:22:59 UTC (first capture of the rewritten FAQ; identical to the live page on 2026-09-15)
+http://web.archive.org/web/20260605222259/https://www.helionenergy.com/faq
+Text extracted from the archived HTML on 2026-09-15.
+
+Helion | FAQ
+
+-->
+
+About
+
+About
+
+Technology
+
+Technology
+
+Polaris
+
+Polaris
+
+Orion
+
+Orion
+
+Newsroom
+
+Newsroom
+
+Blog
+
+Blog
+
+Faq
+
+Faq
+
+Careers
+
+Careers
+
+Home
+
+ABOUT
+
+TECHNOLOGY
+
+POLARIS
+
+ORION
+
+Newsroom
+
+Blog
+
+FAQ
+
+Careers
+
+Hercules
+
+Contact
+
+Chelan
+
+Privacy Policy
+
+Trenta
+
+Terms of use
+
+Career Opportunities
+
+Career Opportunities
+
+## Frequently asked questions
+
+## CLEAR ANSWERS ABOUT FUSION POWER AND OUR APPROACH
+
+LAST UPDATED: May 18, 2026
+
+Clear filters
+
+Fusion 101
+
+Our technology
+
+Our progress
+
+Safety & regulation
+
+Investing & the future
+
+## What is fusion?
+
+Fusion is the process the stars and the sun use to make energy. 
+‍
+Fusion occurs when two atoms combine under intense heat and pressure. The products have less mass than the original two atoms. In accordance with E=Δmc², energy is released in the process. 
+‍
+Fusion is the opposite of fission, where a heavy atom, like uranium, splits apart and releases energy. 
+‍
+Our fusion power is fueled by isotopes of hydrogen and helium. It does not produce greenhouse gases or have a risk of chain reactions. 
+
+## Why fusion is not “nuclear”
+Blog
+
+Learn more
+
+## Why is fusion important, and what will it mean for the world?
+
+Energy is the backbone of modern society. Fusion power has the potential to unlock a nearly limitless source of energy that can be used to make electricity on a national and global scale. Unlike fossil fuels, fusion does not produce greenhouse gases. And unlike fission, fusion does not melt down or produce high-level radioactive waste. 
+‍
+Fusion strengthens energy security and economic growth. Because fusion fuel can be sourced broadly and power plants can operate anywhere, fusion reduces reliance on imported fuels and vulnerable supply routes. 
+‍
+Fusion will also play a critical role in combating climate change. By providing a sustainable and carbon-free energy source, it could help reduce greenhouse gas emissions from power generation, transportation, and industrial sectors. 
+‍
+Helion’s approach to fusion is designed to make this vision possible by delivering clean, reliable, and scalable electricity that can power modern society and support long-term prosperity. 
+
+## What does a world look like with unlimited clean electricity?
+Blog
+
+Learn more
+
+## What is the difference between nuclear fission and fusion?
+
+Fusion refers to the process of combining two light atomic nuclei, such as isotopes of hydrogen and helium. These isotopes are heated and compressed to extremely high temperatures and pressures, typically found in the core of stars. When the conditions are right, the nuclei collide and merge, releasing energy in the process. Fusion is the energy source of the sun and other stars.
+
+Fission, on the other hand, involves the splitting of a heavy atomic nucleus into two or more lighter nuclei. This process also releases a significant amount of energy. In fission reactions, usually heavy isotopes of uranium and plutonium are used as fuel. These isotopes can undergo fission when struck by a neutron, resulting in the release of a large amount of energy, as well as additional neutrons that then trigger other isotopes to fission in a chain reaction. Fission is the process used in current nuclear power plants.
+
+Both fusion and fission have the potential to release large amounts of energy and have nearly limitless fuel supply, but fusion is considered more desirable due to its inability to have an uncontrolled chain reaction, absence of long-lived radioactive waste, and lower risks associated with nuclear proliferation. These benefits also dramatically reduce the costs of fusion power, leading to a highly cost-effective source of energy generation.
+
+## Why fusion is not “nuclear”
+Blog
+
+Learn more
+
+## Why has fusion taken so long?
+
+Fusion is difficult because it requires heating fuel to extremely high temperatures, confining that heated fuel, in the form of plasma, long enough for fusion reactions to occur, and converting the resulting energy into useful electricity. For decades, fusion projects have been limited by materials, power electronics, computing, plasma diagnostics, and the cost and speed of building complex machines. 
+‍
+Recent advances in pulsed power, high-speed electronics, modeling, diagnostics, manufacturing, and controls make new fusion architectures possible. The underlying physics has been studied for decades; now we have the engineering tools to build fast, efficient, repeatable fusion systems, meaning it’s only recently that technology has matured enough to support commercial development. 
+‍
+We’re seeing that come to life today, having now built seven fusion prototypes, that each advance a key system toward commercialization. 
+
+## Why hasn't anyone done fusion before?
+
+Fusion reactions have been achieved many times over the last century, including nearly daily during several of Helion’s operational campaigns, but no one has yet built a commercial fusion power plant that produces reliable electricity for the grid. The challenge is not simply making fusion happen; it is making fusion happen often enough, efficiently enough, and economically enough to deliver usable power for customer use. 
+‍
+Helion is focused on that system-level challenge: producing fusion, recovering energy directly as electricity, repeating the process, and scaling the machine into a commercial power plant. 
+
+## Can fusion melt down?
+
+No. Fusion does not operate through a self-sustaining chain reaction like fission. If the plasma is not actively formed, heated, and compressed, the fusion reaction always stops. Additionally, in a fusion system only seconds of fuel are stored in the generator at any given time, unlike in a nuclear fission reactor, where years of fuel may be stored.
+
+## Can fusion be weaponized?
+
+Fusion machines are not nuclear weapons. Fusion does not produce a chain reaction, so fusion itself is not weaponizable as a nuclear weapon. 
+‍
+Further, fusion itself does not use or produce any fissile material such as plutonium or uranium, the material necessary for making nuclear weapons, and fusion reactions are extremely impractical to utilize for any processes to make these fissile materials and any attempt to do so would be readily detectable. 
+‍
+Nonetheless, fusion technologies and fuels (including tritium) are covered by existing dual-use export controls and licensing frameworks designed to ensure misuse cannot occur. 
+
+## What is different about Helion's approach?
+
+The founders of Helion believe that fusion isn’t a fundamental physics problem, but an engineering problem that will be solved by building, testing, and iterating fusion systems and subsystems. By focusing on our true goal - clean, safe, and abundant electricity - we can approach fusion from a new angle. 
+‍
+Our approach does three major things differently from other fusion approaches: 
+We utilize a pulsed, non-ignition fusion system. This helps us overcome the hardest physics challenges, build highly energy-efficient systems, and allows us to adjust the power output based on need by adjusting the pulse rate. 
+Our system is built to directly recover electricity. Just like regenerative braking in an electric car, our system is built to recover all unused and new electromagnetic energy efficiently. Other fusion systems rely on heating water to create steam to turn a turbine which loses a lot of energy in the process. 
+We use deuterium and helium-3 (D-He-3) as fuel. Deuterium-helium-3 fusion results in charged particles that can be directly recaptured as electricity. This helps keep our system small and efficient, allowing us to build faster and at a lower cost. This fuel cycle also reduces neutron emissions, substantially reducing many of the engineering challenges faced by users of deuterium-tritium fusion fuel. 
+
+## More on Helion’s pulsed approach to fusion
+Blog
+
+Learn more
+
+## Explaining Helion’s fusion fuel: D-He-3
+Blog
+
+Learn more
+
+## What fuel does Helion use? 
+
+Helion’s long-term commercial fuel cycle is based on deuterium and helium-3. Deuterium is an isotope of hydrogen that can be extracted from water. Helium-3 is rare naturally, so Helion plans to produce it through its own fuel cycle. 
+‍
+Throughout testing and operations, Helion will use a mix of deuterium, tritium, and helium-3, validating our systems across fuel types. As our machines get qualified for higher operating parameters, temperatures, and pressures, we will decrease the amount of tritium and increase the amount of He-3.
+
+## Explaining Helion’s fusion fuel: D-He-3
+Blog
+
+Learn more
+
+## Why does Helion use deuterium and helium-3? 
+
+D-He-3 fusion produces most of its energy in charged particles rather than neutrons. Charged particles are better suited to Helion’s direct electricity recovery approach because their energy can contribute to plasma expansion and electromagnetic energy recovery. 
+‍
+D-He-3 is more challenging than D-T because it requires higher temperatures and the reaction cross sections are smaller, but it offers major system advantages when direct energy conversion is successful. 
+
+## Explaining Helion’s fusion fuel: D-He-3
+Blog
+
+Learn more
+
+## Where will Helion get helium-3?
+
+Helion plans to produce helium-3 in its machines through a closed-loop fuel cycle. D-D reactions produce helium-3 directly in one branch and tritium in another branch. Tritium decays into helium-3 over time. Helion captures, separates, and recycles these isotopes to reduce reliance on scarce external helium-3 sources.
+
+## Is helium-3 scarce? 
+
+Naturally available helium-3 is scarce, which is why Helion’s fuel-cycle strategy is to breed helium-3 from deuterium reactions and recycle it.
+
+## How to engineer a renewable deuterium–helium-3 fusion fuel cycle
+Blog
+
+Learn more
+
+## How viable is breeding enough helium-3?
+
+Helion’s strategy is to produce helium-3 through D-D side reactions and tritium decay, then capture and recycle the fuel in our machines. The viability depends on fusion efficiency, fuel recovery, tritium management, system repetition rate, and the amount of helium-3 required per unit of electricity produced. 
+‍
+We’re currently operating fuel systems that enable us to filter and store helium-3 after every fusion pulse. We’ll continue to scale this technology as we move toward commercial operations. 
+‍
+
+## How does Helion handle tritium?
+
+Helion will operate its machines with deuterium, tritium, and helium-3 throughout a system’s lifetime, and tritium handling is a core area of engineering focus to ensure safe and secure operations. 
+‍
+Helion captures exhaust gases, separates hydrogen isotopes from helium isotopes, and further separates tritium from hydrogen and deuterium. We manage recovered tritium through licensed systems. Tritium recovered from fusion can be recycled, stored, or allowed to decay into helium-3 under controlled conditions.
+
+## Does tritium handling make the system more complex?
+
+Yes. Tritium handling adds regulatory, safety, monitoring, and fuel-processing requirements. Helion’s view is that this additional complexity is manageable, but is outweighed by the advantages of a D-He-3 fuel cycle - lower neutron output and direct energy recovery. These advantages are why D-He-3 systems are our primary goal for long-term commercial deployment.
+
+## What is a field reversed configuration (FRC)?
+
+A Field Reversed Configuration (FRC) is a high-beta plasma confinement concept used in Helion's fusion systems. In an FRC, the plasma is contained within a toroidal (doughnut) shape and is surrounded by a magnetic field. Unlike other fusion confinement concepts, such as tokamaks or stellarators, the entire plasma and its associated magnetic field form a self-contained structure with no internal magnets. 
+‍
+The key characteristic of an FRC is that the plasma's magnetic field lines form closed loops within the plasma itself, rather than connecting to external structures. This is achieved by using a combination of magnetic fields, typically created by a combination of external coils and plasma currents. 
+
+## A note on FRC instabilities
+Blog
+
+Learn more
+
+## What does "high beta" mean?
+
+An FRC is a high-beta plasma configuration, which means that the ratio of the plasma pressure to the magnetic pressure from the external field is close to 100%. The high-beta nature of FRCs is what allows Helion to accelerate, translate, compress, and heat a bulk FRC plasma and why compressed FRCs can reach very high-temperature regimes without some of the same constraints faced by other magnetic confinement approaches. 
+‍
+In comparison, a tokamak or stellarator creates a toroidal shape by having structures inside the hot plasma fuel and has an average beta of 5% or less. This is one of the key advantages to Helion’s approach. The high-beta FRC increases efficiency and allows our machine to directly recover electricity from the plasma. 
+‍
+Fusion reaction rates (the amount of energy produced) scale as magnetic field to the 4th power, an extremely strong scaling. However, that is the magnetic field inside the plasma, not outside. A 10 tesla Helion FRC outperforms a 44 tesla Tokamak in terms of fusion power per unit volume.
+‍
+Video: Using Trenta results to predict future machine performance 
+
+## Does Helion need ignition?
+
+No. Not all fusion systems require ignition. Helion’s system is designed to operate without relying on the plasma to self-sustain through ignition, enabled by our pulsed operations.
+‍
+Helion’s approach depends on three efficiency advantages: direct recovery of fusion energy as electricity, high-beta operation, and pulsed operation. Because Helion recovers and reuses much of the electrical energy put into each pulse, the system does not need to cross the ignition threshold in the same way that many traditional fusion approaches do.
+
+## How to make fusion electricity without ignition
+Blog
+
+Learn more
+
+## How does Helion think about Q?
+
+Q can mean different things depending on where the measurement boundary is drawn. Scientific Q usually compares fusion energy produced in the plasma to (i) energy delivered to the plasma, (ii) energy lost from the plasma, or (iii) something similar. Engineering Q may include more of the machine. Power plant Q includes the full facility and balance-of-plant.
+‍
+These measurement boundaries, along with differences in machine architecture (e.g., what type of plasma configuration and whether a machine is steady-state or pulsed) make identifying the most relevant definition of Q a nuanced exercise. We view this distinction as less useful for the ultimate goal of delivering electricity to customers. 
+‍
+Therefore, Helion focuses less on a single Q number and more on whether our systems can produce useful electricity. Because Helion recovers energy from each pulse, the most important question is not one isolated Q number, but the total energy balance of the whole system. 
+‍
+Helion may not need to meet the same scientific-Q threshold used by some other fusion approaches, because our system is designed around energy recovery and direct electricity production. 
+
+## How does Helion think about net electricity?
+
+In fusion, “net” usually refers to a ratio of energy or electricity in versus out. But the boundary for those measurements can vary widely, which has made the term ambiguous across the industry. In 2021, we used “net electricity” in a headline when discussing Polaris. In hindsight, we realized that the term was not well defined within the fusion industry and created more confusion than clarity. Today, we prefer to focus on a clearer goal that no one else in the industry has touched: demonstrating electricity from fusion.
+
+## How does Helion generate electricity from fusion?
+
+Helion’s system is designed to recover electricity directly from the plasma through electromagnetic induction.
+‍
+The FRC plasmas in our machine are high-beta and, due to their internal electrical current, produce their own magnetic field, which pushes on the magnetic field from the machine’s electromagnets. The FRCs collide in the fusion chamber and are compressed by the field from these central compression coils. That compression causes the plasma to become denser and hotter, initiating fusion reactions that cause the plasma’s internal energy to increase, and eventually cause the plasma to expand. The field from the expanding plasma pushes on the field from the magnets and transfers energy from the plasma to the electrical system powering the electromagnets. This process is explained by Faraday's Law of Induction. 
+
+## Helion’s fusion system is (basically) an RLC circuit
+Blog
+
+Learn more
+
+## What does Helion mean by “direct energy conversion”? 
+
+Direct energy conversion means recovering fusion energy as electricity without first converting it to an intermediate state such as heat for a steam turbine. In Helion’s systems, charged fusion products help drive plasma expansion. That expansion pushes against magnetic fields and induces current in external coils, returning energy to the capacitor banks.
+‍
+Video: The theory behind Helion’s direct energy recovery system
+
+## What does Helion mean by “demonstrating electricity from fusion”?
+
+Demonstrating electricity from fusion means showing that fusion reactions create recoverable electrical energy in the machine. Helion measures the energy stored on capacitors before and after a fusion pulse. If fusion contributes energy to the system, the expanding plasma induces current in the coils and returns energy to the capacitors.
+
+## Measuring electricity production from fusion: Electrical diagnostics
+Blog
+
+Learn more
+
+## How will Helion measure electricity production from fusion?
+
+Helion measures electricity production using custom electrical diagnostics that track energy in our system before and after each pulse. These diagnostics, installed on each of our bank sub-units, measure capacitor voltage with high precision and, when combined with per-unit capacitance data collected during assembly of the bank, provide an accurate picture of energy changes from each pulse.  
+‍
+The key proof point is showing that a portion of the energy returned to a subsystem’s capacitor bank came from fusion-driven plasma expansion, rather than only from ordinary inductive coupling in the circuit.
+
+## Measuring electricity production from fusion: Electrical diagnostics
+Blog
+
+Learn more
+
+## What temperatures are required for D-He-3 fusion? 
+
+D-He-3 fusion generally requires higher temperatures than D-T fusion. D-T fusion is highly reactive at lower temperatures, which is one reason it is commonly used in fusion research. D-He-3 requires hotter plasmas, commonly discussed in the tens of keV range, or 200-600M°C. 
+‍
+Helion’s target regime is not based only on maximizing the D-He-3 reactivity. The system also considers He-3 production, plasma density, compression, pulse duration, fuel mix, D-D side reactions, energy recovery, and total system performance. 
+
+## How does Helion stabilize FRC plasmas during rapid compression and merging?
+
+Geometry, elongation, trapped flux, timing, symmetry, and compression profile all affect stability. Helion designs and operates its machines to keep the FRC in favorable stability regimes during the pulse, including by designing for increased elongation, which is beneficial for stability, and by operating within key stability boundaries.
+
+## A note on FRC instabilities
+Blog
+
+Learn more
+
+## What are the dominant instability risks in Helion’s FRCs? 
+
+The dominant instability risks in FRCs are the low-mode-number instabilities that have challenged FRC research for decades: primarily the n = 1 tilt mode and the n = 2 rotational mode. The tilt mode can cause the entire plasma to tip off-axis, while the rotational mode can grow into destructive distortions that terminate the plasma.  
+‍
+We mitigate these risks through a combination of plasma physics and engineering design, including operating in a kinetic regime, and shaping and pulsing our plasmas.  
+
+## A note on FRC instabilities
+Blog
+
+Learn more
+
+## Does pulsed operation reduce or exacerbate instabilities? 
+
+Pulsed operation changes the stability problem. It does not eliminate plasma instabilities, but it reduces the amount of time the plasma must remain stable for the duration of a single pulse. Helion’s plasma only needs to remain well-confined through formation, acceleration, compression, fusion, and expansion, rather than being held steady indefinitely. Stability margins are therefore designed to maintain acceptable particle loss and macroscopic stability over the pulse timescale, rather than indefinite confinement.
+
+## More on Helion’s pulsed approach to fusion
+Blog
+
+Learn more
+
+## What confinement time is required?
+
+Helion’s system requires confinement on the order of hundreds of microseconds to milliseconds, not seconds or minutes. The required confinement time depends on density, temperature, fuel mix, compression ratio, and energy recovery efficiency.
+
+## How sensitive is Helion’s performance to initial plasma conditions?
+
+Helion’s performance is sensitive to initial plasma velocity, symmetry, temperature, density, trapped flux, and timing. The machine is designed for precise pulse control and repeatability so the two FRCs merge cleanly and compress efficiently.
+
+## How does Helion achieve sufficient compression without excessive losses?
+
+Helion magnetically compresses high-beta FRC plasmas. The compression process is designed to increase temperature and density while preserving trapped flux and minimizing particle loss. The system’s geometry and pulse timing are selected to avoid excessive wall interaction and maintain stable plasma structure through the fusion pulse.
+
+## What heats the plasma? 
+
+Initially, injected gas is heated through RF heating when a magnetic field is applied in the formation section of the machine. Helion’s plasma continues to heat through acceleration, merging, and compression. Kinetic effects during collision and compression are central heating mechanisms, but the full heating process is dynamic and includes multiple stages.
+
+## Does rapid pulsed compression create non-equilibrium effects?
+
+Yes. Helion’s plasmas are intentionally non-equilibrium during parts of the pulse. Ion and electron temperatures may differ, and plasma conditions evolve rapidly. Helion’s approach is designed around producing fusion and recovering energy before the plasma fully equilibrates.
+
+## Do non-equilibrium effects reduce fusion efficiency? 
+
+They can, if not controlled. They can also be beneficial if ion heating is strong and fusion occurs before energy is lost to electrons, radiation, or transport. Helion’s models and diagnostics track these effects because they are central to the system’s performance.
+
+## From code to compression: How simulation accelerates fusion engineering
+Blog
+
+Learn more
+
+## How does ion-electron temperature equilibration affect Helion? 
+
+Ion-electron equilibration transfers energy from hotter ions to cooler electrons. If the plasma were steady-state, that could erode the ion temperature advantage. Helion’s system is pulsed, so the relevant question is whether enough fusion and energy recovery occur before full equilibration. Helion designs the pulse timing around that constraint and includes this in our models.
+
+## What diagnostics does Helion use? 
+
+Helion employs a broad suite of diagnostics, including magnetic diagnostics, flux loops, interferometry, optical diagnostics, x-ray diagnostics, electrical diagnostics, neutron detectors, activation diagnostics, scintillators, diamond detectors, and other specialized tools to measure plasma behavior and fusion output.
+
+## How we know what’s happening inside a fusion plasma: Plasma diagnostics
+Blog
+
+Learn more
+
+## Measuring fusion reactions: Neutron diagnostics
+Blog
+
+Dr. Michael Hua, Director of Radiation Safety and Nuclear Science
+
+Learn more
+
+## What neutron diagnostics does Helion use?
+
+Helion uses a suite of neutron diagnostics to measure fusion performance and plasma behavior. These include activation foils such as indium, copper, and zirconium; fast activation detectors such as silver, beryllium, SiO₂ Cherenkov detectors, and LaBr₃ scintillators; scintillators and fission chambers for timing; diamond detectors for relative yield and ion temperature; and SRAM detectors for neutron flux estimates. 
+‍
+Together, these diagnostics help determine neutron yield, timing, energy spectrum, and fusion reaction behavior. 
+
+## Measuring fusion reactions: Neutron diagnostics
+Blog
+
+Dr. Michael Hua, Director of Radiation Safety and Nuclear Science
+
+Learn more
+
+## How does Helion measure plasma temperature? 
+
+Helion uses multiple diagnostics to infer plasma temperature, including magnetic measurements, density measurements, x-ray spectra, fusion yield, and neutron spectral information. No single diagnostic tells the entire story, so the plasma state is reconstructed from several independent measurements.
+
+## How we know what’s happening inside a fusion plasma: Plasma diagnostics
+Blog
+
+Learn more
+
+## How does Helion measure fusion yield?
+
+Fusion yield is measured using neutron diagnostics, activation measurements, particle diagnostics, and calibrated detector systems. The measurement approach depends on fuel mix, reaction channel, and machine configuration.
+
+## Measuring fusion reactions: Neutron diagnostics
+Blog
+
+Dr. Michael Hua, Director of Radiation Safety and Nuclear Science
+
+Learn more
+
+## What are the dominant irreversible losses per pulse in Helion’s fusion systems?
+
+The dominant losses include resistive heating in conductors, switching losses, unrecovered magnetic energy, radiation, particle transport, plasma energy lost to walls or divertors, and mechanical vibration.
+
+## What are the limits of coupling efficiency between plasma expansion and external circuits? 
+
+Coupling efficiency depends on plasma geometry, timing, magnetic field structure, circuit impedance, coil design, switching speed, and how much plasma energy is lost to particles, radiation, or walls before it can be recovered electromagnetically. 
+‍
+In Helion’s system, the expanding high-beta FRC remains magnetically linked to the surrounding coils, allowing plasma expansion to induce current back into the capacitor system through Faraday’s Law. Efficient recovery therefore depends on maintaining strong magnetic coupling between the plasma and the external circuit throughout the pulse while minimizing irreversible losses such as resistive heating, radiation, and particle transport. 
+‍
+Recent work on pulsed FRC direct energy conversion has projected electrical recovery efficiencies exceeding 95% for optimized burn cycles and modern pulsed-power systems, significantly higher than historical estimates from older theta-pinch systems.
+‍
+Journal article: The Challenge for Adiabatically Heated FRC Based D-He Fusion 
+Video: The theory behind Helion’s direct energy recovery system 
+
+## How do materials survive repeated pulsed magnetic stress?
+
+Components are designed for cyclic mechanical loads, thermal loads, radiation exposure, and electromagnetic forces. Material choice, geometry, cooling, fatigue analysis, and conservative operating margins are all part of the design.
+
+## What it takes to build materials for a fusion machine
+Blog
+
+Learn more
+
+## What are the fatigue limits on coils?
+
+Coil fatigue depends on field strength, pulse rate, conductor and insulator materials, structural support, temperature, and mechanical stress. Materials are specifically selected to survive a large number of pulses without unacceptable performance degradation.
+
+## Rolling metal into magnet strength
+Blog
+
+Learn more
+
+## How does plasma stability change with increasing size? 
+
+One important stability consideration in FRCs is the tilt mode, where the plasma tends to rotate or “flip” relative to the external magnetic field. Elongation helps resist this instability. In a short FRC, the two ends of the plasma are close together, so perturbations at one end can strongly couple to the other, making the plasma easier to tilt as a whole. In a longer FRC, the ends are farther apart, reducing that coupling and making the configuration more resistant to coherent tilt behavior. However, there are practical limits to elongation. If the FRC becomes too long, different regions of the plasma can begin behaving independently, potentially leading to breakup or separation into multiple structures. 
+‍
+Scaling to larger plasmas also increases trapped magnetic flux, which raises the FRC’s kinetic stability parameter, often referred to as the s-parameter. Lower s values, where only a few particle orbits fit between the magnetic null region and the plasma edge, tend to provide stronger kinetic stabilization. As s increases and more particle orbits fit within the plasma, the FRC has greater freedom to organize into less favorable configurations and become more susceptible to instabilities. Helion’s approach balances this effect through plasma shaping and elongation, which can improve stability while still allowing the machine to scale to larger plasma volumes and higher performance.
+‍
+Article: Stability of field-reversed configurations in the large s experiment (LSX)
+
+## How does Helion's approach compare to the National Ignition Facility (NIF) and tokamaks?
+
+The National Ignition Facility (NIF) uses an approach called inertial confinement (ICF) to bring fuel to fusion conditions. The facility directs high-powered lasers at a small pellet of deuterium-tritium fuel until the pellet ignites and sustains a fusion reaction. 
+‍
+Tokamaks are donut-shaped devices that use magnets to contain a plasma. This approach is called magnetic confinement. The goal of tokamaks is to confine fusion fuel for long periods at high enough temperatures for fusion ignition to occur. Once the reaction reaches a certain point where ignition occurs, a tokamak can continue to keep the reaction going until there is a plasma instability. 
+‍
+We use an approach that takes different aspects of these two approaches and combines them into an approach called magneto-inertial fusion (MIF). Our MIF concept uses magnets to create and confine plasma, then compresses the plasma to fusion conditions. Due to how efficient our system is, we do this without needing to reach ignition.
+
+## How to make fusion electricity without ignition
+Blog
+
+Learn more
+
+## Why has the FRC and pulsed compression approach not been widely pursued historically?
+
+FRCs have been studied for decades, but earlier programs lacked today’s pulsed-power electronics, high-speed controls, diagnostics, simulation tools, and manufacturing capability. Helion’s view is that these enabling technologies make the approach more practical now than it was in earlier eras.
+
+## Are there fundamental physics reasons most fusion programs avoided this architecture?
+
+Historically, many programs prioritized steady-state magnetic confinement or laser inertial confinement because they fit better with government research programs and established scientific roadmaps. FRCs are compact, dynamic, and pulsed, which makes them harder to diagnose and model but potentially attractive for direct electricity generation.
+
+## Why is 100 million degrees Celsius important?
+
+Around 100 million degrees Celsius is a meaningful benchmark because it is in the range where fusion reaction rates become significant for many fusion fuels. Helion’s Trenta prototype demonstrated plasma temperatures of about 100 million degrees Celsius, and Polaris has reached higher temperatures.
+
+## What is Polaris designed to do?
+
+Polaris is designed to demonstrate electricity production from fusion and also to validate Helion’s ability to scale operations between different fuel mixes (D-D, D-T, D-He-3). This will be the first time a fusion machine has directly recovered and stored electricity from fusion-generated plasma expansion.
+‍
+This achievement will give us confidence in our ability to design and build fusion machines that can produce the fusion energy in the operating fuels required for a commercial fusion power plant. It will be an important milestone, not only for us, but for the fusion industry. 
+
+## Is Polaris a net electricity machine?
+
+In 2021, we used “net electricity” when discussing the goals of Polaris. In hindsight, we realized that the term "net" didn't align with the commercial-driven goals of our 7th fusion prototype, and also wasn't as clear as we intended. Today, we prefer to direct focus to the more concrete goal of Polaris: to demonstrate electricity from fusion, where we show we made fusion energy and converted a portion of it to electricity on the capacitor bank. This achievement will help us move toward commercial electricity production for the grid.
+
+## What is Orion?
+
+Orion is Helion’s first commercial fusion power plant. It will produce electricity for Microsoft and is expected to provide at least 50 MWe after an initial ramp-up period.
+
+## Starting to build the world's first fusion power plant in Malaga, WA
+Blog
+
+Learn more
+
+## What plasma conditions has Helion demonstrated?
+
+Helion has demonstrated fusion-relevant plasma temperatures, high-power pulsed operation, magnetic compression, and millisecond-scale plasma lifetimes across its prototypes. Trenta reached above 100 million degrees Celsius, and Polaris has reached above 150 million degrees Celsius.
+
+## How we conducted and measured D-T fusion
+Blog
+
+Our 7th fusion prototype, Polaris, is the first private fusion energy machine to demonstrate measurable quantities of thermonuclear deuterium-tritium fusion and achieve plasma temperatures of 150 million degrees Celsius (MºC). 
+
+Learn more
+
+## What performance improvements are still required to put Helion’s fusion electricity on the grid?
+
+Helion continues to improve plasma size, trapped flux, compression, confinement time, repetition rate, and system integration. These are all improvements we’re currently making throughout Polaris operations. The most important remaining work is demonstrating electricity from fusion, extending performance repeatably, and scaling the integrated machine into a commercial plant.
+
+## How much of Helion’s performance is measured versus projected?
+
+Helion has measured fusion-relevant temperatures, fusion production, pulsed operation, magnetic compression, and high-efficiency magnetic energy recovery on seven operational fusion prototypes. Commercial plant performance still depends on scaling those results into an integrated system that demonstrates electricity from fusion, repetition rate, component lifetime, fuel processing, and grid delivery.
+
+## How does Helion consider peer review? 
+
+Helion values peer review and external scientific scrutiny, but it also operates as a company focused on building and deploying commercial technology. Some results are shared through publications, conferences, regulatory filings, and technical engagements, and direct discussion with experts and stakeholders, while specific implementation details and data remain proprietary until broader disclosure is appropriate. You can see our peer reviewed work and conference presentations in our Technical Library. 
+‍
+Helion’s priority is to validate performance through experiment, diagnostics, repeatability, and mission-driven progress toward commercial fusion generators.
+
+## How does pulsed power become stable grid electricity? 
+
+Helion’s system recovers energy into electrical storage and uses both high and low voltage power electronics to condition that energy to be grid-compatible. The fusion core is pulsed, but the grid interface is designed to deliver smooth, usable power.
+
+## Can Helion deliver continuous power?
+
+Helion’s commercial system is designed to deliver continuous electricity by operating in pulses and smoothing the output through electrical systems. The plant can adjust output by changing pulse rate and operating conditions.
+
+## How does ramp-up and ramp-down compare with conventional generators?
+
+A pulsed fusion plant should be more flexible than many conventional thermal generators because output can be adjusted through pulse rate and stored electrical energy. Final ramp behavior depends on plant design, thermal limits, controls, and grid requirements.
+
+## What are Helion's technical achievements?
+
+Helion has been achieving record-breaking results across its previous fusion prototypes, including in IPA, IPA-C, Grande, and Venti.  
+‍
+Helion’s sixth prototype, Trenta, operated for two years, completed 10,000 high-power pulses, operated under vacuum for 16 months, produced fusion, and reached plasma temperatures of about 100 million degrees Celsius. Helion also demonstrated high-efficiency pulsed magnets, compression fields greater than 10 Tesla, and plasma lifetimes greater than 1 millisecond. 
+‍
+Polaris has begun operation and has demonstrated higher plasma temperatures, including about 150 million degrees Celsius, as well as measurable D-T fusion.
+
+## Trenta's final fusion test campaign
+Blog
+
+Before its final operations, we are sharing this groundbreaking fusion device with the world for the first time.
+
+Learn more
+
+## Creation of a high-temperature plasma through merging and compression of supersonic field reversed configuration plasmoids
+Technical Library
+
+April 13, 2011
+
+Learn more
+
+## What are the key remaining risks for Helion’s approach to commercial fusion power?
+
+The key remaining risks are demonstrating electricity from fusion, scaling repetition rate, selecting materials that can survive the fusion environment, extending confinement and compression time, maintaining low particle losses, validating fuel processing, and integrating the system into a commercial power plant.
+
+## How will Helion know it has succeeded?
+
+Helion’s mission is to satisfy the need for abundant clean energy. We believe we can only do this once we achieve deployment at a global scale, building gigawatts of fusion power every year. Until then, we have not succeeded.
+
+## Is fusion safe?
+
+Yes. Helion’s fusion approach has no possibility of creating a chain reaction, and the machine shuts off instantly in any off-normal scenario. There is no risk of a runaway chain reaction.
+‍
+Helion’s fusion generators will produce a manageable amount of radiation while they run. Helion uses commercially available shielding materials (e.g., concrete) to limit the amount of radiation that leaves the vicinity of the machine. When the machine is off, that radiation stops.  
+‍
+And, because Helion generators use only small amounts of fuel at any given time, any potential impacts would be inherently limited, generally remaining on site and well within regulatory protections for the surrounding community. 
+
+## Does fusion produce waste?
+
+Helion’s fusion approach does not produce high-level radioactive waste. Our machines do produce and can use tritium. Tritium’s half-life is only 12.3 years (compared to 24,000 years for some fission waste). As tritium decays, it turns into helium-3, which we use as our fusion fuel.
+‍
+The radiation from fusion does activate some of the materials inside the machine over the operating life of a power plant. Helion’s generators are specifically designed to use materials that result in low levels of activation, and we are continuing to refine our designs to further reduce byproducts. 
+‍
+Because fusion's byproducts are limited and well-understood, established regulatory pathways and sufficient capacity already exist to manage them. Helion plans and funds decommissioning for each generator before it begins operating, in compliance with applicable regulations. 
+
+## How does Helion handle neutrons?
+
+Helion manages neutrons with shielding, monitoring, access controls, and distance. Shielding materials such as borated polyethylene and borated concrete slow and absorb neutrons and secondary radiation. Radiation levels are monitored and kept as low as reasonably achievable.
+
+## How to shield neutrons
+Blog
+
+Learn more
+
+## Does Helion’s system produce neutrons?
+
+Yes. Helion’s D-He-3 fuel cycle is not neutron-free. The primary D-He-3 reaction produces charged particles, but D-D side reactions produce neutrons, and some secondary D-T reactions also produce neutrons.
+‍
+Helion designs shielding, materials, maintenance plans, and radiation monitoring around this neutron production. 
+
+## How to shield neutrons
+Blog
+
+Learn more
+
+## How is fusion regulated?
+
+In early 2023, the U.S. Nuclear Regulatory Commission (NRC) made a landmark decision to regulate fusion under its byproduct material framework - the same approach applied to particle accelerators and industrial facilities that use radioactive material. The NRC chose to regulate fusion energy differently from nuclear fission, due to the inherent differences in risk levels. Congress codified this approach in the ADVANCE Act of 2024, and in early 2026 the NRC issued its proposed rule formally implementing the framework.
+‍
+Under this approach, fusion is generally regulated by Agreement States - states that have assumed licensing authority from the NRC. Helion’s first power plant will be regulated through Washington state authorities, consistent with the pathway used for its prior fusion prototypes. 
+‍
+In practice, for us, that means our first fusion power plant, Orion, is regulated by the Washington Department of Health. 
+
+## Why fusion is not “nuclear”
+Blog
+
+Learn more
+
+## What are the dominant cost drivers in a commercial plant?
+
+Major cost drivers include capacitors and power electronics. Helion’s direct energy conversion approach is intended to reduce costs by avoiding large steam turbines and thermal power-cycle infrastructure.
+
+## How much will Helion's fusion electricity cost?
+
+We estimate that Helion’s fusion power will be one of the lowest cost sources of electricity.
+‍
+There are four main components of electricity cost: 1) Capital cost 2) Operating cost 3) Up-time 4) Fuel cost. Helion’s fusion power plant is projected to have negligible fuel cost, low operating cost, high up-time and competitive capital cost. Our machines require a much lower cost on capital equipment because we can do fusion so efficiently and don’t require large steam turbines, cooling towers, or other expensive requirements of traditional fusion approaches. 
+
+## How much money has Helion raised?
+
+Since Helion's founding in 2013, we have raised more than $1 billion in private capital.
+
+## Helion Announces $425M Series F Investment to Scale Commercialized Fusion Power
+News article
+
+Round includes new investors, Lightspeed Venture Partners, SoftBank Vision Fund 2, and existing investors
+
+Learn more
+
+## Can I invest in Helion?
+
+Helion is a private company and not publicly traded, which means we are not currently offering public investment opportunities.
+
+## Who are Helion’s customers?
+
+Helion has announced a power purchase agreement with Microsoft for its first commercial fusion power plant and a separate collaboration with Nucor to develop fusion power for industrial electricity demand.
+
+## Axios | Microsoft signs nuclear fusion deal as part of sustainability push
+News article
+
+Microsoft signed a power purchase agreement with Helion for at least 50 megawatts of electricity beginning in 2028.
+
+Learn more
+
+## The Wall Street Journal | A Futuristic Plan to Make Steel With Nuclear Fusion
+News article
+
+Helion Energy and Nucor are teaming up to build a power plant at one of Nucor's U.S. steel mills.
+
+Learn more
+
+## Why does Helion believe fusion can be commercial soon?
+
+Helion believes its approach can commercialize quickly because it is compact, pulsed, directly converts energy to electricity, uses modern power electronics, and can be iterated through hardware prototypes. The company’s development path is based on building and testing machines, not waiting for a single large experimental facility to answer every question.
+
+NEWSLETTER
+
+Sign up
+
+Thank you! Your submission has been received!
+
+Oops! Something went wrong while submitting the form.
+
+Technology
+
+Orion
+
+Polaris
+
+Trenta
+
+About
+
+Careers
+
+Updates
+
+FAQ
+
+Hercules
+
+Chelan 
+
+Contact
+
+Privacy Policy
+
+Terms of Use
+
+©2026 Helion
+
+LINKEDIN
+
+X
+
+YOUTUBE
+
+INSTAGRAM
+

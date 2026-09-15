@@ -13,5 +13,6 @@ if __name__ == "__main__":
     print(f"p_fus/module    {float(pt.p_fus):.1f} MW")
     print(f"wall flux       {diag['q_wall_mw_m2']:.2f} MW/m^2")
     print(f"flash energy    {diag['e_flash_mj_m2']:.2f} MJ/m^2")
+    print(f"burn implied    {diag['tau_burn_implied_s']:.2f} s (constraint 7, x_s 0.7)")
     for w in diag["warnings"]:
         print(f"warning: {w}")

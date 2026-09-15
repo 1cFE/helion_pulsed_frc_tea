@@ -29,13 +29,17 @@ costed in the smallest chamber that survives it: plasma radius 0.61 m
 10 m length, where the flash reads 1.48 MJ/m^2. The 1 GWe vendor
 device is 20 modules at 1 Hz, the 3 GWe park 60. The power-purchase
 figure is a commercial commitment, not a physics disclosure; the model
-reproduces it only with this shot.
+reproduces it only with this shot. The shot is also beyond the vendor's
+own stated pulse: at the patent burn point a millisecond burn returns
+under 0.4 MJ from the bank and 128 MJ implies a 0.3 to 0.7 s burn
+(constraint 7), so the shot is a graded claim at every rung, and the
+records device is priced at it only so that a machine exists to cost.
 
 All numbers at costingfe `44434d9` (cylinder geometry + wall-flux audit
 for linear pulsed concepts; shot-cycled CAS72 replacement scope;
 physics-consistent recovery-store markup; per-pulse fuel-cycle
 semantics with species-resolved DHE3 recycle losses), pinned by the regression tests
-in `tests/test_study.py`. The tier stacks are `config/best_case.yaml`,
+in `tests/`. The tier stacks are `config/best_case.yaml`,
 `config/tier2.yaml`, `config/tier3.yaml`; `scripts/tiers.py` reproduces the
 ladder end to end.
 
@@ -83,10 +87,11 @@ speculation device.
 
 ## Coherence constraints (enforced, not advisory)
 
-Six physics couplings are enforced on every quoted point (five checked
-by `study.coherence_violations`, the sixth applied by construction in
-`study.run`); a stack that violates one is flagged in the output of
-every script rather than reported:
+Seven physics couplings are enforced on every quoted point (five checked
+by `study.coherence_violations`, the sixth and seventh applied by
+construction in `study.run`); a stack that violates one of the five is
+flagged in the output of every script rather than reported, and every
+point carries the burn time the seventh implies:
 
 1. **f_rad is coupled to the burn mix.** A D-rich plasma radiates more, not
    less: Bosch-Hale + bremsstrahlung at the study calibration (the
@@ -164,6 +169,27 @@ every script rather than reported:
    tilt boundary, an unmodeled truncation risk on f_pdv that the
    composite cap's engineering margin partially absorbs at the
    extrapolation grade and speculation's zero margin does not.
+7. **The shot is bounded by the plasma energy and the burn time.** The
+   plasma at peak compression holds chi of the delivered driver energy
+   at the energy density of a beta = 1 plasma and burns at the fusion
+   power density of the burn point, so gain <= chi x burn time /
+   breakeven time, with the breakeven time the ratio of those two
+   densities: 86 ms at the patent point (22 T, 70 keV, n_D 0.75e22,
+   He3/D 0.158, Bosch-Hale rates) with thermalized electrons, 3.7 times
+   shorter with electrons held at a tenth of the ion temperature, which
+   the 1 ms ion-electron equilibration time at that density forbids for
+   any burn long enough to matter (Lackner et al. 2026, JFE 45:12;
+   Nicolas et al. 2026, JFE 45:24). Against the vendor's stated pulse,
+   "on the order of hundreds of microseconds to milliseconds"
+   (helionenergy.com/faq, June 2026 capture in `docs/sources/`), a 1 ms
+   burn returns 0.2 to 0.4 MJ from the 50 MJ bank across x_s 0.5 to
+   0.85, less than the circuit loses per shot at any eta_dec in the
+   ladder; the design-basis 128 MJ shot implies a 0.3 to 0.7 s burn and
+   the speculation shot 1 to 3 s (`scripts/yield_bound.py`). No record
+   supports any yield, so the shot is a graded claim at every rung
+   rather than a shared basis: the records device is priced at the
+   vendor's shot so that a machine exists to cost, and every point
+   reports `tau_burn_implied_s` at x_s 0.7 (`study.run`).
 
 The store-and-decay idealization itself (dhe3_f_T = 0: no bred triton
 burns in-plasma) is checked in `scripts/tritium_burn.py`. A triton born
@@ -172,7 +198,8 @@ mid-pulse burns before the pulse ends with probability
 70-20 keV (each unit of D burnup burns 14-43x as much bred tritium), each percent of per-shot D burnup burns 14-43% of the bred
 tritium in-plasma; the fuel cycle is only self-consistent with low
 per-shot burnup bought back by rep rate. At Helion's stated
-sub-millisecond dwell (helionenergy.com/faq) and Trenta-class densities
+pulse of hundreds of microseconds to milliseconds (helionenergy.com/faq,
+June 2026 capture in `docs/sources/`) and Trenta-class densities
 (1e22-3e22 m^-3) the burn fraction stays below about 1% and dhe3_f_T = 0
 is a good approximation; at reactor-class compression (1e23 m^-3) with
 millisecond-plus dwell it reaches 4-13%. Priced at dhe3_f_T = 0.04 the
@@ -443,7 +470,7 @@ an explicit leap. See `config/tier3.yaml` for the per-knob notes.
 | c_inv_per_kw_net | 50 $/kW | small lever |
 | multi_unit_labor_factor | 0.80 | small lever |
 | interest_rate | 0.03 real | IEA/NEA 2020 low case: sovereign-class capital with no mechanism that delivers it to a first-of-a-kind fleet; financing, shown separately (worth 7.1 $/MWh at 1 GWe and 6.1 at 3 GWe against 7%) |
-| yield_per_shot_mj | solved, not asserted | gain speculation is admitted, but the shot must be survivable in the chamber it is costed in: `coherent_min.py` solves yield and chamber jointly. The optimum is a broad plateau (300-750 MJ in a 30 m x 1.5 m single-module chamber, 2.3-5.9 Hz, panel wall at its flux limit). Q = 40 (2000 MJ) in the concept preset's 0.5 m x 10 m chamber deposits about 6.7 MJ/m^2 per shot, four times the tungsten flash-melt bound, and is excluded. |
+| yield_per_shot_mj | solved, not asserted; a graded claim at every rung (constraint 7) | no record supports any yield: the vendor's stated pulse returns under 0.4 MJ from the 50 MJ bank, the design-basis 128 MJ shot implies a 0.3 to 0.7 s burn and the speculation shot 1 to 3 s (`scripts/yield_bound.py`), so the records device is priced at the vendor's shot only so that a machine exists to cost. Gain speculation is admitted, but the shot must be survivable in the chamber it is costed in: `coherent_min.py` solves yield and chamber jointly. The optimum is a broad plateau (300-750 MJ in a 30 m x 1.5 m single-module chamber, 2.3-5.9 Hz, panel wall at its flux limit). Q = 40 (2000 MJ) in the concept preset's 0.5 m x 10 m chamber deposits about 6.7 MJ/m^2 per shot, four times the tungsten flash-melt bound, and is excluded. |
 
 ## The coherent minimum, and the $10 question
 
@@ -646,11 +673,14 @@ damage scan nor CAS72 currently prices.
 
 ## What the ledger needs next
 
-1. A measured, fusion-inclusive round-trip recovery efficiency on Polaris,
-   separating the circuit factor from the PdV factor. It gates the
-   composite-recovery entries directly and, through the wall-load budget,
-   the honest rep-rate ceiling. Every other open item moves single $/MWh;
-   this one moves tens.
+1. The burning shot on Polaris: its yield at its measured dwell, read
+   against constraint 7 (the whole plant hangs on it: at the vendor's
+   stated pulse the bank returns under 0.4 MJ), and its fusion-inclusive
+   round-trip recovery efficiency, separating the circuit factor from
+   the PdV factor, which gates the composite-recovery entries directly
+   and, through the wall-load budget, the honest rep-rate ceiling. Every
+   other open item moves single $/MWh; the recovery efficiency moves
+   tens, and the yield moves everything.
 2. A duty-cycle analysis for any rep rate above about 1 Hz: switch and
    capacitor cycle life, vacuum recovery at 100-300 ms periods, coil and
    chamber thermal management.
