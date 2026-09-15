@@ -83,7 +83,11 @@ priced along the expansion adiabat (conductor ~ L^(1/3)), the design
 search trades length for radius: the minima are fat short chambers. The dominant open
 band is the compression field: the burnup basis is the patent's 22 T
 point, and a 10 T / 5 T machine adds +4.1 / +21.3 $/MWh at the
-speculation device.
+speculation device. The recovery topology is the other: at the 40%
+ceiling Slough (2025, Nucl. Fusion 65 106019, eq. 18) derives for a
+flux-conserving expansion chamber, f_pdv 0.4 adds +25.7 at the
+extrapolation device and +6.1 at speculation (`reconciliation.py`,
+RISK row).
 
 ## Coherence constraints (enforced, not advisory)
 
@@ -168,7 +172,13 @@ point carries the burn time the seventh implies:
    stability prefers prolate FRCs, the late expansion trades toward the
    tilt boundary, an unmodeled truncation risk on f_pdv that the
    composite cap's engineering margin partially absorbs at the
-   extrapolation grade and speculation's zero margin does not.
+   extrapolation grade and speculation's zero margin does not. Slough (2025) caps the
+   recoverable share of an FRC ejected into a flux-conserving expansion
+   chamber at (1 - x_s^2)/(2.5 - x_s^2), 0.4 at most, and holds that an
+   FRC does not free-expand; that is the co-founder's own topology, not
+   the discharged coil assumed here, and it is priced as a risk row
+   (+25.7 / +6.1 $/MWh at the extrapolation / speculation device), not
+   enforced.
 7. **The shot is bounded by the plasma energy and the burn time.** The
    plasma at peak compression holds chi of the delivered driver energy
    at the energy density of a beta = 1 plasma and burns at the fusion
@@ -185,7 +195,11 @@ point carries the burn time the seventh implies:
    burn returns 0.2 to 0.4 MJ from the 50 MJ bank across x_s 0.5 to
    0.85, less than the circuit loses per shot at any eta_dec in the
    ladder; the design-basis 128 MJ shot implies a 0.3 to 0.7 s burn and
-   the speculation shot 1 to 3 s (`scripts/yield_bound.py`). No record
+   the speculation shot 1 to 3 s (`scripts/yield_bound.py`), and the
+   bound reproduces Slough's (2025) own D-T design, where a gain of 9.1
+   on the FRC energy over a 2 to 5 ms transit at 34.8 T and 15 keV is a
+   3.4 ms burn at that point's breakeven time
+   (`study.breakeven_time_dt_s`). No record
    supports any yield, so the shot is a graded claim at every rung
    rather than a shared basis: the records device is priced at the
    vendor's shot so that a machine exists to cost, and every point
@@ -442,7 +456,7 @@ evidence-supported values.
 | eta_pin | 0.95 | 0.98 | Solid-state pulsed-power wall-plug efficiency; plausible for modern semiconductor switching, no datasheet or Helion statement located. | UNSOURCED |
 | max_f_rep | 1.0 | 3.0 | No public Helion statement of a numeric plant rep rate exists (Polaris target about 1/s; Trenta about 1/10 min; the 1-10 Hz band is the concept YAML's roadmap paraphrase). 3 Hz is what the bought wall supports at this tier's recovery parameters; it remains UNSOURCED as a demonstrated cadence (nothing MJ-class has run at 1 Hz continuously). The band top (10 Hz) is speculation. | UNSOURCED-ROADMAP |
 | fw_class | panel | hhf | Machine-design purchase, not a record: divertor-grade monoblock wall (ITER divertor procurement anchor, 2.5 M$/m^2 NOAK, 10 MW/m^2 qualification) over the real 44.6 m^2 cylinder, 112 M$/module, to make 3 Hz admissible in the design-basis chamber. The extrapolation device instead buys a fatter chamber with the cheaper panel wall (see coherent minimum below). | design purchase |
-| dhe3_dd_frac | 0.488 (the patent's He3/D = 0.158 at 70 keV, as a D-D event share; the earlier 0.314 was the blog's 3:1 bremsstrahlung minimum, kept only as the floor's calibration anchor) | 0.85 | D-rich operation to raise in-situ He-3 breeding (prompt D-D He-3 plus stored-tritium decay) and cut the purchased-fuel line; the concept's own stated direction, but 0.85 is the top of a sweep, not a derived operating point. Adopted only jointly with f_rad 0.28 and the tritium-plant adder (coherence constraints 1 and 4). | UNSOURCED |
+| dhe3_dd_frac | 0.488 (the patent's He3/D = 0.158 at 70 keV, as a D-D event share, the self-sustained cycle's limit of roughly 0.16 that Slough 2025 restates citing the same patent; the earlier 0.314 was the blog's 3:1 bremsstrahlung minimum, kept only as the floor's calibration anchor) | 0.85 | D-rich operation to raise in-situ He-3 breeding (prompt D-D He-3 plus stored-tritium decay) and cut the purchased-fuel line; the concept's own stated direction, but 0.85 is the top of a sweep, not a derived operating point. Adopted only jointly with f_rad 0.28 and the tritium-plant adder (coherence constraints 1 and 4). | UNSOURCED |
 | f_rad | 0.163 | 0.28 | Bremsstrahlung-consistent radiated fraction at dd_frac 0.85 under the study calibration; relativistic corrections would raise it another 10-25%. Not an optimistic move: this knob *costs* 1.1 $/MWh against the incoherent alternative, and is the price of the fuel credit. | physics floor |
 | interest_rate | 0.07 real | 0.05 real | Cost of capital (financing): federal loan guarantees blended with utility equity, a mechanism with precedent but no fusion record, between the IEA/NEA 2020 central and low cases. The one entry that is financing rather than technology; Figure 1 and the at-7% column keep it separate (worth 6.3 $/MWh at this device against 7%). | mechanism with precedent |
 | lifetime_yr | 30 | 80 | Book life (engineering): US DOE hydropower lifespan (65-85 yr) with every core component replaced on its own schedule; the unreplaceable structure sees negligible neutron fluence (copper coils are replaced with the wall, D-D neutrons only). Bank and wall replacements are priced at every rung, so the model shows where 80 yr pays: 3.9 $/MWh here against 30 yr, with the bank turned over about 7x. | civil-works record |

@@ -172,6 +172,21 @@ def breakeven_time_s(b_t: float = None, t_i_kev: float = None,
     return u / p_fus
 
 
+def breakeven_time_dt_s(b_t: float, t_i_kev: float) -> float:
+    """The same breakeven time for a balanced D-T plasma with thermalized
+    electrons at beta = 1: the cross-check against Slough (2025, Nucl.
+    Fusion 65 106019), whose compact D-T reactor quotes a gain of 9.1 on the
+    FRC energy over a 2 to 5 ms transit at 34.8 T and the optimum 15 keV."""
+    from costingfe.layers.physics import Q_DT
+    from costingfe.layers.reactivity import sigv_dt
+
+    p_b = b_t**2 / (2.0 * _MU0)
+    n_i = p_b / (2.0 * t_i_kev * 1e3 * 1.602e-19)  # n_e = n_i, T_e = T_i
+    n_d = n_t = 0.5 * n_i
+    p_fus = n_d * n_t * float(sigv_dt(t_i_kev)) * Q_DT * MEV_J
+    return 1.5 * p_b / p_fus
+
+
 def yield_bound_mj(e_del_mj: float, x_s: float, tau_burn_s: float,
                    tau_f_s: float = None) -> float:
     """Largest shot yield the plasma can return in a burn of tau_burn_s:

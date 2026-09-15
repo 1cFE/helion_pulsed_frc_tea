@@ -87,3 +87,13 @@ def test_bound_table_lists_both_shots_across_the_xs_span():
     row = next(r for r in rows if r["yield_mj"] == 128.1 and r["x_s"] == 0.85)
     assert row["tau_burn_s"] == pytest.approx(0.31, abs=0.02)
     assert row["yield_at_vendor_pulse_mj"] == pytest.approx(0.41, abs=0.03)
+
+
+def test_slough_cfr2_design_point_satisfies_the_bound():
+    """Slough (2025, Nucl. Fusion 65 106019): a D-T FRC at 34.8 T and the
+    optimum 15 keV, gain 9.1 on the FRC energy over a 2 to 5 ms transit.
+    gain x breakeven time must land inside that transit."""
+    from study import breakeven_time_dt_s
+    tau_f = breakeven_time_dt_s(34.8, 15.0)
+    assert 2e-3 <= 9.1 * tau_f <= 5e-3
+    assert tau_f == pytest.approx(0.4e-3, rel=0.15)

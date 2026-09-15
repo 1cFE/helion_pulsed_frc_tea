@@ -114,7 +114,11 @@ initial operations in 2028" and has withdrawn both "electricity by
 The fuel cycle is the one in Helion's patent (US 11,469,003 B2). The
 patent's operating table also fixes the vendor device's burn point: a
 plasma with He3/D = 0.158 at 70 keV and 22 T, radiating 23% of its
-fusion power as bremsstrahlung and releasing 6% as neutrons. The other
+fusion power as bremsstrahlung and releasing 6% as neutrons. Slough
+(2025), citing the same patent, restates that mix as the self-sustained
+cycle's limit, He-3 at roughly 16% of the fuel, and in the same paper
+leaves D-He3 for a D-T design, putting the D-He3 gain at equal FRC
+conditions a factor of 240 below D-T's. The other
 three devices run deuterium-rich, with 85% of the fusion events D-D,
 because He-3 is expensive: bred He-3 undercuts purchased He-3 at every
 grade, so the design search picks that mix each time. The D-D reactions
@@ -800,8 +804,11 @@ pulse of hundreds of microseconds to milliseconds (Helion FAQ, June
 shot at any eta_dec in the ladder; the design-basis 128 MJ shot needs
 0.3 to 0.7 s, which falls to the patent table's own tenth-of-a-second
 class only with cold electrons throughout; the speculation shot needs
-1 to 3 s. Trenta's record is lifetimes above 1 ms. This is constraint
-7, and it is why the shot is a graded claim in Section 3 rather than a
+1 to 3 s. Trenta's record is lifetimes above 1 ms. The bound also reproduces
+the co-founder's own D-T design: Slough (2025) quotes a gain of 9.1 on
+the FRC energy over a 2 to 5 ms transit at 34.8 T and 15 keV, and at
+that point's breakeven time the same arithmetic gives a 3.4 ms burn.
+This is constraint 7, and it is why the shot is a graded claim in Section 3 rather than a
 shared basis; `scripts/yield_bound.py` prints the bound, and every
 point the scripts evaluate carries the burn time its shot implies at
 x_s 0.7. It is also the thin-cycle argument of Nicolas et al. in this
@@ -833,8 +840,17 @@ above 90% for optimal cycles. The vendor's FAQ (June 2026) cites
 Nicolas et al. (2026) for recovery "exceeding 95%"; the figure in that
 paper is its ideal Carnot-form bound at a temperature ratio of 40 under
 full adiabaticity, which the paper then sets aside on the thin-cycle
-argument and finds insensitive to the Otto or Diesel choice. There is
-no Carnot exemption in this:
+argument and finds insensitive to the Otto or Diesel choice. Slough
+(2025), the co-founder whose patent supplies the fuel cycle, derives
+40% as the most an ejected FRC can return in a flux-conserving
+expansion chamber, where it comes to rest in equilibrium at a radius
+ratio x_s holding 1.5 pV of thermal energy against the field it has
+compressed (recoverable share (1 - x_s^2)/(2.5 - x_s^2)), and states
+that an FRC does not free-expand. That is his own recovery topology,
+not the discharged compression coil this work's f_pdv assumes, so it
+is carried as a risk row rather than a cap: at f_pdv 0.4 the
+extrapolation device reads 59.3 $/MWh (+25.7) and the speculation
+device 18.0 (+6.1). There is no Carnot exemption in this:
 the cycle's efficiency is set by its form, its compression and
 expansion ratios, and the entropy generated in the deliberately
 irreversible merging (the chi derate above), which is what the
@@ -991,7 +1007,11 @@ None of these is in the evidence base at any grade.
   seconds at the patent point.
 - The headline floor is conditional on the patent-basis compression
   field: per-pulse burnup falls as B^2, so a 10 T reactor point adds
-  about 4 $/MWh and a 5 T point about 21 $/MWh (Section 5.3). The
+  about 4 $/MWh and a 5 T point about 21 $/MWh (Section 5.3). It is
+  conditional too on the discharged-coil recovery topology: at the 40%
+  ceiling Slough (2025) derives for a flux-conserving expansion chamber
+  the speculation device adds 6.1 $/MWh and the extrapolation device
+  25.7 (Section 6). The
   neutron-damage adders are more likely low than high
   (fission-spectrum dpa data, an order of magnitude more helium per
   dpa at 14 MeV, uniform-cylinder averaging over a localized burn).
@@ -1021,7 +1041,13 @@ the $/MWh they gate:
 2. **Capacitor cost-at-life** (tens of $/MWh): a sourced curve
    replacing the single derating target, resolving the joint optimism
    of 0.1 $/J with 1e10-shot life.
-3. **Per-pulse burnup, extraction, and fuel recovery** (6-16 $/MWh):
+3. **The recovery chain** (5 to 26 $/MWh at the extrapolation grade,
+   the top of the range at Slough's 40% ceiling): the Polaris vacuum /
+   no-burn / burn shot triplet separates the circuit efficiency, the
+   thermalization share chi(1 - f_pdv), and the fusion-inclusive
+   composite in one campaign, and the no-burn deficit says whether the
+   share sits at the flux-conserver 0.4 or the adiabatic 0.8.
+4. **Per-pulse burnup, extraction, and fuel recovery** (6-16 $/MWh):
    the patent fixes the design intent, low per-pulse burnup with
    inter-pulse tritium removal, but a patent is design intent, not a
    measurement; the reactor-point compression density and field, the
@@ -1029,10 +1055,6 @@ the $/MWh they gate:
    recovery (four nines required at the published operating point) fix
    the neutron spectrum, the wall-replacement schedule, and the
    fuel-cycle cost between them.
-4. **The recovery chain** (order 5 $/MWh at the extrapolation grade): the Polaris
-   vacuum / no-burn / burn shot triplet separates the circuit
-   efficiency, the thermalization share chi(1 - f_pdv), and the
-   fusion-inclusive composite in one campaign.
 5. **A duty-cycle basis for multi-Hz operation** and **a costed
    tritium-plant scope** for the D-rich cycle (single $/MWh each, but
    licensing-defining).
@@ -1049,13 +1071,15 @@ them, are all available on hardware the developer is already building.
 Everything here is in the study repository at
 [github.com/1cFE/helion_pulsed_frc_tea](https://github.com/1cFE/helion_pulsed_frc_tea):
 the four evidence stacks in `config/`, the scripts in `scripts/` that
-produce every number and figure (the README says what each one does),
+produce every number, every figure and the HTML rendering (the README
+says what each one does),
 the evidence ledger, the adversarial review, the capacitor evidence,
 and the vendor slide and FAQ captures. The cost model is `1costingfe` at commit
-44434d9. Forty-six regression tests pin all four devices at both
+44434d9. Fifty-one regression tests pin all four devices at both
 plant sizes, the stack evaluations at the vendor configuration, the
 tritium-burn closure, the yield bound with the burn time every point
-implies, the chi(x_s) anchors, the breeder unit cost, the
+implies and its D-T cross-check, the recovery ceiling, the chi(x_s)
+anchors, the breeder unit cost, the
 availability derivation, the financing ladder, and the three-part
 partition of the LCOE behind Figure 1, and fail loudly if the model
 moves under this work.
@@ -1131,6 +1155,13 @@ moves under this work.
   current-flux cycle, Table 1 against the vendor's reactivity curve).
 - Rubin, T. (2026). 1costingfe: a bottom-up fusion power plant cost
   model. Repository at commit `44434d9`.
+- Slough, J. (2025). "A compact fusion reactor based on the staged
+  compression of a field reversed configuration." Nuclear Fusion 65,
+  106019 (open access; the 2026 corrigendum replaces figure 36 only):
+  the self-sustained cycle's He-3 fraction of roughly 0.16, citing the
+  fuel-cycle patent; the D-T design point (34.8 T, 15 keV, gain 9.1 on
+  the FRC energy over a 2 to 5 ms transit); the 40% recovery ceiling of
+  a flux-conserving expansion chamber (its equation 18).
 - Spencer, R. L., Tuszewski, M., and Linford, R. K. (1983).
   "Adiabatic compression of elongated field-reversed configurations."
   Physics of Fluids 26, 1564 (the FRC adiabatic compression scalings

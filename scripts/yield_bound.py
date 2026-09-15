@@ -14,6 +14,7 @@ import csv
 from study import (  # noqa: I001  sets COSTINGFE_BACKEND before costingfe imports
     OUTPUT_DIR,
     VENDOR_PULSE_S,
+    breakeven_time_dt_s,
     breakeven_time_s,
     build_model,
     chi_from_xs,
@@ -59,6 +60,10 @@ def main():
     for r in rows:
         print(f"{r['device']:8} {r['yield_mj']:9.1f} {r['x_s']:5.2f} {r['chi']:5.2f} "
               f"{r['yield_at_vendor_pulse_mj']:18.2f} {r['tau_burn_s']:15.2f}")
+    tau_dt = breakeven_time_dt_s(34.8, 15.0)
+    print(f"cross-check, Slough 2025 CFR2 (D-T, 34.8 T, 15 keV): breakeven "
+          f"{tau_dt*1e3:.2f} ms; gain 9.1 on the FRC energy is a "
+          f"{9.1*tau_dt*1e3:.1f} ms burn, inside the paper's 2 to 5 ms transit")
     OUTPUT_DIR.mkdir(exist_ok=True)
     with open(OUTPUT_DIR / "yield_bound.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))

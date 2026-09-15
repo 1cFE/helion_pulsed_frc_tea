@@ -60,6 +60,25 @@ TRITIUM_BAND_MUSD = (100.0, 300.0)
 TRITIUM_POINT_MUSD = 200.0
 ETA_TH_BOTTOMING = 0.30
 
+# Slough (2025, Nucl. Fusion 65 106019, eq. 18): in a flux-conserving
+# expansion chamber the ejected FRC comes to rest in equilibrium at a
+# radius ratio x_s, retaining 1.5 p V of thermal energy against the field
+# it has compressed, so the recoverable share is (1 - x_s^2)/(2.5 - x_s^2),
+# at most 0.4. That is the co-founder's own recovery topology and his
+# published view that an FRC does not free-expand; the study's higher
+# f_pdv assumes the compression coil is discharged under the expanding
+# plasma. Priced here as a risk row, not enforced.
+F_PDV_CEILING_SLOUGH = 0.4
+
+
+def f_pdv_ceiling_risk(model, fwd, diag, ceiling=F_PDV_CEILING_SLOUGH):
+    """(LCOE, delta, effective f_pdv) with the recovery share held at the
+    ceiling; study.run keeps min(claim, share x adiabatic cap), so a claim
+    below the cap sticks."""
+    _, d = run(model, dict(fwd, f_pdv=ceiling))
+    return d["lcoe"], d["lcoe"] - diag["lcoe"], d["f_pdv_eff"]
+
+
 
 def crf(i, n):
     return i * (1 + i) ** n / ((1 + i) ** n - 1)
@@ -166,6 +185,10 @@ def analyze(label, spec):
     # reactor-point compression field is lower, density and burnup fall as
     # B^2 and the recovery nines bind harder. Priced by scaling both
     # species' per-pulse burn fractions.
+    lcoe_c, delta_c, f_pdv_c = f_pdv_ceiling_risk(model, fwd, diag)
+    print(f"  RISK recovery share at Slough's flux-conserver ceiling "
+          f"(f_pdv {f_pdv_c:.2f} against {diag['f_pdv_eff']:.2f}): "
+          f"LCOE {lcoe_c:.1f} ({delta_c:+.1f}) $/MWh")
     for b_t in (10.0, 5.0):
         scale = (b_t / 22.0) ** 2
         _, d_b = run(model, dict(
