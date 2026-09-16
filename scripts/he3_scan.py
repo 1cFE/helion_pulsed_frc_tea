@@ -15,15 +15,33 @@ coherent-minimum machine. f_rad is coupled to the mix via the
 bremsstrahlung floor; the tritium adder fires on the D-rich side. The
 dd_frac 0.95 column probes how close deeper breeding gets to He-3
 self-sufficiency (price-insensitivity is the test).
+
+A price concession also changes which mix the design search picks, so
+the footer re-runs the search at u_he3 = 0 per burn mix (optimum_by_mix)
+at the extrapolation and speculation grades and both plant sizes: free
+He-3 is priced at the He-3-rich machine it would buy, not at the D-rich
+machine the ledger price chose.
 """
 import csv
+import itertools
 
+from costingfe.model import SizingInfeasible
+
+from coherent_min import (
+    BURN_BRANCHES,
+    FW_CLASSES,
+    LENGTHS_M,
+    RADII_M,
+    YIELDS_MJ,
+    point_fwd,
+    tier_fwd,
+)
 from study import (
     DEVICES,
     OUTPUT_DIR,
     apply_records,
     build_model,
-    device_fwd,
+    coherence_violations,
     f_rad_floor,
     load_config,
     run,
@@ -31,6 +49,60 @@ from study import (
 
 U_HE3_USD_KG = (2e7, 4.5e6, 2e6, 1e6, 5e5, 1e5, 0.0)
 DD_FRACS = (0.131, 0.314, 0.5, 0.7, 0.85, 0.95)
+RE_PRICE_TOP_N = 5
+
+
+def optimum_by_mix(model, u_he3, net_electric_mw=1000.0, tier="tier3",
+                   yields=YIELDS_MJ, lengths=LENGTHS_M, radii=RADII_M,
+                   walls=FW_CLASSES):
+    """Best coherent design per burn mix at one He-3 price: the
+    coherent_min grid re-run with u_he3 overridden, so a price concession
+    is priced at the mix and chamber it would choose rather than at the
+    machine the ledger price chose. A tier-3 grid keeps the yield free;
+    any other tier keeps the stack's design-basis shot. The 1 GWe grid is
+    scanned in full; a larger plant re-prices the top designs per mix,
+    since the integer module count can trip the wall audit at size."""
+    fwd0 = tier_fwd(tier)
+    if tier != "tier3":
+        yields = (fwd0["yield_per_shot_mj"],)
+    out = []
+    for branch in BURN_BRANCHES:
+        cands = []
+        for y, length, radius, fw in itertools.product(yields, lengths, radii, walls):
+            fwd = point_fwd(fwd0, y, length, radius, fw, branch)
+            fwd["u_he3"] = u_he3
+            try:
+                _, diag = run(model, fwd)
+            except SizingInfeasible:
+                continue
+            if coherence_violations(fwd, diag, tier):
+                continue
+            cands.append((diag["lcoe"], y, length, radius, fw))
+        cands.sort()
+        best = None
+        for lcoe1, y, length, radius, fw in cands[:RE_PRICE_TOP_N]:
+            fwd = point_fwd(fwd0, y, length, radius, fw, branch)
+            fwd["u_he3"] = u_he3
+            fwd["net_electric_mw"] = net_electric_mw
+            try:
+                _, diag = run(model, fwd)
+            except SizingInfeasible:
+                continue
+            if coherence_violations(fwd, diag, tier):
+                continue
+            if best is None or diag["lcoe"] < best["lcoe"]:
+                best = dict(
+                    tier=tier, u_he3=u_he3, plant_mwe=net_electric_mw,
+                    dd_frac=branch["dhe3_dd_frac"], f_rad=branch["f_rad"],
+                    yield_mj=y, length_m=length, radius_m=radius, fw_class=fw,
+                    lcoe=diag["lcoe"], n_mod=diag["n_mod"],
+                    f_rep_hz=round(diag["f_rep_hz"], 3),
+                    tritium_adder=diag["tritium_adder_musd"],
+                    availability=round(diag["availability"], 3),
+                )
+        if best is not None:
+            out.append(best)
+    return out
 
 if __name__ == "__main__":
     cfg = load_config("baseline.yaml")
@@ -61,10 +133,22 @@ if __name__ == "__main__":
             line += f"{r['lcoe']:<9.1f}"
         print(line)
 
-    # Super-speculation floor: the tier-3 coherent 3 GWe design
-    # (coherent_min.py footer) with the He-3 price concession stacked on top.
-    _, fwd3 = device_fwd("spec", 3000.0)
-    print("\ntier-3 coherent 3 GWe design, He-3 price concession on top:")
-    for u in (5e5, 0.0):
-        _, d3 = run(model, dict(fwd3, u_he3=u))
-        print(f"  u_he3 {u:>8.0f} $/kg: LCOE {d3['lcoe']:.1f}")
+    # Free He-3 priced at the machine it would choose: the design search
+    # re-run per burn mix at u_he3 = 0, at the extrapolation and
+    # speculation grades and both plant sizes.
+    mix_rows = []
+    for tier in ("tier2", "tier3"):
+        for mwe in (1000.0, 3000.0):
+            mix_rows.extend(optimum_by_mix(model, 0.0, mwe, tier=tier))
+    with open(OUTPUT_DIR / "he3_free_by_mix.csv", "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(mix_rows[0]))
+        w.writeheader()
+        w.writerows(mix_rows)
+    print("\nfree He-3 (u_he3 = 0), best coherent design per burn mix:")
+    print(f"{'tier':>6} {'MWe':>5} {'dd':>6} {'LCOE':>6} {'yield':>6} {'L':>4} "
+          f"{'r':>5} {'wall':>6} {'n_mod':>5} {'f_rep':>6} {'T-adder':>8} {'avail':>6}")
+    for r in mix_rows:
+        print(f"{r['tier']:>6} {r['plant_mwe']:>5.0f} {r['dd_frac']:>6.3f} "
+              f"{r['lcoe']:>6.1f} {r['yield_mj']:>6.0f} {r['length_m']:>4.0f} "
+              f"{r['radius_m']:>5.2f} {r['fw_class']:>6} {r['n_mod']:>5} "
+              f"{r['f_rep_hz']:>6.2f} {r['tritium_adder']:>8.1f} {r['availability']:>6.3f}")

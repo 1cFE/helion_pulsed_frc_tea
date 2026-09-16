@@ -31,14 +31,17 @@ from study import (
     apply_records,
     build_model,
     coherence_violations,
+    f_rad_floor,
     load_config,
     run,
 )
 
-BURN_BRANCHES = (
-    {"dhe3_dd_frac": 0.131, "f_rad": 0.123},  # YAML-lean mix at its brems floor
-    {"dhe3_dd_frac": 0.314, "f_rad": 0.163},  # He-3-lean: buy fuel, few neutrons
-    {"dhe3_dd_frac": 0.85, "f_rad": 0.28},    # D-rich: breed He-3, tritium plant
+# Each burn mix sits exactly on its bremsstrahlung floor (constraint 1):
+# the concept preset's He-3-rich mix, the 3:1 D:He-3 mix that buys its
+# fuel and makes few neutrons, and the D-rich mix that breeds He-3 and
+# carries the tritium plant.
+BURN_BRANCHES = tuple(
+    {"dhe3_dd_frac": dd, "f_rad": f_rad_floor(dd)} for dd in (0.131, 0.314, 0.85)
 )
 FW_CLASSES = ("panel", "hhf")
 LENGTHS_M = (10.0, 15.0, 20.0, 30.0, 45.0, 60.0)
