@@ -910,19 +910,19 @@ them, are all available on hardware the developer is already building.
 Everything here is in the study repository at
 [github.com/1cFE/helion_pulsed_frc_tea](https://github.com/1cFE/helion_pulsed_frc_tea):
 the four evidence stacks in `config/`, the scripts in `scripts/` that
-produce every number, every figure and the HTML renderings of this page
-and the ledger (the README says what each one does), the evidence
-ledger, the adversarial review, the capacitor evidence, and the Helion
-slide and FAQ captures. The cost model is `1costingfe` at commit
-44434d9. Sixty regression tests pin all four devices at both plant
-sizes, the stack evaluations at Helion's configuration, the design
-search's burn mixes on their bremsstrahlung floors, the free-He-3
-optimum by mix, the tritium-burn closure, the yield bound with the burn
-time every point implies and its D-T cross-check, the recovery ceiling,
-the tritium store's He-3 credit, the chi(x_s) anchors, the breeder unit
-cost, the availability derivation, the financing ladder, and the
-three-part partition of the LCOE behind Figure 1, and fail loudly if the
-model moves under this work.
+produce every number, every figure and the HTML, LaTeX and PDF
+renderings of this page and the ledger (the README says what each one
+does), the evidence ledger, the adversarial review, the capacitor
+evidence, and the Helion slide and FAQ captures. The cost model is
+`1costingfe` at commit 44434d9. Seventy-two regression tests pin all
+four devices at both plant sizes, the stack evaluations at Helion's
+configuration, the design search's burn mixes on their bremsstrahlung
+floors, the free-He-3 optimum by mix, the tritium-burn closure, the
+yield bound with the burn time every point implies and its D-T
+cross-check, the recovery ceiling, the tritium store's He-3 credit, the
+chi(x_s) anchors, the breeder unit cost, the availability derivation,
+the financing ladder, and the three-part partition of the LCOE behind
+Figure 1, and fail loudly if the model moves under this work.
 
 ## Conflict of interest
 

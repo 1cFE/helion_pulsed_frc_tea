@@ -112,6 +112,7 @@ python3 yield_bound.py     # constraint 7: the shot against the plasma energy an
 python3 reconciliation.py  # adders/credits the model cannot price, honest bands
 python3 make_figures.py    # paper figures into docs/figures/
 python3 make_html.py       # docs/writeup.md and docs/ledger.md -> outputs/*_notion.html, deterministic, figures embedded
+python3 make_latex.py      # the same two -> outputs/writeup.tex/.pdf and ledger.tex/.pdf (pandoc + pdflatex, figures as PDF)
 python3 -m pytest ../tests # closure, config-integrity, ladder regression
 ```
 
