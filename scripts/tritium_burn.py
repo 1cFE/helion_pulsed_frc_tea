@@ -34,8 +34,11 @@ Two anchors make the scan robust to both unknowns:
 import csv
 import math
 
+import numpy as np
+
 from study import (  # noqa: I001  sets COSTINGFE_BACKEND before costingfe imports
     DEVICES,
+    N_D_PATENT_M3,
     OUTPUT_DIR,
     SECONDS_PER_YEAR,
     apply_records,
@@ -47,6 +50,10 @@ from study import (  # noqa: I001  sets COSTINGFE_BACKEND before costingfe impor
 
 from costingfe.layers.physics import Q_DD_NHE3, Q_DD_PT, Q_DHE3, Q_DT
 from costingfe.layers.reactivity import sigv_dd_n, sigv_dd_p, sigv_dhe3, sigv_dt
+
+# f_t_from_burnup lives in study.py, where the coherence check uses it as
+# the in-pulse tritium burn floor; re-exported here for the scans/tests.
+from study import f_t_from_burnup  # noqa: E402, F401
 
 M_T_KG = 3.016 * 1.66054e-27  # triton mass
 T_MEAN_LIFE_YR = 12.33 / 0.6931  # decay store residence to He-3
@@ -70,6 +77,25 @@ POINTS = {
 # high-compression-density counterfactual (the patent basis 1.2e-4 gives a
 # floor of 0.002, which dhe3_f_T = 0 satisfies within tolerance).
 F_T_SCENARIOS = (0.0, 0.01, 0.04, 0.78)
+
+
+# The patent's operating table gives the confinement its cycle assumes:
+# 0.157 s without tritium removal and 0.103 s with it (US 11,469,003 B2).
+# The burnup basis uses the vendor's stated pulse instead; the writeup's
+# tritium-burn figure draws the closure across both.
+PATENT_CONFINEMENT_S = (0.103, 0.157)
+
+
+def in_pulse_burn_vs_dwell(tau_s, n_d_m3: float, t_i_kev: float):
+    """(f_D, f_T) after a dwell tau_s at fusion conditions: the per-pulse
+    deuterium burnup 1 - exp(-n_D <sv>_DD tau) and the thermalized-limit
+    in-pulse burn of a bred triton it implies (f_t_from_burnup). Vectorized
+    over tau_s; n_d_m3 and t_i_kev are the burn point."""
+    sv_dd = float(sigv_dd_n(t_i_kev) + sigv_dd_p(t_i_kev))
+    tau = np.asarray(tau_s, dtype=float)
+    f_d = 1.0 - np.exp(-n_d_m3 * sv_dd * tau)
+    f_t = np.vectorize(lambda fd: f_t_from_burnup(float(fd), t_i_kev))(f_d)
+    return f_d, f_t
 
 
 def burn_probability(n_d_m3: float, t_i_kev: float, tau_s: float) -> float:
@@ -111,11 +137,6 @@ def reaction_rates(result):
         he3_prod=0.5 * dd * r,
         f_he3_eff=f_he3_eff,
     )
-
-
-# f_t_from_burnup now lives in study.py, where the coherence check uses it
-# as the in-pulse tritium burn floor; re-exported here for the scans/tests.
-from study import f_t_from_burnup  # noqa: E402, F401
 
 
 def he3_over_d(r_dhe3_over_r_dd: float, t_i_kev: float) -> float:

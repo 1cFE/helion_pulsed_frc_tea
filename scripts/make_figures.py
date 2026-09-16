@@ -13,7 +13,9 @@ from pathlib import Path  # noqa: E402
 from study import (  # noqa: E402
     DEVICES,
     DEVICE_ORDER,
+    N_D_PATENT_M3,
     PLANT_SIZES_MWE,
+    VENDOR_PULSE_S,
     apply_records,
     build_model,
     device_fwd,
@@ -21,7 +23,12 @@ from study import (  # noqa: E402
     load_config,
     run,
 )
-from tritium_burn import f_t_from_burnup  # noqa: E402
+from tritium_burn import (  # noqa: E402
+    PATENT_CONFINEMENT_S,
+    f_t_from_burnup,
+    in_pulse_burn_vs_dwell,
+)
+from yield_bound import bound_table  # noqa: E402
 
 BLUE, ORANGE, AQUA, RED, GREY = "#2a78d6", "#eb6834", "#1baf7a", "#e34948", "#a6a5a1"
 INK, INK2, GRID, SURFACE = "#0b0b0b", "#52514e", "#e5e4e0", "#fcfcfb"
@@ -145,6 +152,46 @@ def fig2_tornado(model, cfg):
     save(fig, "fig2_tornado")
 
 
+def fig_tritium_burn(model, cfg):
+    """The burnup closure against burn time at the patent point: what the
+    store-and-decay basis assumes (Helion's stated pulse) against what the
+    granted shot needs (constraint 7)."""
+    taus = np.logspace(-4, np.log10(3.0), 240)
+    f_d, f_t = in_pulse_burn_vs_dwell(taus, N_D_PATENT_M3, 70.0)
+    rows = bound_table()
+    def span(device):
+        r = [x for x in rows if x["device"] == device]
+        return (min(x["tau_burn_s"] for x in r), max(x["tau_burn_s"] for x in r),
+                r[0]["yield_mj"])
+    helion, spec = span("helion"), span("spec")
+    fig, ax = plt.subplots(figsize=(7.2, 3.6))
+    bands = [((1e-4, VENDOR_PULSE_S), "Helion's stated pulse", GREY),
+             (PATENT_CONFINEMENT_S, "patent confinement", GREY),
+             (helion[:2], f"{helion[2]:.0f} MJ shot", ORANGE),
+             (spec[:2], f"{spec[2]:.0f} MJ shot", ORANGE)]
+    for (lo, hi), label, color in bands:
+        ax.axvspan(lo, hi, color=color, alpha=0.18, linewidth=0)
+        ax.text(np.sqrt(lo * hi), 2.2e-5, label, rotation=90, fontsize=7.5,
+                color=INK2, ha="center", va="bottom")
+    ax.plot(taus, f_t, color=BLUE, linewidth=2,
+            label="bred tritium, thermalized limit")
+    ax.plot(taus, f_d, color=ORANGE, linewidth=2, linestyle="--",
+            label="deuterium")
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xlim(1e-4, 3.0)
+    ax.set_ylim(1e-5, 1.0)
+    ax.set_yticks([1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0],
+                  ["0.001%", "0.01%", "0.1%", "1%", "10%", "100%"])
+    ax.set_xlabel("burn time at the patent point (s)")
+    ax.set_ylabel("fraction burned in the pulse")
+    ax.set_axisbelow(True)
+    ax.grid(color=GRID, linewidth=0.8)
+    style(ax)
+    leg = ax.legend(frameon=False, fontsize=8, labelcolor=INK, loc="upper left")
+    save(fig, "fig4_tritium_burn")
+
+
 def fig3_burnup(model, cfg):
     bfs = np.array([1.2e-4, 3e-4, 1e-3, 3e-3, 1e-2, 3e-2, 0.15, 0.3])
     frs = [(0.99, "recovery 0.99"), (0.999, "0.999"), (0.9999, "0.9999")]
@@ -167,9 +214,8 @@ def fig3_burnup(model, cfg):
         ax.text(0.045, 0.97, "patent basis", fontsize=8, color=INK2,
                 transform=ax.transAxes, va="top")
         ax.set_xscale("log")
-        ax.set_yscale("log")
-        ax.set_yticks([15, 20, 30, 50, 100, 150],
-                      ["15", "20", "30", "50", "100", "150"])
+        ax.set_ylim(0, 30)
+        ax.set_yticks([0, 5, 10, 15, 20, 25, 30])
         ax.set_title(title, fontsize=10)
         ax.set_xlabel("per-pulse burn fraction")
         ax.set_axisbelow(True)
@@ -178,9 +224,9 @@ def fig3_burnup(model, cfg):
     axes[0].set_ylabel("LCOE (\\$/MWh)")
     leg = axes[1].legend(frameon=False, fontsize=8, labelcolor=INK,
                          title="per-pulse fuel recovery", title_fontsize=8,
-                         loc="center right")
+                         loc="upper right")
     leg.get_title().set_color(INK2)
-    save(fig, "fig4_burnup")
+    save(fig, "fig5_burnup")
 
 
 def fig4_anatomy(model, cfg):
@@ -216,46 +262,11 @@ def fig4_anatomy(model, cfg):
     save(fig, "fig3_anatomy")
 
 
-def fig5_plant_size(model, cfg):
-    fwd0 = stack(cfg, *TIERS[2], **TIER3_MIN)
-    sizes = (50.0, 100.0, 250.0, 500.0, 1000.0)
-
-    def scaled(module_mwe, plant_mwe):
-        s = module_mwe / 1000.0
-        return dict(fwd0, net_electric_mw=plant_mwe,
-                    yield_per_shot_mj=300.0 * s, e_driver_mj=50.0 * s,
-                    chamber_length=max(60.0 * s, 3.0), plasma_t=0.75,
-                    r_bore=0.85, fw_class="panel")
-
-    stand, park = [], []
-    for m in sizes:
-        _, d = run(model, scaled(m, m))
-        stand.append(d["lcoe"])
-        _, d = run(model, scaled(m, 1000.0))
-        park.append(d["lcoe"])
-    fig, ax = plt.subplots(figsize=(6.4, 3.2))
-    ax.plot(sizes, stand, color=ORANGE, linewidth=2, marker="o",
-            markersize=5, label="standalone plant of one module")
-    ax.plot(sizes, park, color=BLUE, linewidth=2, marker="o",
-            markersize=5, label="same module in a 1 GWe park")
-    ax.text(sizes[0], stand[0] + 2, f"{stand[0]:.1f}", fontsize=8, color=INK)
-    ax.text(sizes[0], park[0] + 1.5, f"{park[0]:.1f}", fontsize=8, color=INK)
-    ax.set_xscale("log")
-    ax.set_xticks(sizes, [f"{s:.0f}" for s in sizes])
-    ax.set_xlabel("module size (MWe)")
-    ax.set_ylabel("LCOE (\\$/MWh)")
-    ax.legend(frameon=False, fontsize=9, labelcolor=INK)
-    ax.set_axisbelow(True)
-    ax.grid(color=GRID, linewidth=0.8)
-    style(ax)
-    save(fig, "fig5_plant_size")
-
-
 if __name__ == "__main__":
     cfg = load_config("baseline.yaml")
     model = build_model(cfg)
     fig1_ladder(model, cfg)
     fig2_tornado(model, cfg)
+    fig_tritium_burn(model, cfg)
     fig3_burnup(model, cfg)
     fig4_anatomy(model, cfg)
-    fig5_plant_size(model, cfg)

@@ -243,6 +243,26 @@ def test_burnup_closure_contradicts_store_and_decay():
     assert f_t_from_burnup(7.3e-4, 70.0) < 0.011
 
 
+def test_in_pulse_burn_vs_dwell_spans_the_stated_pulse_and_the_shot():
+    """The closure against burn time at the patent point (0.75e22 m^-3,
+    70 keV): under 1% tritium burn across the vendor's stated pulse, 28-38%
+    over the patent's own 0.103-0.157 s confinement, and above half at the
+    burn the design-basis shot implies under constraint 7."""
+    import numpy as np
+    from study import N_D_PATENT_M3, VENDOR_PULSE_S
+    from tritium_burn import PATENT_CONFINEMENT_S, in_pulse_burn_vs_dwell
+    from yield_bound import bound_table
+
+    _, f_t = in_pulse_burn_vs_dwell(np.array([1e-4, VENDOR_PULSE_S]), N_D_PATENT_M3, 70.0)
+    assert f_t.max() < 0.01
+    f_d, f_t = in_pulse_burn_vs_dwell(np.array(PATENT_CONFINEMENT_S), N_D_PATENT_M3, 70.0)
+    assert f_d == pytest.approx([0.025, 0.038], abs=0.002)
+    assert f_t == pytest.approx([0.28, 0.38], abs=0.02)
+    shot = min(r["tau_burn_s"] for r in bound_table() if r["device"] == "helion")
+    _, f_t = in_pulse_burn_vs_dwell(shot, N_D_PATENT_M3, 70.0)
+    assert f_t > 0.5
+
+
 def test_chi_from_xs_equilibrium_anchors():
     """FRC average-beta theorem pins the driver-thermalization share:
     x_s 0.5/0.7/0.85 -> chi 0.30/0.52/0.71."""

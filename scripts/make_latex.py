@@ -1,4 +1,4 @@
-"""Render docs/writeup.md and docs/ledger.md to LaTeX and PDF.
+"""Render docs/writeup.md, docs/short_writeup.md and docs/ledger.md to LaTeX and PDF.
 
 Deterministic like make_html.py: fixed pandoc options, no timestamps
 (SOURCE_DATE_EPOCH pinned for pdflatex), so two builds of the same source
@@ -28,7 +28,8 @@ OUTPUT_DIR = ROOT / "outputs"
 FIG_DIR = ROOT / "docs" / "figures"
 WRITEUP_MD = ROOT / "docs" / "writeup.md"
 LEDGER_MD = ROOT / "docs" / "ledger.md"
-TARGETS = ((WRITEUP_MD, "writeup"), (LEDGER_MD, "ledger"))
+SHORT_MD = ROOT / "docs" / "short_writeup.md"
+TARGETS = ((WRITEUP_MD, "writeup"), (SHORT_MD, "short_writeup"), (LEDGER_MD, "ledger"))
 
 PANDOC_FROM = "markdown-tex_math_dollars-implicit_figures+tex_math_single_backslash"
 PANDOC_VARS = ("geometry:margin=1in", "fontsize=10pt", "colorlinks=true",
