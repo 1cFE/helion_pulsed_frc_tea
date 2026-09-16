@@ -10,7 +10,10 @@ and LaTeX does not add a second "Figure n" label. The SVG figures are
 converted to PDF with cairosvg (the PNG copies are the fallback), and
 each pipe table's separator row is re-dashed in proportion to its
 content so pandoc's longtable gives wide columns to long cells. The
-output directory is not tracked.
+ASCII physics of the markdown (chi, tau, x_s, B^2/2mu0, the indented
+equation blocks) is typeset as LaTeX math through the tables in this
+file, and leftover_ascii_math is the guard that a new equation gets a
+mapping. The output directory is not tracked.
 """
 import math
 import os
@@ -27,7 +30,7 @@ WRITEUP_MD = ROOT / "docs" / "writeup.md"
 LEDGER_MD = ROOT / "docs" / "ledger.md"
 TARGETS = ((WRITEUP_MD, "writeup"), (LEDGER_MD, "ledger"))
 
-PANDOC_FROM = "markdown-tex_math_dollars-implicit_figures"
+PANDOC_FROM = "markdown-tex_math_dollars-implicit_figures+tex_math_single_backslash"
 PANDOC_VARS = ("geometry:margin=1in", "fontsize=10pt", "colorlinks=true",
                "documentclass=article")
 MAX_CELL_CHARS = 400
@@ -94,17 +97,172 @@ def _figure_ext(out_dir: Path) -> str:
         return "png"
 
 
-def prepare_markdown(text: str, figure_ext: str = "pdf") -> tuple[str, str]:
-    """(title, body): the leading H1 lifted out as the document title,
-    figure links pointed at the converted copies, and every pipe table's
-    separator row re-dashed in proportion to the square root of its
-    longest cell per column (pandoc reads the dashes as relative widths)."""
+_BYLINE_RE = re.compile(r"^\*([^*]+)\*$")
+
+# The markdown writes its physics in ASCII (chi, tau, x_s, B^2/2mu0) so it
+# reads on GitHub and in the HTML page; the LaTeX rendering typesets it.
+# Display equations are the indented code blocks, matched whole; inline
+# formulas are matched longest first with flexible whitespace, then the
+# bare symbols. Config knob names (dd_frac, fuel_recovery, f_rep) stay as
+# text, as the writeup's Notation paragraph says they do.
+DISPLAY_EQUATIONS = {
+    "f_T = 1 - (1 - e^-x)/x, x = (sv_DT / sv_DD) x_DD,":
+        r"f_T = 1 - \frac{1 - e^{-x}}{x}, \qquad x = \frac{\langle\sigma v\rangle_{DT}}{\langle\sigma v\rangle_{DD}}\, x_{DD},",
+    "gain <= chi x burn time / breakeven time,":
+        r"\mathrm{gain} \le \chi \, \frac{\text{burn time}}{\text{breakeven time}},",
+}
+_ETA_DEC = r"\eta_{\mathrm{dec}}"
+_F_PDV = r"f_{\mathrm{pdv}}"
+_E_DEL = r"E_{\mathrm{del}}"
+_SV = r"\langle\sigma v\rangle"
+INLINE_FORMULAS = [
+    ("gain <= chi x burn time / breakeven time",
+     r"\mathrm{gain} \le \chi \times \text{burn time} / \text{breakeven time}"),
+    ("chi(x_s) = 1.5 <beta> x_s^2 / (1.5 <beta> x_s^2 + 1 - x_s^2)",
+     r"\chi(x_s) = 1.5\langle\beta\rangle x_s^2 / (1.5\langle\beta\rangle x_s^2 + 1 - x_s^2)"),
+    ("chi = 1.5 <beta> x_s^2 / (1.5 <beta> x_s^2 + 1 - x_s^2)",
+     r"\chi = 1.5\langle\beta\rangle x_s^2 / (1.5\langle\beta\rangle x_s^2 + 1 - x_s^2)"),
+    ("x = (sv_DT/sv_DD)(-ln(1 - f_D))",
+     rf"x = ({_SV}_{{DT}}/{_SV}_{{DD}})\,(-\ln(1 - f_D))"),
+    ("x_DD = -ln(1 - f_D) = n_D <sigma v>_DD tau",
+     rf"x_{{DD}} = -\ln(1 - f_D) = n_D {_SV}_{{DD}}\, \tau"),
+    ("CAS30 = fraction x CAS20 x (construction_time_yr / 6 yr)",
+     r"\mathrm{CAS30} = \mathrm{fraction} \times \mathrm{CAS20} \times (\mathrm{construction\_time\_yr} / 6\,\mathrm{yr})"),
+    ("p_dee = eta_dec (p_driver + p_pdv) - p_driver",
+     rf"p_{{\mathrm{{dee}}}} = {_ETA_DEC}\,(p_{{\mathrm{{driver}}}} + p_{{\mathrm{{pdv}}}}) - p_{{\mathrm{{driver}}}}"),
+    ("eta_dec chi (1 - f_pdv) p_driver",
+     rf"{_ETA_DEC}\, \chi\, (1 - {_F_PDV})\, p_{{\mathrm{{driver}}}}"),
+    ("eta_dec[(1 - chi) + chi f_pdv]", rf"{_ETA_DEC}[(1 - \chi) + \chi {_F_PDV}]"),
+    ("B^2 tau >= 1.4 (2 + 3 T_e/T_i)^2", r"B^2\tau \ge 1.4\,(2 + 3\,T_e/T_i)^2"),
+    ("W = (B^2/2mu0) x annulus volume", r"W = (B^2/2\mu_0) \times \text{annulus volume}"),
+    ("W = (B^2 / 2 mu0) x annulus volume", r"W = (B^2/2\mu_0) \times \text{annulus volume}"),
+    ("0.90 x 0.80 = 0.72 <= 0.80", r"0.90 \times 0.80 = 0.72 \le 0.80"),
+    ("0.192 = 0.08 x 6 / 2.5", r"0.192 = 0.08 \times 6 / 2.5"),
+    ("f_T = 1 - (1 - e^-x)/x", r"f_T = 1 - (1 - e^{-x})/x"),
+    ("(1/2) n_D <sigma v>_DT tau", rf"\tfrac{{1}}{{2}} n_D {_SV}_{{DT}}\, \tau"),
+    ("(1 - x_s^2)/(2.5 - x_s^2)", r"(1 - x_s^2)/(2.5 - x_s^2)"),
+    ("V_i = E_del/(B^2/2mu0)", rf"V_i = {_E_DEL}/(B^2/2\mu_0)"),
+    ("bf / (1 - fr (1 - bf))", r"\mathrm{bf}/(1 - \mathrm{fr}\,(1 - \mathrm{bf}))"),
+    ("<beta> = 1 - x_s^2/2", r"\langle\beta\rangle = 1 - x_s^2/2"),
+    ("E_del/(B^2/2mu0)", rf"{_E_DEL}/(B^2/2\mu_0)"),
+    ("1 - (V_i/V_f)^(2/3)", r"1 - (V_i/V_f)^{2/3}"),
+    ("(1 - e^-t/17.8 yr)", r"(1 - e^{-t/17.8\,\mathrm{yr}})"),
+    ("n_D <sigma v> tau", rf"n_D {_SV}\, \tau"),
+    ("composite <= 0.80", r"\text{composite} \le 0.80"),
+    ("chi(1 - f_pdv)", rf"\chi(1 - {_F_PDV})"),
+    ("1.5 B^2/2mu0", r"1.5\, B^2/2\mu_0"),
+    ("staffing^0.5", r"\mathrm{staffing}^{0.5}"),
+    ("T_e = T_i/2", r"T_e = T_i/2"),
+    ("gamma = 5/3", r"\gamma = 5/3"),
+    ("T_e = T_i", r"T_e = T_i"),
+    ("chi E_del", rf"\chi {_E_DEL}"),
+    ("1 - gain", r"1 - \mathrm{gain}"),
+    ("beta = 1", r"\beta = 1"),
+    ("B^(1/5)", r"B^{1/5}"),
+    ("L^(1/3)", r"L^{1/3}"),
+    ("1.5 pV", r"1.5\,pV"),
+    ("P^0.5", r"P^{0.5}"),
+    ("n tau", r"n\tau"),
+    ("B^2", r"B^2"),
+]
+UNITS = [
+    ("MW yr/m^2", r"\mathrm{MW\,yr/m^2}"), ("M$/m^2", r"\mathrm{M\$/m^2}"),
+    ("MJ/m^2", r"\mathrm{MJ/m^2}"), ("MW/m^2", r"\mathrm{MW/m^2}"),
+    ("s/m^3", r"\mathrm{s/m^3}"), ("m^-3", r"\mathrm{m^{-3}}"),
+    ("m^3", r"\mathrm{m^3}"), ("m^2", r"\mathrm{m^2}"),
+]
+SYMBOLS = {
+    "eta_dec": _ETA_DEC, "eta_pin": r"\eta_{\mathrm{pin}}", "eta_th": r"\eta_{\mathrm{th}}",
+    "f_pdv": _F_PDV, "f_rad": r"f_{\mathrm{rad}}", "E_del": _E_DEL,
+    "x_DD": r"x_{DD}", "x_s": r"x_s", "f_T": r"f_T", "f_D": r"f_D", "n_D": r"n_D",
+    "T_i": r"T_i", "T_e": r"T_e", "V_i": r"V_i", "V_f": r"V_f",
+    "chi": r"\chi", "tau": r"\tau", "mu0": r"\mu_0",
+}
+ARROW = (" -> ", r" \(\to\) ")
+LEFTOVER_RE = re.compile(
+    r"\^|<=|>=|<beta>|<sigma|\bmu0\b|\bchi\b|\btau\b|\bx_s\b|\beta_(?:dec|pin|th)\b"
+    r"|\bf_pdv\b|\bE_del\b|\bx_DD\b|\bgamma = ")
+
+
+def _pat(ascii_text: str) -> re.Pattern:
+    """Whitespace-flexible, word-bounded match for an ASCII formula."""
+    body = r"\s+".join(re.escape(w) for w in ascii_text.split())
+    lead = r"(?<![\w])" if ascii_text[0].isalnum() else ""
+    tail = r"(?![\w])" if ascii_text[-1].isalnum() else ""
+    return re.compile(lead + body + tail)
+
+
+_RULES = ([(_pat(a), b) for a, b in INLINE_FORMULAS]
+          + [(_pat(a), b) for a, b in UNITS]
+          + [(re.compile(rf"(?<![\w]){re.escape(a)}(?![\w])"), b) for a, b in SYMBOLS.items()])
+
+
+def _mathify_plain(text: str) -> str:
+    """Inline rules on a run of plain text: each match becomes a sentinel so
+    a later, shorter rule cannot fire inside it; sentinels become math."""
+    found = []
+    for rx, latex in _RULES:
+        def keep(m, latex=latex):
+            found.append(latex)
+            return f"\x00{len(found) - 1}\x00"
+        text = rx.sub(keep, text)
+    text = text.replace(*ARROW)
+    return re.sub(r"\x00(\d+)\x00", lambda m: rf"\({found[int(m.group(1))]}\)", text)
+
+
+def mathify(body: str) -> str:
+    """The ASCII physics of the markdown as LaTeX math, leaving code spans
+    and unmapped code blocks alone."""
+    lines = body.split("\n")
+    out, i = [], 0
+    while i < len(lines):
+        if lines[i].startswith("    ") and (i == 0 or not lines[i - 1].strip()):
+            j = i
+            while j < len(lines) and lines[j].startswith("    "):
+                j += 1
+            key = " ".join(" ".join(l.split()) for l in lines[i:j])
+            if key in DISPLAY_EQUATIONS:
+                out.append(rf"\[{DISPLAY_EQUATIONS[key]}\]")
+            else:
+                out.extend(lines[i:j])
+            i = j
+            continue
+        out.append(lines[i])
+        i += 1
+    text = "\n".join(out)
+    parts = _PROTECTED_RE.split(text)
+    return "".join(p if _PROTECTED_RE.fullmatch(p) else _mathify_plain(p) for p in parts)
+
+
+_PROTECTED_RE = re.compile(r"(`[^`\n]*`|\\\[.*?\\\]|\\\(.*?\\\))", re.S)
+
+
+def leftover_ascii_math(text: str) -> list[str]:
+    """ASCII math still in the prose of a mathified body (code spans and
+    math excluded): the guard that a new equation gets a mapping."""
+    plain = _PROTECTED_RE.sub(" ", text)
+    return sorted(set(m.group(0) for m in LEFTOVER_RE.finditer(plain)))
+
+
+def prepare_markdown(text: str, figure_ext: str = "pdf") -> tuple[str, str, str]:
+    """(title, author, body): the leading H1 lifted out as the document
+    title and the italic byline under it as the author, figure links
+    pointed at the converted copies, and every pipe table's separator row
+    re-dashed by column_dashes (pandoc reads the dashes as relative
+    widths)."""
     lines = text.split("\n")
-    title = ""
+    title = author = ""
     for i, line in enumerate(lines):
         if line.strip():
             if line.startswith("# "):
                 title = line[2:].strip()
+                lines = lines[i + 1:]
+            break
+    for i, line in enumerate(lines):
+        if line.strip():
+            m = _BYLINE_RE.match(line.strip())
+            if m:
+                author = m.group(1).strip()
                 lines = lines[i + 1:]
             break
     out = []
@@ -126,7 +284,7 @@ def prepare_markdown(text: str, figure_ext: str = "pdf") -> tuple[str, str]:
         out.append(re.sub(r"\(figures/([A-Za-z0-9_]+)\.svg\)",
                           rf"(figures/\1.{figure_ext})", line))
         i += 1
-    return title, "\n".join(out)
+    return title, author, mathify("\n".join(out))
 
 
 def convert_figures(out_dir: Path) -> list[Path]:
@@ -150,12 +308,14 @@ def convert_figures(out_dir: Path) -> list[Path]:
 def build_tex(md_path: Path, out_tex: Path, title: str | None = None) -> Path:
     md_path, out_tex = Path(md_path), Path(out_tex)
     out_tex.parent.mkdir(parents=True, exist_ok=True)
-    lifted, body = prepare_markdown(md_path.read_text(encoding="utf-8"),
-                                    _figure_ext(out_tex.parent))
+    lifted, author, body = prepare_markdown(md_path.read_text(encoding="utf-8"),
+                                            _figure_ext(out_tex.parent))
     title = title or lifted
     cmd = ["pandoc", "--from", PANDOC_FROM, "--to", "latex", "--standalone",
            "--wrap=none", "--metadata", f"title={title}",
            "--variable", f"header-includes={TABLE_PREAMBLE}"]
+    if author:
+        cmd += ["--metadata", f"author={author}"]
     for v in PANDOC_VARS:
         cmd += ["--variable", v]
     tex = subprocess.run(cmd, input=body.encode("utf-8"), check=True,

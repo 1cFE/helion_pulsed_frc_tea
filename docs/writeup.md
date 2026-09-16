@@ -1,5 +1,7 @@
 # The techno-economic floor of a Helion-class pulsed inductive fusion power plant
 
+*Tal Rubin, Astera Institute*
+
 In this work, we investigate how cheap fusion electricity can get if
 direct energy conversion is the key technology for harnessing fusion
 energy. It is one of six studies, each taking such a thesis to its

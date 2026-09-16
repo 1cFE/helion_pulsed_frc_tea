@@ -1,5 +1,7 @@
 # Evidence ledger
 
+*Tal Rubin, Astera Institute*
+
 Every non-baseline value adopted in the ladder, with the analog class named
 and the reason it applies. Tiers follow the Borealis convention: tier 1 is a
 citable record or published bound, tier 2 a labelled extrapolation from a
@@ -82,7 +84,7 @@ The optimized devices choose chamber, wall class, and burn mix by
 bands around them (model gaps and conservatisms,
 `scripts/reconciliation.py`): extrapolations within 21.2-30.3,
 speculation within 9.9-11.6 at 1 GWe. With the coils
-priced along the expansion adiabat (conductor ~ L^(1/3)), the design
+priced along the expansion adiabat (conductor growing as L^(1/3)), the design
 search trades length for radius: the minima are fat short chambers. The dominant open
 band is the compression field: the burnup basis is the patent's 22 T
 point, and a 10 T / 5 T machine adds +2.3 / +11.4 $/MWh at the

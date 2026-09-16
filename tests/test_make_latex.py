@@ -21,17 +21,57 @@ pytestmark = pytest.mark.skipif(
     reason="pandoc and pdflatex are both needed")
 
 
-def test_prepare_lifts_the_title_and_points_figures_at_pdf():
-    title, body = prepare_markdown(WRITEUP_MD.read_text(encoding="utf-8"))
+def test_prepare_lifts_the_title_and_byline_and_points_figures_at_pdf():
+    title, author, body = prepare_markdown(WRITEUP_MD.read_text(encoding="utf-8"))
     assert title.startswith("The techno-economic floor")
+    assert author == "Tal Rubin, Astera Institute"
     assert not body.lstrip().startswith("# ")
+    assert not body.lstrip().startswith("*Tal Rubin")
     assert "figures/fig1_ladder.pdf" in body
     assert ".svg" not in body
 
 
+def test_mathify_sets_display_and_inline_equations():
+    from make_latex import mathify
+    body = ("so\n\n    gain <= chi x burn time / breakeven time,\n\nwith chi(x_s) = "
+            "1.5 <beta> x_s^2 / (1.5 <beta> x_s^2 + 1 - x_s^2) and `eta_dec` in code, "
+            "eta_dec in prose, n_D 0.75e22 m^-3 and a 1.5 MJ/m^2 flash")
+    out = mathify(body)
+    assert "\\[\\mathrm{gain} \\le \\chi" in out
+    assert "\\(\\chi(x_s) = 1.5\\langle\\beta\\rangle x_s^2" in out
+    assert "`eta_dec`" in out
+    assert "\\(\\eta_{\\mathrm{dec}}\\) in prose" in out
+    assert "\\(n_D\\) 0.75e22 \\(\\mathrm{m^{-3}}\\)" in out
+    assert "\\(\\mathrm{MJ/m^2}\\)" in out
+    from make_latex import leftover_ascii_math
+    assert leftover_ascii_math(out) == []
+    assert mathify(out) == out
+
+
+def test_no_ascii_math_is_left_in_either_document():
+    from make_latex import leftover_ascii_math
+    for md in (WRITEUP_MD, LEDGER_MD):
+        _, _, body = prepare_markdown(md.read_text(encoding="utf-8"))
+        assert leftover_ascii_math(body) == [], md.name
+
+
+def test_tex_typesets_the_equations(tmp_path):
+    tex = build_tex(WRITEUP_MD, tmp_path / "writeup.tex").read_text(encoding="utf-8")
+    assert "\\[\\mathrm{gain} \\le \\chi" in tex
+    assert "\\eta_{\\mathrm{dec}}" in tex
+    assert "\\langle\\sigma v\\rangle_{DD}" in tex
+    assert "gain <= chi" not in tex
+
+
+def test_tex_carries_the_author_on_both_documents(tmp_path):
+    for md in (WRITEUP_MD, LEDGER_MD):
+        tex = build_tex(md, tmp_path / (md.stem + ".tex")).read_text(encoding="utf-8")
+        assert "\\author{Tal Rubin, Astera Institute}" in tex
+
+
 def test_prepare_widens_table_separators_with_the_content():
     md = "| knob | why |\n|---|---|\n| a | " + "long " * 40 + "|\n"
-    _, body = prepare_markdown(md)
+    _, _, body = prepare_markdown(md)
     sep = body.splitlines()[1]
     cells = [c for c in sep.strip().strip("|").split("|")]
     assert len(cells[1]) > len(cells[0])
@@ -43,7 +83,7 @@ def test_prepare_reserves_the_width_an_unbreakable_token_needs():
     identifier breaks at its underscores and needs only its longest piece."""
     md = ("| knob | value | note |\n|---|---|---|\n"
           "| dec_staged_recovery_factor | 1234567890.123456 | " + "word " * 120 + "|\n")
-    _, body = prepare_markdown(md)
+    _, _, body = prepare_markdown(md)
     cells = body.splitlines()[1].strip().strip("|").split("|")
     shares = [len(c) / sum(len(x) for x in cells) for c in cells]
     assert shares[1] >= 0.19
