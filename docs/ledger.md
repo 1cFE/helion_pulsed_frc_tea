@@ -388,39 +388,31 @@ from the replacement schedule the model already prices.
 
 Held at every grade:
 
- | knob | repo default | value | analog class | why it applies | source
-| grade |
-|------|----------|-------|--------------|----------------|--------|-------|
-| inflation_rate | 0.02 (code default) | 0.0 | Constant-dollar framing |
-With inflation_rate 0 the model discounts capital, replacement events,
-and operating costs at one real rate. The code default escalates only
-the operating costs (the overnight cost and replacement events are never
-escalated), a hybrid in which the nominal rate acts as a real rate on
-capital and the operating costs carry a 23% levelization premium at 30
-years. Constant dollars is the IEA/NEA, EIA AEO, and NREL ATB practice.
-| Framing choice; see interest_rate. | convention | |
-construction_time_yr | 6.0 | 2.5 | Large single-block combined-cycle gas
-turbine (CCGT) | Applies more strongly here than to the mirror: the
-plant is an integer count of factory-built modules, closer to CCGT block
-construction than to a single large bespoke machine. | Siemens Energy,
-1200 MW CCGT block in about 30 months. | strong | | indirect_fraction |
-0.20 | 0.192 (8% effective) | Large industrial/power-plant engineering,
-procurement and construction (EPC) | Same cost-basis scope as NETL's
-EPCM line (fraction of total direct cost); 8% is the low end of the
-cited 8-10% band, for plants built in about 3 years. The model computes
-CAS30 = fraction x CAS20 x (construction_time_yr / 6 yr), so entering
-0.08 at 2.5 yr would give an effective 3.3% and count the short schedule
-twice; 0.192 = 0.08 x 6 / 2.5 restores the effective 8%. | US DOE/NETL
-Quality Guidelines for Energy System Studies. | strong |
+| knob | repo default | value | why it applies | source (grade) |
+|---|---|---|---|---|
+| inflation_rate | 0.02 (code default) | 0.0 | Constant-dollar framing. With inflation_rate 0 the model discounts capital, replacement events, and operating costs at one real rate. The code default escalates only the operating costs (the overnight cost and replacement events are never escalated), a hybrid in which the nominal rate acts as a real rate on capital and the operating costs carry a 23% levelization premium at 30 years. Constant dollars is the IEA/NEA, EIA AEO, and NREL ATB practice. | Framing choice; see interest_rate (convention) |
+| construction_time_yr | 6.0 | 2.5 | Large single-block combined-cycle gas turbine (CCGT) analog, which applies more strongly here than to the mirror: the plant is an integer count of factory-built modules, closer to CCGT block construction than to a single large bespoke machine. | Siemens Energy, 1200 MW CCGT block in about 30 months (strong) |
+| indirect_fraction | 0.20 | 0.192 (8% effective) | Large industrial engineering, procurement and construction (EPC) analog, on the same cost-basis scope as NETL's EPCM line (fraction of total direct cost); 8% is the low end of the cited 8-10% band, for plants built in about 3 years. The model computes CAS30 = fraction x CAS20 x (construction_time_yr / 6 yr), so entering 0.08 at 2.5 yr would give an effective 3.3% and count the short schedule twice; 0.192 = 0.08 x 6 / 2.5 restores the effective 8%. | US DOE/NETL Quality Guidelines for Energy System Studies (strong) |
 
 Stepped with the tiers:
 
 | knob | design basis | records | extrapolations | speculation | what it is | source |
 |---|---|---|---|---|---|---|
-| interest_rate (real) | 0.07 | 0.07 | 0.05 | 0.03 | financing: the cost of capital, the one entry that is a change of risk-bearer rather than of technology; Figure 1 and the at-7% column keep it separate. No fusion plant has a record for it at any grade: 7% is the central case of the standard convention, 5% a loan-guarantee blend with precedent, 3% sovereign-class capital with no mechanism | IEA/NEA, Projected Costs of Generating Electricity 2020 (3%, 7%, 10% real cases, 7% central) |
-| lifetime_yr | 30 | 30 | 80 | 80 | engineering: what cannot be replaced sets it, and nothing escalates with time in the real framing. Capacitor-bank and wall replacements are priced at every grade (CAS72, `scripts/burnup_scan.py`), so the model shows where 80 yr pays: worth 4.2 $/MWh at the extrapolation device against 30 yr, with the bank turned over about 7x; the tornado's 4.3 $/MWh | 30: model default and the low end of the fusion literature's cluster (Böhnlein et al. 2026: median 30-40 yr across 43 lifetime assumptions; ARIES 40); 80: US DOE hydropower lifespan 65-85 yr, with every core component on its own replacement schedule |
-| availability | derived | derived | derived | derived | 0.98, the US fission fleet's availability outside its planned outages, less three planned outages: a routine maintenance bundle (34 d every 2 yr, the refueling outage that carries the fleet's routine work), the bank swaps (34 d each, every cap_shot_lifetime shots at the solved rep rate) and the wall-and-coil changeouts (84 d each, when the 14-MeV-equivalent fluence reaches the dpa tolerance); `scripts/study.py` `replacement_schedule` | 0.98: the US fleet's capacity factor (over 90% since 2002, 92% in 2024; WNA, EIA) less refueling outages of 34-38 d per 18-24 month cycle leaves 1-3% of unplanned loss, and the fleet's unplanned capability loss factor on IAEA Power Reactor Information System data is 1.6% against a 4.1% world average (Glorian, WEC/Solomon; IAEA RDS-2 2025 gives 4.2% world for 2022-2024). 34 d: EIA 2024 refueling outages; 24-month cycle: the long end of the fleet's 18-24 month range, this plant having no fuel reason to open. 84 d: Thea Energy Helios (arXiv 2512.08027), one planned outage every two years |
+| interest_rate (real) | 0.07 | 0.07 | 0.05 | 0.03 | financing: the cost of capital, a change of risk-bearer rather than of technology; Figure 1 and the at-7% column keep it separate | IEA/NEA 2020 (3%, 7%, 10% real cases, 7% central); 5% a loan-guarantee blend with precedent, 3% sovereign-class capital with no mechanism; no fusion plant has a record at any grade |
+| lifetime_yr | 30 | 30 | 80 | 80 | engineering: what cannot be replaced sets it; bank and wall replacements are priced at every grade, so 80 yr is worth 4.3 $/MWh at the extrapolation device against 30 | 30: model default and the low end of the fusion literature (Böhnlein et al. 2026, median 30-40 yr; ARIES 40); 80: US DOE hydropower lifespan 65-85 yr, every core component on its own replacement schedule |
+| availability | derived | derived | derived | derived | 0.98 outside planned outages, less a routine bundle (34 d every 2 yr), the bank swaps (34 d each at the shot life) and the wall-and-coil changeouts (84 d each at the dpa tolerance); `study.replacement_schedule` | US fission fleet (WNA, EIA, IAEA PRIS) for the 0.98 and the 34 d; Thea Energy Helios for the 84 d; see below |
 | wall_dpa_tolerance | 20 | 20 | 50 | 50 | engineering: sets the changeout interval in the availability derivation (0.2 $/MWh at the extrapolation device) | 20 dpa: demonstrated RAFM database edge; 50 dpa: DEMO-class design target |
+
+The availability sources: 0.98 is the US fleet's capacity factor (over
+90% since 2002, 92% in 2024; WNA, EIA) less refueling outages of 34-38 d
+per 18-24 month cycle, which leaves 1-3% of unplanned loss; the fleet's
+unplanned capability loss factor on IAEA Power Reactor Information
+System data is 1.6% against a 4.1% world average (Glorian, WEC/Solomon;
+IAEA RDS-2 2025 gives 4.2% world for 2022-2024). The 34 d routine bundle
+is the EIA 2024 refueling outage, on a 24-month cycle, the long end of
+the fleet's 18-24 month range, since this plant has no fuel reason to
+open. The 84 d changeout is Thea Energy's Helios planned outage (arXiv
+2512.08027), one every two years.
 
 Derived availability per device at 1 GWe (`outputs/devices.csv`; the
 3 GWe parks are within 0.001), with the three outage terms as fractions
@@ -446,9 +438,20 @@ evidence-supported value. The other unrecorded claim, the shot, has no
 evidence-supported value above zero and is granted to both (constraint
 7). The records device is then design-optimized like every other device.
 
-| knob | Helion basis | value | analog class | why it applies | source | grade |
-|------|----------|-------|--------------|----------------|--------|-------|
-| fuel_recovery | 0.9999 | 0.999 | Machine-scale recirculating-wall fuel retention | ANTI-RECORD REVERSION: the Helion-implied four nines is a concept-viability requirement (the He-3 economy fails without it), which the hard nth-of-a-kind (NOAK) rule forbids as a basis value. The per-pulse loss channel is wall retention plus pump slip in a sealed loop; the closest measured analog is gas-balance long-term fuel retention on JET with its ITER-like wall (JET-ILW) at 0.1-0.3% of injected throughput. The analogy has category gaps in both directions: campaign retention is co-deposition-dominated inventory over many wall recycles, not single-transit loss (per-transit loss could be far lower), and it measures none of the separation slip a per-pulse isotope-processing plant adds (could be far higher); helium behaves differently again. 0.999 is the defensible center of a range spanning at least 0.99-0.9999. The model default carries this value. | JET-ILW gas-balance retention studies (Brezinsek et al.). | analog argument |
+**fuel_recovery: 0.9999 at the Helion basis, held at 0.999 (analog
+argument).** An anti-record reversion: the Helion-implied four nines is
+a concept-viability requirement (the He-3 economy fails without it),
+which the hard nth-of-a-kind (NOAK) rule forbids as a basis value. The
+per-pulse loss channel is wall retention plus pump slip in a sealed
+loop; the closest measured analog is machine-scale gas-balance long-term
+fuel retention on JET with its ITER-like wall (JET-ILW), 0.1-0.3% of
+injected throughput (Brezinsek et al.). The analogy has category gaps in
+both directions: campaign retention is co-deposition-dominated inventory
+over many wall recycles, not single-transit loss (per-transit loss could
+be far lower), and it measures none of the separation slip a per-pulse
+isotope-processing plant adds (could be far higher); helium behaves
+differently again. 0.999 is the defensible center of a range spanning at
+least 0.99-0.9999, and the model default carries it.
 
 **Held at baseline in tier 1:**
 
@@ -470,7 +473,7 @@ evidence-supported value above zero and is granted to both (constraint
 | eta_pin | 0.95 | 0.98 | Solid-state pulsed-power wall-plug efficiency; plausible for modern semiconductor switching, no datasheet or Helion statement located. | UNSOURCED |
 | max_f_rep | 1.0 | 3.0 | No public Helion statement of a numeric plant rep rate exists (Polaris target about 1/s; Trenta about 1/10 min; the 1-10 Hz band is the concept YAML's roadmap paraphrase). 3 Hz is what the bought wall supports at this tier's recovery parameters; it remains UNSOURCED as a demonstrated cadence (nothing MJ-class has run at 1 Hz continuously). The band top (10 Hz) is speculation. | UNSOURCED-ROADMAP |
 | fw_class | panel | hhf | Machine-design purchase, not a record: divertor-grade monoblock wall (ITER divertor procurement anchor, 2.5 M$/m^2 NOAK, 10 MW/m^2 qualification) over the real 44.6 m^2 cylinder, 112 M$/module, to make 3 Hz admissible in the design-basis chamber. The extrapolation device instead buys a fatter chamber with the cheaper panel wall (see coherent minimum below). | design purchase |
-| dhe3_dd_frac | 0.488 (the patent's He3/D = 0.158 at 70 keV, as a D-D event share, the self-sustained cycle's limit of roughly 0.16 that Slough 2025 restates citing the same patent; 0.314, the blog's 3:1 D:He-3 bremsstrahlung minimum, is the floor's calibration anchor) | 0.85 | D-rich operation to raise in-situ He-3 breeding (prompt D-D He-3 plus stored-tritium decay) and cut the purchased-fuel line; the concept's own stated direction, but 0.85 is the top of a sweep, not a derived operating point. Adopted only jointly with f_rad 0.28 and the tritium-plant adder (coherence constraints 1 and 4). | UNSOURCED |
+| dhe3_dd_frac | 0.488 (the patent's He3/D = 0.158 at 70 keV as a D-D event share) | 0.85 | D-rich operation to raise in-situ He-3 breeding (prompt D-D He-3 plus stored-tritium decay) and cut the purchased-fuel line; the concept's own stated direction, but 0.85 is the top of a sweep, not a derived operating point. Adopted only jointly with f_rad 0.28 and the tritium-plant adder (coherence constraints 1 and 4). Slough (2025) restates the patent's mix as the self-sustained cycle's limit, citing the same patent; 0.314, the blog's 3:1 D:He-3 bremsstrahlung minimum, is the floor's calibration anchor. | UNSOURCED |
 | f_rad | 0.163 | 0.28 | Bremsstrahlung-consistent radiated fraction at dd_frac 0.85 under the study calibration; relativistic corrections would raise it another 10-25%. Not an optimistic move: this knob *costs* 1.1 $/MWh against the incoherent alternative, and is the price of the fuel credit. | physics floor |
 | interest_rate | 0.07 real | 0.05 real | Cost of capital (financing): federal loan guarantees blended with utility equity, a mechanism with precedent but no fusion record, between the IEA/NEA 2020 central and low cases. The one entry that is financing rather than technology; Figure 1 and the at-7% column keep it separate (worth 6.7 $/MWh at this device against 7%). | mechanism with precedent |
 | lifetime_yr | 30 | 80 | Book life (engineering): US DOE hydropower lifespan (65-85 yr) with every core component replaced on its own schedule; the unreplaceable structure sees negligible neutron fluence (copper coils are replaced with the wall, D-D neutrons only). Bank and wall replacements are priced at every grade, so the model shows where 80 yr pays: 4.3 $/MWh here against 30 yr, with the bank turned over about 7x. | civil-works record |
@@ -493,7 +496,7 @@ an explicit leap. See `config/tier3.yaml` for the per-knob notes.
 | cap_shot_lifetime | 1e10 | required for coherence with 10 Hz; no source at any price; jointly heroic with the $/J entry below |
 | eta_dec x f_pdv | 0.95 x 0.947 = 0.90 | the theory-optimal composite taken at face value, zero engineering margin; f_pdv 0.947 sits within 0.04 of the 30 m chamber's adiabatic bound (0.989). The source figure (Kirtley, APS DPP 2024, 'optimal burn cycles exceeding 90%') is unreproducible: its numerator is independently verified but its input-accounting denominator is defined in neither slide nor talk (docs/sources/kirtley_dpp24_formulas.md) |
 | c_cap_allin_per_joule | 0.1 | below the model's own documented range floor; contradicts the derating physics that buys the cap life above |
-| u_he3 | 5e5 $/kg | no fleet-scale He-3 market exists at any price. The government price is the DOE Isotope Program's allocation, 600 $/L to federal and 1,000 $/L to commercial users in 2011 (CRS R41419), 4.5-7.4 M$/kg, and that is 2011 data, since which prices have risen several-fold; the recent commercial transactions are gram-to-kilogram scale at 19-22 M$/kg (2024 spot about $2,500/L per Edelgas; Interlune's 2025 DOE and Maybell Quantum agreements priced "at approximately today's commercial market price"; TAE's 2026 Black Moon lunar supply option discloses no price). This entry is 9x below the 2011 allocation and 40x below the commercial spot, and the new entrants (lunar: Interlune, Black Moon; terrestrial: Pulsar Helium) are building toward the high price, not under it. A dedicated deuterium breeder built from the same module (`scripts/breeder_loop.py`; writeup Section 5.6) prices the He-3 each device buys at 2.0-2.3 M$/kg at the records device, 6.4-7.2 M$/kg at the Helion device, 0.7-1.0 M$/kg at the extrapolation grade and 0.2-0.5 M$/kg at speculation (1.2-1.4x more with the decay wait financed; table below): the baseline 2e6 is reproduced at the records grade, unexplainable at the Helion device, conservative at the extrapolation grade, and this entry sits inside the speculation-grade band. |
+| u_he3 | 5e5 $/kg | no fleet-scale He-3 market exists at any price. The DOE Isotope Program's 2011 allocation was 600 $/L to federal and 1,000 $/L to commercial users (CRS R41419), 4.5-7.4 M$/kg, and prices have risen several-fold since: the 2024-2026 transactions are gram-to-kilogram scale at 19-22 M$/kg (Edelgas spot; Interlune's DOE and Maybell Quantum agreements at the commercial price; TAE's Black Moon lunar option undisclosed), with every new entrant building toward the high price. This entry is 9x below the 2011 allocation and 40x below the commercial spot. The breeder section below prices the He-3 each device buys: the ledger's 2 M$/kg is reproduced at the records grade, unexplainable at the Helion device (6.4-7.2 M$/kg), conservative at the extrapolation grade, and this entry sits inside the speculation-grade 0.2-0.5 M$/kg band. |
 | dec_staged_recovery_factor | 0.5 | patent's unquantified "net reduction in cost and size", optimistic edge |
 | c_inv_per_kw_net | 50 $/kW | small lever |
 | multi_unit_labor_factor | 0.80 | small lever |
@@ -636,17 +639,17 @@ own module, shot with the He-3 taken out of the fill, its prompt He-3
 and tritium pumped out every pulse): module ownership plus a
 throughput-sized tritium plant plus its net power at the device's own
 LCOE, per kilogram delivered at an equilibrium decay store. Co-sited
-prices the breeder as reactor-plant equipment in the park; standalone
-prices it as its own plant; the financed column discounts the decay half
-at the grade's rate. Each device is then re-run at that price with its
-own LCOE as the power price.
+prices the breeder as reactor-plant equipment in the park and standalone
+as its own plant; financing the decay wait at the grade's rate adds 1.2
+to 1.4x. Each device is then re-run at that price with its own LCOE as
+the power price.
 
-| device | He-3 bought (kg/yr) | breeder output (kg/yr per module) | co-sited (M$/kg) | standalone (M$/kg) | decay wait financed (M$/kg) | device at co-sited / standalone price ($/MWh) |
-|---|---|---|---|---|---|---|
-| citable records | 176 | 12.8 | 2.0 | 2.3 | 2.7 | 110.3 / 111.8 |
-| Helion's requirements | 98 | 5.6 | 6.4 | 7.2 | 9.2 | 148.6 / 156.9 |
-| extrapolations | 34 | 26.4 | 0.67 | 1.0 | 0.88 | 25.2 / 25.4 |
-| speculation | 25 | 133 | 0.18 | 0.54 | 0.22 | 10.5 / 10.6 |
+| device | He-3 bought (kg/yr) | breeder output (kg/yr per module) | co-sited (M$/kg) | standalone (M$/kg) | device at co-sited / standalone price ($/MWh) |
+|---|---|---|---|---|---|
+| citable records | 176 | 12.8 | 2.0 | 2.3 | 110.3 / 111.8 |
+| Helion's requirements | 98 | 5.6 | 6.4 | 7.2 | 148.6 / 156.9 |
+| extrapolations | 34 | 26.4 | 0.67 | 1.0 | 25.2 / 25.4 |
+| speculation | 25 | 133 | 0.18 | 0.54 | 10.5 / 10.6 |
 
 The ledger price of 2 M$/kg is reproduced at the records grade, cannot
 be reached at the Helion device (a module that breeds 5.6 kg/yr at a

@@ -106,6 +106,7 @@ python3 breeder_loop.py    # dedicated pure-D breeders in the loop: park LCOE, e
 python3 locus_scan.py      # (max_f_rep, yield) surface with coherence flags
 python3 module_scan.py     # module-count vs standalone-plant-size sweeps
 python3 tritium_burn.py    # in-pulse T burn vs breed rate; dhe3_f_T audit
+python3 mix.py             # He3/D ion ratio <-> dd_frac map at the study's mixes
 python3 burnup_scan.py     # burn_fraction axis under both triton-fate limits
 python3 yield_bound.py     # constraint 7: the shot against the plasma energy and burn time
 python3 reconciliation.py  # adders/credits the model cannot price, honest bands
