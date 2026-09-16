@@ -40,8 +40,8 @@ def test_ledger_html_carries_its_title_and_rendered_tables(tmp_path):
     assert 'class="math' not in html
 
 
-def test_build_all_writes_the_writeup_and_the_ledger(tmp_path):
+def test_build_all_writes_the_writeup_the_short_writeup_and_the_ledger(tmp_path):
     from make_html import build_all
     written = build_all(tmp_path)
-    assert sorted(p.name for p in written) == ["ledger_notion.html", "writeup_notion.html"]
+    assert sorted(p.name for p in written) == ["ledger_notion.html", "short_writeup_notion.html", "writeup_notion.html"]
     assert all(p.stat().st_size > 10_000 for p in written)
