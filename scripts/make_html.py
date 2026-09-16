@@ -15,12 +15,12 @@ OUTPUT_DIR = ROOT / "outputs"
 WRITEUP_MD = ROOT / "docs" / "writeup.md"
 LEDGER_MD = ROOT / "docs" / "ledger.md"
 SHORT_MD = ROOT / "docs" / "short_writeup.md"
-OUTPUT_HTML = OUTPUT_DIR / "writeup_notion.html"
+OUTPUT_HTML = OUTPUT_DIR / "Helion_writeup_notion.html"
 LEDGER_HTML = OUTPUT_DIR / "ledger_notion.html"
 PAGE_TITLE = "Helion pulsed FRC TEA writeup"
 LEDGER_TITLE = "Helion pulsed FRC TEA ledger"
 TARGETS = ((WRITEUP_MD, OUTPUT_HTML.name, PAGE_TITLE),
-           (SHORT_MD, "short_writeup_notion.html", "Helion pulsed FRC TEA short writeup"),
+           (SHORT_MD, "Helion_short_writeup_notion.html", "Helion pulsed FRC TEA short writeup"),
            (LEDGER_MD, LEDGER_HTML.name, LEDGER_TITLE))
 
 

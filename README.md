@@ -62,7 +62,8 @@ hundreds of microseconds to milliseconds. The records device sits 6.5
 $/MWh above Helion's requirements: reverting Helion's fourth nine of
 per-pulse fuel recovery is worth about 49 $/MWh at Helion's own mix,
 nearly all of which the records device's deuterium-rich mix recovers.
-See `docs/writeup.md` for the narrative results and `docs/ledger.md` for
+See `docs/writeup.md` for the narrative results (`docs/short_writeup.md` is
+the half-length version) and `docs/ledger.md` for
 record-by-record sourcing, the tornado ranking, and the knob-by-knob
 consistency audit against the sister study `borealis_mirror_tea`.
 
@@ -111,8 +112,8 @@ python3 burnup_scan.py     # burn_fraction axis under both triton-fate limits
 python3 yield_bound.py     # constraint 7: the shot against the plasma energy and burn time
 python3 reconciliation.py  # adders/credits the model cannot price, honest bands
 python3 make_figures.py    # paper figures into docs/figures/
-python3 make_html.py       # docs/writeup.md and docs/ledger.md -> outputs/*_notion.html, deterministic, figures embedded
-python3 make_latex.py      # the same two -> outputs/writeup.tex/.pdf and ledger.tex/.pdf (pandoc + pdflatex, figures as PDF)
+python3 make_html.py       # writeup, short writeup and ledger -> outputs/Helion_writeup_notion.html, Helion_short_writeup_notion.html, ledger_notion.html (deterministic, figures embedded)
+python3 make_latex.py      # the same three -> outputs/Helion_writeup, Helion_short_writeup and ledger as .tex and .pdf (pandoc + pdflatex, figures as PDF)
 python3 -m pytest ../tests # closure, config-integrity, ladder regression
 ```
 

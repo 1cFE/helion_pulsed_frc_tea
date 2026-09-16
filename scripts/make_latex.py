@@ -29,7 +29,7 @@ FIG_DIR = ROOT / "docs" / "figures"
 WRITEUP_MD = ROOT / "docs" / "writeup.md"
 LEDGER_MD = ROOT / "docs" / "ledger.md"
 SHORT_MD = ROOT / "docs" / "short_writeup.md"
-TARGETS = ((WRITEUP_MD, "writeup"), (SHORT_MD, "short_writeup"), (LEDGER_MD, "ledger"))
+TARGETS = ((WRITEUP_MD, "Helion_writeup"), (SHORT_MD, "Helion_short_writeup"), (LEDGER_MD, "ledger"))
 
 PANDOC_FROM = "markdown-tex_math_dollars-implicit_figures+tex_math_single_backslash"
 PANDOC_VARS = ("geometry:margin=1in", "fontsize=10pt", "colorlinks=true",
