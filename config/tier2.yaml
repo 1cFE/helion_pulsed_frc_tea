@@ -2,8 +2,8 @@
 # Tier 2: labelled extrapolations, applied on top of tier 1.
 # Post-red-team composition. Three structural changes from the earlier draft:
 # (1) the recovery pair is capped as a COMPOSITE (<= 0.80), with f_pdv
-#     DERIVED per point from the chamber-coupled radial bound
-#     (study.f_pdv_cap x the tier-1 radial share 0.8): the only published figure ("optimal burn cycles exceeding
+#     capped per point by the chamber-coupled adiabatic bound
+#     (study.f_pdv_cap): the only published figure ("optimal burn cycles exceeding
 #     90% recovery", APS DPP24) speaks to the product, and assigning 0.95
 #     and 0.97 to the factors separately double-booked it;
 # (2) max_f_rep is 3 Hz WITH the divertor-class wall bought explicitly

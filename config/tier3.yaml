@@ -22,9 +22,6 @@ records:
     value: 0.95
     source: "SPECULATION: with f_pdv below, composite 0.90 = the APS DPP24 theory optimum ('optimal cycles exceeding 90%') taken at face value with zero engineering margin."
 
-  f_pdv_radial_share:
-    value: 1.0
-    source: "SPECULATION: the vendor's talk states only the radial-axial COUPLING (Kirtley, DPP24: radial compression pulls the FRC in axially, per the Spencer 1983 length scaling), which is the same adiabatic physics behind the work partition here; recovery of the axial work to coil current is asserted by no source. Two physical routes could deliver it: (a) axial-channel CAPTURE, end circuits switched into recovery during the stroke; or (b) axial-expansion SUPPRESSION, static end-field gradients forcing the boundary work radial - architecture-consistent with the published geometry but unquantified, and it forces oblateness, pushing on the tilt boundary. Either route is resolvable by the Polaris shot triplet."
 
   f_pdv:
     value: 0.947

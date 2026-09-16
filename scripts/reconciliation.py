@@ -72,8 +72,8 @@ F_PDV_CEILING_SLOUGH = 0.4
 
 
 def f_pdv_ceiling_risk(model, fwd, diag, ceiling=F_PDV_CEILING_SLOUGH):
-    """(LCOE, delta, effective f_pdv) with the recovery share held at the
-    ceiling; study.run keeps min(claim, share x adiabatic cap), so a claim
+    """(LCOE, delta, effective f_pdv) with f_pdv held at the
+    ceiling; study.run keeps min(claim, adiabatic cap), so a claim
     below the cap sticks."""
     _, d = run(model, dict(fwd, f_pdv=ceiling))
     return d["lcoe"], d["lcoe"] - diag["lcoe"], d["f_pdv_eff"]
@@ -186,7 +186,7 @@ def analyze(label, spec):
     # B^2 and the recovery nines bind harder. Priced by scaling both
     # species' per-pulse burn fractions.
     lcoe_c, delta_c, f_pdv_c = f_pdv_ceiling_risk(model, fwd, diag)
-    print(f"  RISK recovery share at Slough's flux-conserver ceiling "
+    print(f"  RISK f_pdv at Slough's flux-conserver ceiling "
           f"(f_pdv {f_pdv_c:.2f} against {diag['f_pdv_eff']:.2f}): "
           f"LCOE {lcoe_c:.1f} ({delta_c:+.1f}) $/MWh")
     for b_t in (10.0, 5.0):

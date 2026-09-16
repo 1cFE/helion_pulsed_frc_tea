@@ -42,8 +42,8 @@ through the bremsstrahlung floor, recovery efficiency is capped as a
 composite (eta_dec x f_pdv), the wall must survive its steady flux and
 per-shot flash energy in the wall class it is costed at, a D-rich burn
 mix carries its tritium-plant consequences, the in-plasma tritium burn
-is floored by the burnup closure, and f_pdv is derived per point from
-the chamber's expansion ratio times the radial work share. Every
+is floored by the burnup closure, and f_pdv is capped per point by
+the chamber's adiabatic expansion bound. Every
 device except the vendor configuration is a constrained design-space
 scan optimum (chamber size, wall class, yield, burn mix), not an
 asserted operating point.
@@ -55,8 +55,7 @@ the $10 target is reached by one internally consistent stack and only
 through its 3% real cost of capital and a derived availability above
 about 0.90, not through any physics or engineering entry. The records
 device tops the ladder because the vendor's per-pulse fuel recovery
-and recovery-share claims have no records and their reversion is worth
-about 74 $/MWh. See `docs/writeup.md` for the narrative results
+claim has no record and its reversion is worth about 60 $/MWh. See `docs/writeup.md` for the narrative results
 and `docs/ledger.md` for record-by-record sourcing, the tornado ranking,
 and the knob-by-knob consistency audit against the sister study
 `borealis_mirror_tea`.

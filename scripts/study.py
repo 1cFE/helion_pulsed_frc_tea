@@ -87,14 +87,12 @@ DD_FRAC_TRITIUM_THRESHOLD = 0.488
 # flux volume is estimated as all delivered driver energy stored at the
 # basis compression field (patent triple, B = 22 T): V_i = E_del/(B^2/2mu0),
 # about 0.26 m^3 at 50 MJ. Adiabatic expansion to the chamber volume V_f
-# caps the recoverable fraction at 1 - (V_i/V_f)^(2/3); the radial channel
-# carries about 0.8 of the boundary work (FRC adiabatic scalings), so
-# f_pdv_eff = min(claim, share x cap) with share = 0.8 unless axial-channel
-# capture is claimed (tier 3) or the point is the unchallenged vendor basis
-# (share 1.0 default).
+# caps the recoverable fraction at 1 - (V_i/V_f)^(2/3), so
+# f_pdv_eff = min(claim, cap). The whole volume stroke counts: the vendor's
+# burn-cycle framework (Kirtley, DPP24) defines its convergence and
+# expansion ratios on volume, radial and axial together.
 B_COMPRESSION_T = 22.0
 _MU0 = 4e-7 * 3.141592653589793
-F_PDV_RADIAL_SHARE_DEFAULT = 1.0
 
 # Constraint 7 (the shot against the plasma energy and the burn time):
 # gain <= chi x tau_burn / tau_f. The patent burn point (US 11,469,003 B2
@@ -132,6 +130,39 @@ DPA_REL_DD = 0.4
 STUDY_KEYS = ("availability_steady_state", "outage_days_routine",
               "routine_cycle_yr", "outage_days_bank_swap",
               "outage_days_wall", "wall_dpa_tolerance")
+
+
+# The decay store's He-3 return. Half the D-D events breed a triton that is
+# stored and decays to He-3 (12.33 yr half-life); from startup the return
+# builds as (1 - e^-t/tau_T) and substitutes purchased He-3 atom for atom
+# (both face the same recycle loop), so purchases per primary event fall
+# from (1 - dd_frac) toward (1 - dd_frac) - 0.5 dd_frac and reach zero
+# where the mix breeds more than it burns. The fuel account is a
+# steady-state annual cost, so the credit enters as the levelized fraction
+# of the perpetual purchase that remains over the book life at the rung's
+# real rate, applied to the He-3 price (u_he3 x phi). The store's own
+# capital, inventory and licensing are priced elsewhere (constraint 4).
+T_MEAN_LIFE_YR = 12.33 / math.log(2.0)
+
+
+def he3_purchase_fraction(dd_frac: float, interest_rate: float,
+                          lifetime_yr: float, steps_per_yr: int = 12) -> float:
+    """Levelized fraction of the perpetual He-3 purchase that remains once
+    the decay store's return is credited; 1.0 when nothing is bred."""
+    if dd_frac <= 0.0:
+        return 1.0
+    need = 1.0 - dd_frac
+    ret = 0.5 * dd_frac
+    n = max(1, int(round(lifetime_yr * steps_per_yr)))
+    dt = lifetime_yr / n
+    num = den = 0.0
+    for k in range(n):
+        t = (k + 0.5) * dt
+        frac = max(0.0, 1.0 - ret * (1.0 - math.exp(-t / T_MEAN_LIFE_YR)) / need)
+        w = math.exp(-interest_rate * t)
+        num += frac * w
+        den += w
+    return num / den
 
 
 def chi_from_xs(x_s: float) -> float:
@@ -322,7 +353,7 @@ DEVICES = {
     "records": dict(
         configs=("best_case.yaml",),
         overrides=dict(dhe3_dd_frac=0.85, f_rad=0.28, chamber_length=10.0,
-                       plasma_t=1.0, r_bore=1.1, fw_class="panel"),
+                       plasma_t=0.75, r_bore=0.85, fw_class="panel"),
         size_overrides={},
     ),
     "helion": dict(configs=(), overrides={}, size_overrides={}),
@@ -373,14 +404,20 @@ def run(model: CostModel, fwd: dict, tritium_adder: bool = True):
     unless the caller pins `availability` explicitly, and raises the
     fuel-handling account C220500 by the tritium-plant adder when the burn
     mix is D-rich (dd_frac >= threshold; cost_overrides replace rather than
-    add, hence the probe). The study-only keys (STUDY_KEYS,
-    f_pdv_radial_share) never reach the model, which rejects unknown
+    add, hence the probe), and credits the decay store's He-3 return by
+    scaling the He-3 price by he3_purchase_fraction (he3_decay_return=False
+    restores the perpetual purchase). The study-only keys (STUDY_KEYS,
+    he3_decay_return) never reach the model, which rejects unknown
     parameters. Captures the model's audit warnings and computes the wall
     metrics the coherence checks need.
     """
     fwd = dict(fwd)
-    share = fwd.pop("f_pdv_radial_share", F_PDV_RADIAL_SHARE_DEFAULT)
+    decay_return = fwd.pop("he3_decay_return", True)
     study = {k: fwd.pop(k) for k in STUDY_KEYS if k in fwd}
+    phi = (he3_purchase_fraction(fwd.get("dhe3_dd_frac", 0.131),
+                                 fwd["interest_rate"], fwd["lifetime_yr"])
+           if decay_return else 1.0)
+    fwd["u_he3"] = fwd.get("u_he3", float(model.cc.u_he3)) * phi
     derive = "availability" not in fwd
     if derive:
         missing = [k for k in STUDY_KEYS if k not in study]
@@ -390,7 +427,7 @@ def run(model: CostModel, fwd: dict, tritium_adder: bool = True):
                 f"dict (config/baseline.yaml carries them)")
     cap = f_pdv_cap(fwd, model)
     f_pdv_claim = fwd.get("f_pdv", float(model.cc.f_pdv))
-    fwd["f_pdv"] = min(f_pdv_claim, share * cap)
+    fwd["f_pdv"] = min(f_pdv_claim, cap)
 
     # The probe sizes the machine; availability does not enter the sizing,
     # so the probe runs at the steady-state value when deriving.
@@ -432,6 +469,7 @@ def run(model: CostModel, fwd: dict, tritium_adder: bool = True):
         "capital_per_kw": float(result.costs.capital_per_kw),
         "f_pdv_eff": fwd["f_pdv"],
         "f_pdv_cap": cap,
+        "he3_purchase_fraction": phi,
         "tau_burn_implied_s": implied_burn_s(
             float(result.params["yield_per_shot_mj"]),
             float(result.params["e_driver_mj"]), X_S_REFERENCE),
