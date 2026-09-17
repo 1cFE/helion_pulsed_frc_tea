@@ -15,7 +15,7 @@ working temperature of a conventional working fluid. The direct energy
 conversion system also replaces the conventional and expensive turbine
 island. The best fusion fuel for this purpose is deuterium-helium-3 (D-He3),
 whose fusion energy is carried largely by charged particles, and has relatively manageable photon emissions at fusion conditions.
-One of the best physical mechanisms for directly interacting with the plasma
+One of the most efficient physical mechanisms for directly interacting with the plasma
 is inductive recovery: a coil-driven magnetic field compresses the
 plasma, and the plasma then expands against that field much as the gas
 in an engine expands against a piston.
@@ -103,10 +103,9 @@ repetition rate and module count solved jointly from the net-power
 target under a rep-rate ceiling.
 
 The public record as of September 2026 is D-T fusion on Polaris at 150
-million degrees C, with no published yield or recovered electricity,
-from Helion, which has withdrawn the term "net electricity" from its own
-goals [2, 5]. Helion does not report the data a costing needs, and this
-work fills each gap by grading it (Section 3): the yield of a burning
+million degrees C. Helion has published no yield or recovered energy, and has withdrawn the term "net electricity" from its Polaris goals. [2, 5].
+Helion does not report the data inputs a cost analysis needs, and this
+work fills each gap with graded evidence tiers (Section 3): the yield of a burning
 pulse and its burn time; the energy recovered with plasma present, which
 the FAQ says has been measured on seven prototypes and gives no figure
 for; the compression density and field of the reactor point; the
@@ -117,7 +116,7 @@ supplier's, not Helion's.
 
 ## 3. Method
 
-**Notation.** 1costingfe model parameters keep their configuration-file
+***Notation.** 1costingfe model parameters keep their configuration-file
 names. dd_frac (dhe3_dd_frac) is the D-D share of primary fusion events
 by count, not an ion ratio: the patent's He3/D = 0.158 at 70 keV is
 dd_frac 0.49, Helion's mix; the 3:1 D:He-3 mix is 0.31; the D-rich mix
@@ -126,7 +125,7 @@ eta_dec is the circuit efficiency of inductive recovery, f_pdv the
 fraction of the plasma's expansion work that reaches the coils, and
 their product the composite recovery. chi is the plasma-thermal share of
 the delivered driver energy and x_s the separatrix-to-coil radius ratio;
-the other parameters are named where they enter.
+the other parameters are named where they enter.*
 
 **Evidence ladder.** The plant environment is held in part and stepped
 in part:

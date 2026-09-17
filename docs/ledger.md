@@ -15,7 +15,7 @@ integer count of Helion-class modules; design basis in
 `config/baseline.yaml`, capacitor and pulsed-power evidence in
 `docs/capacitor_technology_report.md`, adversarial findings in
 `docs/red_team_review.md` (all of whose verdicts are folded into the
-tier composition below), narrative answer in `docs/writeup.md`, whose
+tier composition below), narrative answer in `docs/Helion_writeup.md`, whose
 Notation paragraph (Section 3) defines the symbols and knob names used
 here.
 
@@ -630,7 +630,7 @@ is not the capacitor bank: it is buildings (CAS21 286 M$), heat
 rejection and electrical plant (CAS24-26 about 170 M$), CAS50 (199 M$,
 of which 140 is the decommissioning provision), fuel handling plus the
 tritium plant (about 190 M$), and the first wall of the big chamber (106
-M$). See `docs/writeup.md` for the account-by-account anatomy and the
+M$). See `docs/Helion_writeup.md` for the account-by-account anatomy and the
 small-plant-penalty analysis.
 
 ## The breeder as the price of He-3

@@ -87,14 +87,14 @@ Helion's.
 
 ## 3. Method
 
-**Notation.** Model parameters keep their configuration-file names.
+***Notation.** Model parameters keep their configuration-file names.
 dd_frac is the D-D share of primary fusion events by count (Helion's mix
 0.49, the D-rich mix 0.85); dhe3_f_T the fraction of bred tritium that
 burns in-pulse; eta_dec and f_pdv the circuit efficiency of inductive
 recovery and the fraction of the plasma's expansion work that reaches
 the coils, their product the composite recovery; chi the plasma-thermal
 share of the delivered driver energy and x_s the separatrix-to-coil
-radius ratio.
+radius ratio.*
 
 **Evidence ladder.** Held at every grade: constant-dollar framing and
 EPCM indirects at 20% of direct cost [6], which the model scales with
@@ -546,7 +546,7 @@ produce every number and figure, the evidence ledger, the adversarial
 review, and the Helion slide and FAQ captures. The cost model is
 `1costingfe` at commit 44434d9. Regression tests pin every quoted
 device, constraint, and credit. This page is the short form of
-`docs/writeup.md`, which carries the full argument.
+`docs/Helion_writeup.md`, which carries the full argument.
 
 ## Conflict of interest
 

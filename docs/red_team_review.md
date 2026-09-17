@@ -14,7 +14,7 @@ inconsistent, or arithmetically wrong), **unsupported** (possible but without
 evidence), **fine**.
 
 A reproducibility note up front: the study repo has zero git commits, and
-`config/`, `scripts/`, and `docs/writeup.md` referenced throughout the design
+`config/`, `scripts/`, and `docs/Helion_writeup.md` referenced throughout the design
 doc and ledger do not exist. The ladder was reproducible only by
 reconstructing the tier stacks from the ledger's tables. Everything below
 should be read with that caveat: the archived repo does not contain the study

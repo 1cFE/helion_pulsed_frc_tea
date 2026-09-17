@@ -1,5 +1,5 @@
 """The HTML rendering of the writeup is produced by scripts/make_html.py,
-deterministically, from docs/writeup.md with the figures embedded."""
+deterministically, from docs/Helion_writeup.md with the figures embedded."""
 import shutil
 import sys
 from pathlib import Path

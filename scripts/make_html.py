@@ -1,4 +1,4 @@
-"""Render docs/writeup.md, docs/short_writeup.md and docs/ledger.md to HTML with pandoc.
+"""Render docs/Helion_writeup.md, docs/Helion_short_writeup.md and docs/ledger.md to HTML with pandoc.
 
 Deterministic: fixed pandoc options, figures embedded as data URIs, no
 timestamps, so two builds of the same source are byte-identical. Dollar
@@ -12,9 +12,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = ROOT / "outputs"
-WRITEUP_MD = ROOT / "docs" / "writeup.md"
+WRITEUP_MD = ROOT / "docs" / "Helion_writeup.md"
 LEDGER_MD = ROOT / "docs" / "ledger.md"
-SHORT_MD = ROOT / "docs" / "short_writeup.md"
+SHORT_MD = ROOT / "docs" / "Helion_short_writeup.md"
 OUTPUT_HTML = OUTPUT_DIR / "Helion_writeup_notion.html"
 LEDGER_HTML = OUTPUT_DIR / "ledger_notion.html"
 PAGE_TITLE = "Helion pulsed FRC TEA writeup"

@@ -233,7 +233,7 @@ self-supply:**
 **Scope warning on the tables below.** They vary only the two capacitor
 constants, holding `max_f_rep`, `eta_dec`, `f_pdv`, and `eta_pin` at their
 baseline values. Those four are between them worth more than either capacitor
-knob (see `docs/writeup.md`, tornado), so these tables answer "what do
+knob (see `docs/Helion_writeup.md`, tornado), so these tables answer "what do
 capacitors alone buy" and must not be read as a floor for the concept. With
 the full ledger applied the machine does reach the target: 17.0 $/MWh on
 records plus labelled extrapolations, and 10.0-10.7 $/MWh once tier-3

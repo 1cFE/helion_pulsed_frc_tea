@@ -61,7 +61,7 @@ hundreds of microseconds to milliseconds. The records device sits 6.5
 $/MWh above Helion's requirements: reverting Helion's fourth nine of
 per-pulse fuel recovery is worth about 49 $/MWh at Helion's own mix,
 nearly all of which the records device's deuterium-rich mix recovers.
-See `docs/writeup.md` for the narrative results (`docs/short_writeup.md` is
+See `docs/Helion_writeup.md` for the narrative results (`docs/Helion_short_writeup.md` is
 the half-length version) and `docs/ledger.md` for
 record-by-record sourcing, the tornado ranking, and the knob-by-knob
 consistency audit against the sister study `borealis_mirror_tea`.

@@ -1,4 +1,4 @@
-"""Paper figures for docs/writeup.md, computed live from the study machinery.
+"""Paper figures for docs/Helion_writeup.md, computed live from the study machinery.
 
 Outputs SVG (embedded in the writeup) and PNG (inspection) to docs/figures/.
 Palette: dataviz reference categorical slots 1-3 (blue/orange/aqua) plus the

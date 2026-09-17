@@ -1,4 +1,4 @@
-"""Render docs/writeup.md, docs/short_writeup.md and docs/ledger.md to LaTeX and PDF.
+"""Render docs/Helion_writeup.md, docs/Helion_short_writeup.md and docs/ledger.md to LaTeX and PDF.
 
 Deterministic like make_html.py: fixed pandoc options, no timestamps
 (SOURCE_DATE_EPOCH pinned for pdflatex), so two builds of the same source
@@ -26,9 +26,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = ROOT / "outputs"
 FIG_DIR = ROOT / "docs" / "figures"
-WRITEUP_MD = ROOT / "docs" / "writeup.md"
+WRITEUP_MD = ROOT / "docs" / "Helion_writeup.md"
 LEDGER_MD = ROOT / "docs" / "ledger.md"
-SHORT_MD = ROOT / "docs" / "short_writeup.md"
+SHORT_MD = ROOT / "docs" / "Helion_short_writeup.md"
 TARGETS = ((WRITEUP_MD, "Helion_writeup"), (SHORT_MD, "Helion_short_writeup"), (LEDGER_MD, "ledger"))
 
 PANDOC_FROM = "markdown-tex_math_dollars-implicit_figures+tex_math_single_backslash"
