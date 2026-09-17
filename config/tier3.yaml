@@ -50,3 +50,7 @@ records:
   interest_rate:
     value: 0.03
     source: "SPECULATION: cost of capital at the IEA/NEA 2020 low case, sovereign-class capital with no mechanism that delivers it to a first-of-a-kind fusion fleet."
+
+  construction_time_yr:
+    value: 2.5
+    source: "SPECULATION: a CCGT-class build (Siemens Energy 1200 MWe combined-cycle block in about 30 months) for a fusion module with a tritium facility; no fusion plant has a build record. Effective indirects 8.3% at this build. Same ruling as the Magnetic D-T Corridor ladder."

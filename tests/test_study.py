@@ -137,10 +137,10 @@ def test_helion_requirements_device(model, base_cfg):
     # the vendor configuration on the design basis (7% real, 30 yr, derived
     # availability)
     diag = _ladder_lcoe(model, base_cfg)
-    assert diag["lcoe"] == pytest.approx(103.9, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(111.0, abs=0.2)
     assert diag["n_mod"] == 20
     _, diag3 = run(model, dict(base_cfg["forward"], net_electric_mw=3000.0))
-    assert diag3["lcoe"] == pytest.approx(100.2, abs=0.2)
+    assert diag3["lcoe"] == pytest.approx(106.9, abs=0.2)
 
 
 def test_records_device(model, base_cfg):
@@ -149,20 +149,20 @@ def test_records_device(model, base_cfg):
     tritium plant, in fat panel-wall chambers)."""
     _, fwd = device_fwd("records", 1000.0)
     _, diag = run(model, fwd)
-    assert diag["lcoe"] == pytest.approx(110.4, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(119.3, abs=0.2)
     assert not coherence_violations(fwd, diag, "tier2")
     _, diag3 = run(model, dict(fwd, net_electric_mw=3000.0))
-    assert diag3["lcoe"] == pytest.approx(106.1, abs=0.2)
+    assert diag3["lcoe"] == pytest.approx(114.6, abs=0.2)
 
 
 def test_tier1_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg, "best_case.yaml")
-    assert diag["lcoe"] == pytest.approx(153.1, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(160.5, abs=0.2)
 
 
 def test_tier2_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg, "best_case.yaml", "tier2.yaml")
-    assert diag["lcoe"] == pytest.approx(31.5, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(32.4, abs=0.2)
     # D-rich mix carries its plant; the adder is unit-priced
     # (50 M$ + 0.657 M$/MW of plant neutron power), so the rung's value is a
     # consequence of its throughput, not an identity
@@ -187,10 +187,10 @@ def test_tier3_rung(model, base_cfg):
 def test_tier2_coherent_minimum(model, base_cfg):
     _, fwd = device_fwd("extrap", 1000.0)
     _, diag = run(model, fwd)
-    assert diag["lcoe"] == pytest.approx(26.1, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(26.8, abs=0.2)
     assert not coherence_violations(fwd, diag, "tier2")
     _, diag3 = run(model, dict(fwd, net_electric_mw=3000.0))
-    assert diag3["lcoe"] == pytest.approx(23.0, abs=0.2)
+    assert diag3["lcoe"] == pytest.approx(23.6, abs=0.2)
 
 
 def test_tier3_coherent_minimum(model, base_cfg):
@@ -375,19 +375,22 @@ def test_missing_schedule_inputs_fail_loudly(model, base_cfg):
 
 def test_financing_and_book_life_ladder():
     """Cost of capital steps 7/7/5/3% real with the tiers; book life
-    30/30/80/80 yr is an engineering entry; nothing else in the environment
-    moves between rungs."""
+    30/30/80/80 yr and construction time 5/5/3.25/2.5 yr are engineering
+    entries; nothing else in the environment moves between rungs (the
+    indirect fraction is the nominal 0.20 everywhere; its effective value
+    follows the build through CAS30 = f x CAS20 x T/6)."""
     from study import PLANT_SIZES_MWE
 
-    expect = {"records": (0.07, 30.0), "helion": (0.07, 30.0),
-              "extrap": (0.05, 80.0), "spec": (0.03, 80.0)}
-    held = ("inflation_rate", "construction_time_yr", "indirect_fraction",
+    expect = {"records": (0.07, 30.0, 5.0), "helion": (0.07, 30.0, 5.0),
+              "extrap": (0.05, 80.0, 3.25), "spec": (0.03, 80.0, 2.5)}
+    held = ("inflation_rate", "indirect_fraction",
             "availability_steady_state", "outage_days_routine", "routine_cycle_yr",
             "outage_days_bank_swap", "outage_days_wall")
     _, base = device_fwd("helion", PLANT_SIZES_MWE[0])
-    for name, (rate, life) in expect.items():
+    for name, (rate, life, build) in expect.items():
         _, fwd = device_fwd(name, PLANT_SIZES_MWE[0])
-        assert (fwd["interest_rate"], fwd["lifetime_yr"]) == (rate, life), name
+        assert (fwd["interest_rate"], fwd["lifetime_yr"], fwd["construction_time_yr"]) == (rate, life, build), name
+        assert fwd["indirect_fraction"] == 0.20, name
         assert "availability" not in fwd, name
         for k in held:
             assert fwd[k] == base[k], (name, k)

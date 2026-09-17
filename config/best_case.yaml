@@ -10,7 +10,7 @@
 # catalog extrapolation, not a life test) are REMOVED from this tier and
 # carried in tier2.yaml as labelled extrapolations. The plant-environment
 # entries that step with the tiers (interest_rate, lifetime_yr,
-# wall_dpa_tolerance) have no tier-1 entry: no fusion plant has a record
+# construction_time_yr, wall_dpa_tolerance) have no tier-1 entry: no fusion plant has a record
 # for any of them, so this grade holds the design-basis values.
 
 records:

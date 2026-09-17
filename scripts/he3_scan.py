@@ -37,11 +37,13 @@ from coherent_min import (
     tier_fwd,
 )
 from study import (
+    DEVICE_ORDER,
     DEVICES,
     OUTPUT_DIR,
     apply_records,
     build_model,
     coherence_violations,
+    device_fwd,
     f_rad_floor,
     load_config,
     run,
@@ -132,6 +134,20 @@ if __name__ == "__main__":
             r = next(x for x in rows if x["u_he3"] == u and x["dd_frac"] == d)
             line += f"{r['lcoe']:<9.1f}"
         print(line)
+
+    # The He-3 credit per device: the same machine with the decay return
+    # withdrawn (bought in perpetuity at the ledger price) and with He-3
+    # free, against its credited LCOE. The writeup quotes the two deltas.
+    print("\nHe-3 credit per device at 1 GWe (perpetual purchase vs free, own mix):")
+    print(f"{'device':>8} {'LCOE':>6} {'perpetual':>10} {'free':>6} {'+perp':>6} {'-free':>6} {'phi':>5}")
+    for name, _ in DEVICE_ORDER:
+        _, fwd = device_fwd(name, 1000.0)
+        _, d = run(model, fwd)
+        _, perp = run(model, dict(fwd, he3_decay_return=False))
+        _, free = run(model, dict(fwd, u_he3=0.0))
+        print(f"{name:>8} {d['lcoe']:>6.1f} {perp['lcoe']:>10.1f} {free['lcoe']:>6.1f} "
+              f"{perp['lcoe'] - d['lcoe']:>+6.1f} {d['lcoe'] - free['lcoe']:>+6.1f} "
+              f"{d['he3_purchase_fraction']:>5.2f}")
 
     # Free He-3 priced at the machine it would choose: the design search
     # re-run per burn mix at u_he3 = 0, at the extrapolation and

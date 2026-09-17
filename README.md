@@ -50,8 +50,7 @@ Helion's configuration is a constrained design-space scan optimum
 (chamber size, wall class, yield, burn mix), not an asserted operating
 point.
 
-Headline ladder at 1 GWe: records 110.4, Helion's requirements 103.9,
-extrapolations 26.1 (32.7 at 7% real), speculation 10.6 (17.8 at 7%)
+Headline ladder at 1 GWe: records 119.3, Helion's requirements 111.0, extrapolations 26.8 (33.9 at 7% real cost of capital), speculation 10.6 (17.9 at 7%)
 $/MWh; at 3 GWe the speculation park reads 8.4 $/MWh (14.6 at 7%), so
 the $10 target is crossed by one internally consistent stack and only
 through its 3% real cost of capital, not through any physics or

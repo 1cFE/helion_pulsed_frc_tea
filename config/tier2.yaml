@@ -63,3 +63,7 @@ records:
   lifetime_yr:
     value: 80.0
     source: "Book life (engineering): US DOE hydropower civil-works lifespan (65-85 yr) with every core component replaced on its own schedule. An extrapolation with a mechanism here: the unreplaceable structure sees negligible neutron fluence (copper coils are replaced with the wall; D-D neutrons only). Capacitor-bank and wall replacements are priced at every rung (CAS72, scripts/burnup_scan.py), so the model shows where 80 yr is unfavorable rather than the ledger asserting it. 30 yr at the design basis and records grades is the model default and the low end of the fusion literature's 30-40 yr cluster (Böhnlein et al. 2026 survey of 43 assumptions; ARIES 40)."
+
+  construction_time_yr:
+    value: 3.25
+    source: "Construction (engineering): the Kashiwazaki-Kariwa ABWR pair, 37 and 39 months from first concrete to fuel load (Omoto 2002, Nuclear Engineering International), at the peak of a mature LWR supply chain, against the 5 yr held at the design basis and records grades (the serial Hualong One builds, about 60 months from first concrete to grid: Zhangzhou 1, October 2019 to 28 November 2024, World Nuclear News). The model scales the EPCM indirects with the build (CAS30 = 0.20 x CAS20 x T/6), so the effective indirect fraction falls from 16.7% to 10.8% with this entry. Same ruling as the Magnetic D-T Corridor ladder."
