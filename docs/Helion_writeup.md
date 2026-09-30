@@ -127,11 +127,22 @@ their product the composite recovery. chi is the plasma-thermal share of
 the delivered driver energy and x_s the separatrix-to-coil radius ratio;
 the other parameters are named where they enter.*
 
+**Design search and reconciliation.** Each device except Helion's own
+configuration is the minimum-LCOE design of a scan over shot yield (a
+free parameter only at speculation, where the scan chooses it; the
+records and extrapolation devices keep the design-basis shot), chamber
+length and radius, wall class, and burn mix, discarding any design that
+violates one of the coherence constraints below. Reconciliation then
+brackets each minimum with the model gaps it cannot price internally
+(high-voltage DC switch duty, the tritium-plant band, the
+driver-thermalization derate) and its conservatisms (no thermal
+bottoming), yielding an honest band rather than a point.
+
 **Evidence ladder.** The plant environment is held in part and stepped
 in part:
 
 - Held at every grade: constant-dollar framing, and EPCM indirects at
-  20% of direct cost [6], which the model scales with the build (CAS30 =
+  20% of direct cost [6], which the model scales with the build time (CAS30 =
   fraction x CAS20 x (construction_time_yr / 6 yr)), so the effective
   fraction is 16.7% at a 5-year build, 10.8% at 3.25 years and 8.3% at
   2.5 years.
@@ -195,7 +206,9 @@ every quoted point in this text:
    qualified to 10 MW/m^2 at 2.5 M$/m^2.
 4. A mix with dd_frac at or above Helion's 0.49 carries its
    tritium-plant consequences, priced as an added fuel-handling cost of
-   50 M$ fixed plus 0.657 M$ per MW of plant neutron power.
+   50 M$ fixed plus 0.657 M$ per MW of plant neutron power: a
+   unit-priced allowance rather than a costed scope, which its
+   throughput takes to 189 M$ at the extrapolation device.
 5. The in-plasma tritium burn dhe3_f_T is floored by the burnup closure
    of Section 5.2, so a low-burn claim at high per-pulse burnup is
    flagged as requiring prompt triton loss (at the patent basis the
@@ -208,20 +221,9 @@ every quoted point in this text:
    6).
 7. The shot yield is bounded by the plasma energy and the burn time,
    gain <= chi x burn time / breakeven time, with the breakeven time
-   that of the plasma at the burn point, so every quoted point carries
-   the burn time its shot implies, and the shot takes each device's
-   grade rather than serving as a shared basis.
-
-**Design search and reconciliation.** Each device except Helion's own
-configuration is the argmin of a scan over shot yield (a free parameter
-only at speculation, where the scan chooses it; the records and
-extrapolation devices keep the design-basis shot), chamber length and
-radius, wall class, and burn mix, discarding any design that violates a
-constraint. Reconciliation then brackets each minimum with the model
-gaps it cannot price internally (high-voltage DC switch duty, the
-tritium-plant band, the driver-thermalization derate) and its
-conservatisms (no thermal bottoming), yielding an honest band rather
-than a point.
+   evaluated for the plasma at the burn point, so every quoted point
+   carries the burn time its shot implies, and the shot takes each
+   device's grade rather than serving as a shared basis.
 
 ## 4. Results: the four devices and what carries the floor
 
@@ -368,38 +370,55 @@ infrastructure and the fuel cycle dominate.*
 
 ## 5. The He-3 fuel cycle is the load-bearing subsystem
 
+**The finding.** The cycle rests on three things, and the ladder prices
+each: He-3 at a price no one has paid at tonne scale, or bred on site; a
+site inventory of about 1.4 tonnes of tritium, 350 times ITER's
+authorization, held while it decays; and per-pulse fuel recovery at four
+nines, the fourth of which is worth 6 $/MWh at the extrapolation device
+and 49 at Helion's own mix. A fourth condition is not a price but a fact
+about the pulse: the store works only if bred tritium does not burn
+before it is pumped out, which holds at Helion's stated pulse and fails
+at the burn the granted shot needs.
+
 The fuel cycle is the one in Helion's patent [15], whose operating table
 also fixes the burn point: a plasma with He3/D = 0.158 at 70 keV and 22
 T (Helion's stated compression field of more than 15 T is consistent
 with that density through pressure balance), radiating 23% of its fusion
 power as bremsstrahlung and releasing 6% as neutrons. Slough [16],
 citing the same patent, restates that mix as the self-sustained cycle's
-limit, He-3 at roughly 16% of the fuel, and in the same paper leaves
-D-He3 for a D-T design, putting the D-He3 gain at equal FRC conditions a
-factor of 240 below D-T's. The D-D reactions are what close the cycle.
-Half of them produce a He-3 atom directly (the prompt branch); the other
-half produce a triton (the tritium branch), which is pumped out with the
-exhaust after the pulse, separated, and stored on getter beds until it
-decays into He-3 (12.3 yr half-life). Almost none of the tritium burns
-before it is removed (dhe3_f_T = 0 in the basis). The plant therefore
-has no lithium anywhere, and its tritium plant is an exhaust-processing
-and storage plant.
+limit, He-3 at roughly 16% of the fuel, and puts the D-He3 gain at equal
+FRC conditions a factor of 240 below D-T's, which is why the reactor he
+designs in that paper is D-T. The D-D reactions are what close the
+cycle. Half of them produce a He-3 atom directly (the prompt branch);
+the other half produce a triton (the tritium branch), which is pumped
+out with the exhaust after the pulse, separated, and stored on getter
+beds until it decays into He-3 (12.3 yr half-life). Almost none of the
+tritium burns before it is removed (dhe3_f_T = 0 in the basis). The
+plant therefore has no lithium anywhere, and its tritium plant is an
+exhaust-processing and storage plant.
 
 ### 5.1 The He-3 balance and the observed market
 
-The tritium branch, 0.42 atoms per primary event, returns He-3 from the
-store as (1 - e^-t/17.8 yr) builds from startup, and this work credits
-that return atom for atom against purchases, levelized over the book
-life at the grade's rate; the prompt bred He-3 counts as extra burns,
-not as supply. A deuterium-rich plant buys He-3 only until the return
-covers its need, about eight years, and its levelized purchase is 16% of
-the perpetual one at the extrapolation device, 24% at the records
-device's 7% and 30 years, and 11% at speculation; Helion's mix breeds
-less than it burns and keeps buying, at 82%. The store's own capital,
-inventory and licensing are priced regardless (constraint 4). Bought in
-perpetuity at the ledger price instead, He-3 would cost the four devices
-34, 4.5, 7.1 and 1.4 $/MWh more; free, it would save them 10.9, 20.3,
-1.4 and 0.2 at their own mixes, and it would change the mix (Section 7).
+The tritium branch, half of the D-D events, produces 0.42 tritium nuclei
+per primary event at the D-rich mix, and each decays to He-3 on the 17.8
+yr mean life of that 12.3 yr half-life. That He-3 is fuel for the
+reactor: it replaces purchased He-3 atom for atom, and from an empty
+store the replacement builds as 1 - e^(-t/17.8 yr), reaching the full
+0.42 per event against the 1 - dd_frac the plant burns only at
+equilibrium. This work levelizes the credit over the book life at the
+grade's rate; the prompt bred He-3 counts as extra burns, not as supply,
+and the store's own capital, inventory and licensing are priced
+regardless (constraint 4).
+
+A deuterium-rich plant therefore buys He-3 only until the store covers
+its need, about eight years, which takes its levelized purchase to a
+fraction of the perpetual one: 24% at the records device, whose 30-year
+life at 7% weights the build-up years most, 16% at extrapolations and
+11% at speculation. Helion's own mix breeds less than it burns and keeps
+buying, at 82%. Bought in perpetuity at the ledger price instead, He-3
+would cost the four devices 34, 4.5, 7.1 and 1.4 $/MWh more; free, it
+would save them 10.9, 20.3, 1.4 and 0.2 at their own mixes, and it would
+change the mix (Section 7).
 
 The price matters because no cheap He-3 exists. The DOE Isotope
 Program's 2011 allocation was 600 $/L to federal users and 1,000 $/L to
@@ -454,14 +473,17 @@ than shrinking it.
 
 ### 5.2 Fuel recovery and the burnup closure
 
-The store-and-decay idealization (dhe3_f_T = 0: no bred triton burns
-in-plasma) is not a free choice; it is a claim about pulse kinetics. A
-triton born mid-pulse sits in a deuterium-rich plasma at fusion
-temperature for the rest of the burn, and D-T reactivity is 27-87x D-D
-at 70-20 keV [19], so each unit of D burnup burns 14-43x as much of the
-bred tritium. The per-pulse deuterium burnup pins the integrated
-exposure x_DD = -ln(1 - f_D) = n_D <sigma v>_DD tau, and averaging over
-triton births gives the thermalized-limit in-pulse tritium burn
+Helion's cycle depends on pumping the bred tritium out of the exhaust
+before it burns, so whether the shot and the fuel plan are compatible is
+a question about pulse length, not a modeling choice. The
+store-and-decay idealization (dhe3_f_T = 0: no bred triton burns
+in-plasma) is therefore a claim about pulse kinetics. A triton born
+mid-pulse sits in a deuterium-rich plasma at fusion temperature for the
+rest of the burn, and D-T reactivity is 27-87x D-D at 70-20 keV [19], so
+each unit of D burnup burns 14-43x as much of the bred tritium. The
+per-pulse deuterium burnup pins the integrated exposure x_DD = -ln(1 -
+f_D) = n_D <sigma v>_DD tau, and averaging over triton births gives the
+thermalized-limit in-pulse tritium burn
 
     f_T = 1 - (1 - e^-x)/x,  x = (sv_DT / sv_DD) x_DD,
 
@@ -479,15 +501,16 @@ s, three to four orders beyond any demonstrated FRC confinement, and the
 reason the shot is graded rather than priced). Over a full confinement
 period at that point the D burn would be 2.5-3.8% and a thermalized
 triton riding it would burn 28-38%, which is the patent's own case for
-inter-pulse removal; over a sub-millisecond pulse the burnup is
-1.2-2.5e-4 and the in-pulse tritium burn 0.2-0.3%, so dhe3_f_T = 0
-satisfies its floor with two orders of margin. Figure 4 draws the
-closure against burn time. At the 0.3 to 0.7 s the design-basis shot
-needs under constraint 7, a thermalized triton burns 58 to 80% before
-removal, and at the speculation shot's 1 to 3 s, 88 to 95%; the
-store-and-decay cycle and the granted shot are coherent together only
-under prompt triton loss, the branch the burnup axis of Figure 5 prices
-at high burnup.
+inter-pulse removal.
+
+Over a sub-millisecond pulse the burnup is 1.2-2.5e-4 and the in-pulse
+tritium burn 0.2-0.3%, so dhe3_f_T = 0 satisfies its floor with two
+orders of margin. Figure 4 draws the closure against burn time. At the
+0.3 to 0.7 s the design-basis shot needs under constraint 7, a
+thermalized triton burns 58 to 80% before removal, and at the
+speculation shot's 1 to 3 s, 88 to 95%; the store-and-decay cycle and
+the granted shot are coherent together only under prompt triton loss,
+the branch the burnup axis of Figure 5 prices at high burnup.
 
 ![The burnup closure against burn time](figures/fig4_tritium_burn.svg)
 
@@ -526,11 +549,12 @@ is self-sufficient in He-3 at three nines, so the multiplier bites only
 on the He-3 bought while the store builds up and the fourth nine is
 worth 6 $/MWh at the extrapolation device (Section 4); at Helion's mix,
 which breeds less than it burns, it is worth 49. Hertz-rate isotope
-separation and the tritium plant are the price of the store itself. The
-JET figure behind the three-nines record is an analogy, not a per-pass
-measurement: campaign retention measures co-deposited wall inventory
-over many recycles, not single-transit loss, and none of the separation
-slip a per-pulse reprocessing plant adds [13].
+separation and the tritium plant are the price of the store itself.
+
+The JET figure behind the three-nines record is an analogy, not a
+per-pass measurement: campaign retention measures co-deposited wall
+inventory over many recycles, not single-transit loss, and none of the
+separation slip a per-pulse reprocessing plant adds [13].
 
 Both species' per-pass burn fractions derive from the same n tau, so the
 axis is swept coherently: burn_fraction_he3 scales with burn_fraction at
@@ -538,18 +562,19 @@ the fixed 70 keV reactivity ratio (3.3x). Figure 5 shows the speculation
 device's LCOE along that axis under both triton fates, at exhaust
 recovery 0.99, 0.999, and 0.9999. At the patent burn point the per-pulse
 fuel recovery sets the cost almost alone: 10.6 $/MWh at four nines, 12.2
-at three, 27.0 at two. Toward higher compression density the recovery
-requirement relaxes: above per-pulse burnup of about 1e-3 the three- and
-four-nines curves converge near 10.0-10.3 $/MWh on the prompt-loss
-branch, but that branch prices the fuel cycle only, since the orbit loss
-that spares the tritium also removes the fusion protons, about four
-fifths of the charged fusion energy at the D-rich mix, so it is a floor
-on the fuel side, not an operating point. The thermalized branch turns
-up past burnup 0.01 as the tritium burn grows (13-90%), so the
-triton-fate question reopens exactly where the recovery question closes.
-Per-pulse exhaust pumping is priced across the axis and peaks at the
-patent burn point (78 M$ per module at the floor: 8300 pumped particles
-per reaction).
+at three, 27.0 at two.
+
+Toward higher compression density the recovery requirement relaxes:
+above per-pulse burnup of about 1e-3 the three- and four-nines curves
+converge near 10.0-10.3 $/MWh on the prompt-loss branch. That branch is
+a floor on the fuel side rather than an operating point, because the
+same orbit loss that spares the tritium also removes the fusion protons,
+about four fifths of the charged fusion energy at the D-rich mix. The
+thermalized branch turns up past burnup 0.01 as the tritium burn grows
+(13-90%), so the triton-fate question reopens exactly where the recovery
+question closes. Per-pulse exhaust pumping is priced across the axis and
+peaks at the patent burn point (78 M$ per module at the floor: 8300
+pumped particles per reaction).
 
 ![The burnup axis](figures/fig5_burnup.svg)
 
@@ -610,13 +635,22 @@ price.
 
 ## 6. The yield a shot can return, and what the circuit recovers of it
 
+**The finding.** Helion's public numbers cannot all be true at once: the
+shot Orion needs, the plasma conditions in the patent, and the stated
+millisecond pulse are mutually inconsistent. At that pulse the fusion
+energy a shot can return is a fraction of what the circuit loses in
+firing it, and the shot Orion needs implies a burn hundreds of times
+longer than Helion describes. That makes the disclosed design point
+incoherent, not the machine impossible: something Helion has not said
+publicly would have to close the gap, or the patent no longer describes
+the machine.
+
 Every number in this work grants Helion's shot. This section bounds what
-a shot can return from the plasma's own energy and burn time, and finds
-the design-basis shot incompatible with Helion's stated pulse. It then
-sets out the two further bounds on what the circuit recovers of a shot,
-the share of the driver energy that thermalizes and the expansion ratio
-the chamber allows, beyond the composite cap of constraint 2 that stops
-the two conversion efficiencies from being counted twice. A three-shot
+a shot can return from the plasma's own energy and burn time, then sets
+out the two further bounds on what the circuit recovers of it, the share
+of the driver energy that thermalizes and the expansion ratio the
+chamber allows, beyond the composite cap of constraint 2 that stops the
+two conversion efficiencies from being counted twice. A three-shot
 sequence on Polaris would measure all three.
 
 **The yield bound.** The plasma at peak compression holds a share chi of
@@ -633,25 +667,33 @@ and burns at the fusion power density of the burn point, so
 with the breakeven time the ratio of those two densities, the fusion
 breakeven time of Lackner et al. [21]; the pulsed gain of Nicolas et al.
 [22], fusion energy over plasma energy, is the same ratio against their
-Lawson time. The patent point is n_D 0.75e22 m^-3, He3/D 0.158, 70 keV
-and 22 T. At Bosch-Hale rates its breakeven time is 86 ms with
-thermalized electrons, and 3.7 times shorter if the electrons could be
-held at a tenth of the ion temperature. They cannot be held there: the
-ion-electron equilibration time at that density is about 1 ms, well
-inside the breakeven time [21]. Helion's stated pulse is hundreds of
-microseconds to milliseconds [2]. Against it the bound reads: a 1 ms
-burn returns 0.2 to 0.4 MJ from the 50 MJ bank across x_s 0.5 to 0.85,
-less than the circuit loses per shot at any eta_dec in the ladder; the
-design-basis 128 MJ shot needs 0.3 to 0.7 s; the speculation shot needs
-1 to 3 s. The bound also reproduces the co-founder's own D-T design:
-Slough [16] quotes a gain of 9.1 on the FRC energy over a 2 to 5 ms
-transit at 34.8 T and 15 keV, and at that point's breakeven time the
-same arithmetic gives a 3.4 ms burn. This is constraint 7, and it is why
-the shot is a graded claim rather than a shared basis; every point the
-scripts evaluate carries the burn time its shot implies at x_s 0.7. Two
-independent reconstructions find Helion's fusion-to-bremsstrahlung ratio
-3.6 to 9 times too favorable [22] or about an order of magnitude [21],
-the provenance of the 0.05 radiated fraction that constraint 1 withdrew.
+Lawson time.
+
+**What the bound reads at Helion's numbers.** The patent point is n_D
+0.75e22 m^-3, He3/D 0.158, 70 keV and 22 T. At Bosch-Hale rates its
+breakeven time is 86 ms with thermalized electrons, and 3.7 times
+shorter if the electrons could be held at a tenth of the ion
+temperature. They cannot be held there: the ion-electron equilibration
+time at that density is about 1 ms, well inside the breakeven time [21].
+Helion's stated pulse is hundreds of microseconds to milliseconds [2],
+and against it the bound reads three ways. A 1 ms burn returns 0.2 to
+0.4 MJ from the 50 MJ bank across x_s 0.5 to 0.85, against the 2.5 MJ
+the circuit loses per shot even at the ladder's best inductive
+efficiency, eta_dec 0.95. The design-basis 128 MJ shot needs a burn of
+0.3 to 0.7 s, three to seven hundred times the stated pulse; both scale
+inversely with the number of modules Orion turns out to be (Section 2).
+The speculation shot needs 1 to 3 s.
+
+The bound also reproduces the co-founder's own D-T design: Slough [16]
+quotes a gain of 9.1 on the FRC energy over a 2 to 5 ms transit at 34.8
+T and 15 keV, and at that point's breakeven time the same arithmetic
+gives a 3.4 ms burn. This is constraint 7, and it is why the shot is a
+graded claim rather than a shared basis; every point the scripts
+evaluate carries the burn time its shot implies at x_s 0.7. The same two
+papers bear on constraint 1: their independent reconstructions find
+Helion's fusion-to-bremsstrahlung ratio 3.6 to 9 times too favorable
+[22] or about an order of magnitude [21], the provenance of the 0.05
+radiated fraction that constraint 1 withdrew.
 
 **Driver thermalization.** The same chi bounds the recovery of the
 driver energy itself. The thermalized share can only return through the
@@ -673,23 +715,24 @@ end-field gradient [23]; constraint 6 counts the whole volume stroke, as
 Helion's own burn-cycle framework does, and whether the end circuits
 return that fifth is a design question the shot sequence below measures.
 
-The cycle is Diesel-type with an Atkinson over-expansion, the framing of
-Helion's own burn-cycle analysis [24], which quotes about 60% for a
-constant-pressure burn and above 90% for optimal cycles. Two published
-figures sit against it. Nicolas et al. [22], whom Helion's FAQ cites for
-recovery "exceeding 95%", give that number only as an ideal Carnot-form
-bound and set it aside on the thin-cycle argument. Slough [16], the
-co-founder whose patent supplies the fuel cycle, derives 40% as the most
-an ejected FRC can return in a flux-conserving expansion chamber, where
-it comes to rest holding 1.5 pV of thermal energy against the field it
-has compressed, and states that an FRC does not free-expand. That is his
-own recovery topology, not the discharged compression coil this work's
-f_pdv assumes, so it is carried as a risk row rather than a cap: at
-f_pdv 0.4 the extrapolation device reads 44.2 $/MWh (+17.4) and the
-speculation device 14.8 (+4.2). There is no Carnot exemption in any of
-this: cycle form, the compression and expansion ratios, and the entropy
-of the deliberately irreversible merging set the efficiency, which is
-what the composite cap encodes.
+The cycle is Diesel-type with an Atkinson over-expansion (burn at
+roughly constant pressure, then expand further than the compression
+stroke), the framing of Helion's own burn-cycle analysis [24], which
+quotes about 60% for a constant-pressure burn and above 90% for optimal
+cycles. Two published figures sit against it. Nicolas et al. [22], whom
+Helion's FAQ cites for recovery "exceeding 95%", give that number only
+as an ideal Carnot-form bound and set it aside on the thin-cycle
+argument. Slough [16], the co-founder whose patent supplies the fuel
+cycle, derives 40% as the most an ejected FRC can return in a
+flux-conserving expansion chamber, where it comes to rest holding 1.5 pV
+of thermal energy against the field it has compressed, and states that
+an FRC does not free-expand. That is his own recovery topology, not the
+discharged compression coil this work's f_pdv assumes, so it is carried
+as a risk row rather than a cap: at f_pdv 0.4 the extrapolation device
+reads 44.2 $/MWh (+17.4) and the speculation device 14.8 (+4.2). There
+is no Carnot exemption in any of this: cycle form, the compression and
+expansion ratios, and the entropy of the deliberately irreversible
+merging set the efficiency, which is what the composite cap encodes.
 
 **Measurement protocol.** A three-shot sequence on Polaris separates the
 whole chain: a vacuum shot measures eta_dec alone; a plasma no-burn shot

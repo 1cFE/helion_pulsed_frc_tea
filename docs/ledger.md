@@ -95,11 +95,14 @@ RISK row).
 
 ## Coherence constraints (enforced, not advisory)
 
-Seven physics couplings are enforced on every quoted point (five checked
-by `study.coherence_violations`, the sixth and seventh applied by
-construction in `study.run`); a stack that violates one of the five is
-flagged in the output of every script rather than reported, and every
-point carries the burn time the seventh implies:
+Six couplings are enforced by the scripts on every quoted point, and a
+seventh, derived in the last constraint below, is applied to every
+quoted point. Constraints 1, 2, 3 and 5 are checked by
+`study.coherence_violations`, and a stack that violates one is flagged
+in the output of every script rather than reported; constraints 4 and 6
+are applied by construction in `study.run`, which prices the tritium
+plant and caps f_pdv; and every point carries the burn time the seventh
+implies (`tau_burn_implied_s`):
 
 1. **f_rad is coupled to the burn mix.** A D-rich plasma radiates more,
    not less: Bosch-Hale + bremsstrahlung at the study calibration (the
@@ -501,7 +504,7 @@ an explicit leap. See `config/tier3.yaml` for the per-knob notes.
 | cap_shot_lifetime | 1e10 | required for coherence with 10 Hz; no source at any price; jointly heroic with the $/J entry below |
 | eta_dec x f_pdv | 0.95 x 0.947 = 0.90 | the theory-optimal composite taken at face value, zero engineering margin; f_pdv 0.947 sits within 0.04 of the 30 m chamber's adiabatic bound (0.989). The source figure (Kirtley, APS DPP 2024, 'optimal burn cycles exceeding 90%') is unreproducible: its numerator is independently verified but its input-accounting denominator is defined in neither slide nor talk (docs/sources/kirtley_dpp24_formulas.md) |
 | c_cap_allin_per_joule | 0.1 | below the model's own documented range floor; contradicts the derating physics that buys the cap life above |
-| u_he3 | 5e5 $/kg | no fleet-scale He-3 market exists at any price. The DOE Isotope Program's 2011 allocation was 600 $/L to federal and 1,000 $/L to commercial users (CRS R41419), 4.5-7.4 M$/kg, and prices have risen several-fold since: the 2024-2026 transactions are gram-to-kilogram scale at 19-22 M$/kg (Edelgas spot; Interlune's DOE and Maybell Quantum agreements at the commercial price; TAE's Black Moon lunar option undisclosed), with every new entrant building toward the high price. This entry is 9x below the 2011 allocation and 40x below the commercial spot. The breeder section below prices the He-3 each device buys: the ledger's 2 M$/kg is reproduced at the records grade, unexplainable at the Helion device (6.4-7.2 M$/kg), conservative at the extrapolation grade, and this entry sits inside the speculation-grade 0.2-0.5 M$/kg band. |
+| u_he3 | 5e5 $/kg | no fleet-scale He-3 market exists at any price. The DOE Isotope Program's 2011 allocation was 600 $/L to federal and 1,000 $/L to commercial users (CRS R41419), 4.5-7.4 M$/kg, and prices have risen several-fold since: the 2024-2026 transactions are gram-to-kilogram scale at 19-22 M$/kg (Edelgas spot; Interlune's DOE and Maybell Quantum agreements at the commercial price; TAE's Black Moon lunar option undisclosed), with every new entrant building toward the high price. This entry is 9x below the 2011 allocation and 40x below the commercial spot. The breeder section below prices the He-3 each device buys: the ledger's 2 M$/kg is reproduced at the records grade, unexplainable at the Helion device (6.9 M$/kg co-sited, 7.9 standalone), conservative at the extrapolation grade, and this entry sits inside the speculation-grade 0.2-0.5 M$/kg band. |
 | dec_staged_recovery_factor | 0.5 | patent's unquantified "net reduction in cost and size", optimistic edge |
 | c_inv_per_kw_net | 50 $/kW | small lever |
 | multi_unit_labor_factor | 0.80 | small lever |
@@ -608,10 +611,10 @@ speculation (17.7 and 6.5 at 3 GWe), with no tritium plant, so a free-He-3 conce
 and 0.2 the D-rich machines show. The distance between those two
 readings, 25.4 vs 39.2 at the same machine, is what the D-rich machine's
 build-up purchases cost at the market price. The credit is worth 7.1
-$/MWh at the study's u_he3 (33.9 without it), about 3 at the 2011 DOE
-allocation of 4.5 M$/kg and about 14 at today's commercial spot; it is
-coupled to the burnup closure, because the return exists only if the
-tritium survives the pulse.
+$/MWh at the study's u_he3 (33.9 without it) and scales with the price:
+about 16 $/MWh at the 2011 DOE allocation of 4.5 M$/kg and about 71 at
+the 20 M$/kg commercial spot. It is coupled to the burnup closure,
+because the return exists only if the tritium survives the pulse.
 
 **The $10/MWh target is crossed by the full speculation stack as a 3 GWe
 park (8.4 $/MWh; 10.6 at 1 GWe), and by nothing below it; with the
