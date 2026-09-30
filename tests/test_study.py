@@ -18,6 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from study import (  # noqa: E402
     E_FLASH_MELT_MJ_M2,
     apply_records,
+    breakeven_time_at_point_s,
     build_model,
     coherence_violations,
     device_fwd,
@@ -440,3 +441,33 @@ def test_run_credits_the_decay_return_through_the_he3_price(model, base_cfg):
     _, perpetual = run(model, dict(fwd, he3_decay_return=False))
     assert free["lcoe"] < d["lcoe"] < perpetual["lcoe"]
     assert d["lcoe"] == pytest.approx(free["lcoe"] + phi * (perpetual["lcoe"] - free["lcoe"]), abs=0.05)
+
+
+def test_breakeven_time_follows_the_point_s_own_burn_mix():
+    """The plasma's breakeven time is a property of what it burns, not of
+    the patent's mix: a D-rich plasma is less power-dense and takes longer,
+    a He-3-rich one takes less. The composition counted is the one the
+    model's fuel accounting implies, recycled bred He-3 included."""
+    tau_patent = breakeven_time_at_point_s(
+        dict(dhe3_dd_frac=0.488, burn_fraction_he3=4.1e-4, fuel_recovery=0.9999))
+    tau_drich = breakeven_time_at_point_s(
+        dict(dhe3_dd_frac=0.85, burn_fraction_he3=4.1e-4, fuel_recovery=0.9999))
+    tau_he3rich = breakeven_time_at_point_s(
+        dict(dhe3_dd_frac=0.314, burn_fraction_he3=4.1e-4, fuel_recovery=0.9999))
+    assert tau_he3rich < tau_patent < tau_drich
+    assert tau_drich == pytest.approx(0.138, abs=0.005)
+    assert tau_patent == pytest.approx(0.065, abs=0.005)
+
+
+def test_duty_cycle_constraint_catches_a_burn_longer_than_its_period():
+    """Constraint 8: a shot's implied burn must fit inside the pulse
+    period, since the next shot cannot start while the last one is still
+    burning. Flagged from the point's own implied burn and rep rate."""
+    fwd = dict(dhe3_dd_frac=0.85, f_rad=0.28, eta_dec=0.90, f_pdv=0.80,
+               dhe3_f_T=0.0, burn_fraction=1.2e-4, fw_class="panel")
+    ok = dict(q_wall_mw_m2=0.5, e_flash_mj_m2=0.5, f_pdv_eff=0.80,
+              tau_burn_implied_s=0.40, f_rep_hz=1.0)
+    bad = dict(ok, tau_burn_implied_s=1.65, f_rep_hz=3.53)
+    assert not [v for v in coherence_violations(fwd, ok, "tier2") if "duty" in v]
+    v = "; ".join(coherence_violations(fwd, bad, "tier2"))
+    assert "duty" in v and "5.8" in v
