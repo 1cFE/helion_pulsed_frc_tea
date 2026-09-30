@@ -147,7 +147,7 @@ INLINE_FORMULAS = [
     ("<beta> = 1 - x_s^2/2", r"\langle\beta\rangle = 1 - x_s^2/2"),
     ("E_del/(B^2/2mu0)", rf"{_E_DEL}/(B^2/2\mu_0)"),
     ("1 - (V_i/V_f)^(2/3)", r"1 - (V_i/V_f)^{2/3}"),
-    ("(1 - e^-t/17.8 yr)", r"(1 - e^{-t/17.8\,\mathrm{yr}})"),
+    ("1 - e^(-t/17.8 yr)", r"1 - e^{-t/17.8\,\mathrm{yr}}"),
     ("n_D <sigma v> tau", rf"n_D {_SV}\, \tau"),
     ("composite <= 0.80", r"\text{composite} \le 0.80"),
     ("chi(1 - f_pdv)", rf"\chi(1 - {_F_PDV})"),

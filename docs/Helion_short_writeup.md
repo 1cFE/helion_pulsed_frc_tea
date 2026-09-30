@@ -127,8 +127,9 @@ being capacitor life 1e9 shots (Pacific Fusion's derating target [14]).
 Every entry carries a source and grade in the evidence ledger
 (`docs/ledger.md`); no extrapolation entry is a measured record.
 
-**Coherence constraints.** Seven couplings are enforced on every quoted
-point:
+**Coherence constraints.** Six couplings are enforced by the scripts on
+every quoted point, and a seventh, derived in Section 6, is applied to
+every quoted point in this text:
 
 1. The radiated fraction follows the burn mix through a bremsstrahlung
    floor (f_rad = 0.28 at dd_frac 0.85, not Helion's stated 0.05).
@@ -267,11 +268,15 @@ lithium; its tritium plant is an exhaust-processing and storage plant.
 
 ### 5.1 The He-3 balance and the observed market
 
-The tritium branch, 0.42 atoms per primary event, returns He-3 from the
-store as (1 - e^-t/17.8 yr) builds from startup, credited atom for atom
-against purchases and levelized over the book life at the grade's rate;
-the prompt bred He-3 counts as extra burns, not as supply. A
-deuterium-rich plant buys He-3 only until the return covers its need,
+The tritium branch, half of the D-D events, produces 0.42 tritium nuclei
+per primary event at the D-rich mix, and each decays to He-3 on the 17.8
+yr mean life of that 12.3 yr half-life. That He-3 is fuel for the
+reactor: it replaces purchased He-3 atom for atom, and from an empty
+store the replacement builds as 1 - e^(-t/17.8 yr), reaching the full
+0.42 per event against the 1 - dd_frac the plant burns only at
+equilibrium. This work levelizes the credit over the book life at the
+grade's rate; the prompt bred He-3 counts as extra burns, not as supply.
+A deuterium-rich plant buys He-3 only until the store covers its need,
 about eight years, so its levelized purchase is 16% of the perpetual one
 at the extrapolation device and 11% at speculation; Helion's mix keeps
 buying, at 82%. Bought in perpetuity at the ledger price, He-3 would
@@ -304,9 +309,12 @@ tritium-plant allowance as more likely low than high.
 
 ### 5.2 Fuel recovery and the burnup closure
 
-The store-and-decay idealization (dhe3_f_T = 0) is a claim about pulse
-kinetics: a triton born mid-pulse sits in a deuterium-rich plasma at
-fusion temperature for the rest of the burn, and D-T reactivity is
+Helion's cycle depends on pumping the bred tritium out of the exhaust
+before it burns, so whether the shot and the fuel plan are compatible is
+a question about pulse length, not a modeling choice. The
+store-and-decay idealization (dhe3_f_T = 0) is therefore a claim about
+pulse kinetics: a triton born mid-pulse sits in a deuterium-rich plasma
+at fusion temperature for the rest of the burn, and D-T reactivity is
 27-87x D-D at 70-20 keV [18]. The per-pulse deuterium burnup pins the
 integrated exposure x_DD = -ln(1 - f_D) = n_D <sigma v>_DD tau, and
 averaging over triton births gives the thermalized-limit in-pulse
