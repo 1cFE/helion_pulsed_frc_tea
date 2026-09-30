@@ -2,7 +2,7 @@
 
 Regression values are pinned at costingfe 44434d9 with the plant
 environment of docs/ledger.md: cost of capital 7/7/5/3% real and book
-life 30/30/80/80 yr stepping with the tiers, availability derived from the
+life 60/60/80/80 yr stepping with the tiers, availability derived from the
 replacement schedule. If costingfe moves and a number shifts, the ladder
 in docs/ledger.md must be re-based in the same change that updates the pin
 here - the red-team review's reproducibility finding is the reason this
@@ -134,13 +134,13 @@ def _ladder_lcoe(model, base_cfg, *cfgs):
 
 
 def test_helion_requirements_device(model, base_cfg):
-    # the vendor configuration on the design basis (7% real, 30 yr, derived
+    # the vendor configuration on the design basis (7% real, 60 yr, derived
     # availability)
     diag = _ladder_lcoe(model, base_cfg)
-    assert diag["lcoe"] == pytest.approx(111.0, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(105.9, abs=0.2)
     assert diag["n_mod"] == 20
     _, diag3 = run(model, dict(base_cfg["forward"], net_electric_mw=3000.0))
-    assert diag3["lcoe"] == pytest.approx(106.9, abs=0.2)
+    assert diag3["lcoe"] == pytest.approx(102.1, abs=0.2)
 
 
 def test_records_device(model, base_cfg):
@@ -375,13 +375,13 @@ def test_missing_schedule_inputs_fail_loudly(model, base_cfg):
 
 def test_financing_and_book_life_ladder():
     """Cost of capital steps 7/7/5/3% real with the tiers; book life
-    30/60/80/80 yr and construction time 5/5/3.25/2.5 yr are engineering
+    60/60/80/80 yr and construction time 5/5/3.25/2.5 yr are engineering
     entries; nothing else in the environment moves between rungs (the
     indirect fraction is the nominal 0.20 everywhere; its effective value
     follows the build through CAS30 = f x CAS20 x T/6)."""
     from study import PLANT_SIZES_MWE
 
-    expect = {"records": (0.07, 60.0, 5.0), "helion": (0.07, 30.0, 5.0),
+    expect = {"records": (0.07, 60.0, 5.0), "helion": (0.07, 60.0, 5.0),
               "extrap": (0.05, 80.0, 3.25), "spec": (0.03, 80.0, 2.5)}
     held = ("inflation_rate", "indirect_fraction",
             "availability_steady_state", "outage_days_routine", "routine_cycle_yr",

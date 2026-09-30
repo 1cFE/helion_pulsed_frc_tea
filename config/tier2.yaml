@@ -62,7 +62,7 @@ records:
 
   lifetime_yr:
     value: 80.0
-    source: "Book life (engineering): US DOE hydropower civil-works lifespan (65-85 yr) with every core component replaced on its own schedule. An extrapolation with a mechanism here: the unreplaceable structure sees negligible neutron fluence (copper coils are replaced with the wall; D-D neutrons only). Capacitor-bank and wall replacements are priced at every rung (CAS72, scripts/burnup_scan.py), so the model shows where 80 yr is unfavorable rather than the ledger asserting it. 30 yr at the design basis and records grades is the model default and the low end of the fusion literature's 30-40 yr cluster (Böhnlein et al. 2026 survey of 43 assumptions; ARIES 40)."
+    source: "Book life (engineering): US DOE hydropower civil-works lifespan (65-85 yr) with every core component replaced on its own schedule. An extrapolation with a mechanism here: the unreplaceable structure sees negligible neutron fluence (copper coils are replaced with the wall; D-D neutrons only). Capacitor-bank and wall replacements are priced at every rung (CAS72, scripts/burnup_scan.py), so the model shows where 80 yr is unfavorable rather than the ledger asserting it. 60 yr at the design basis and records grades is a series-consistency entry, not a record (baseline.yaml): the standard first-renewal licence term, above the about 57 yr longest demonstrated operation and below the 80 yr subsequent renewals thirteen US plants hold."
 
   construction_time_yr:
     value: 3.25

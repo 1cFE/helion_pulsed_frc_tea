@@ -28,7 +28,8 @@ be pushed, and what would have to be true", against Helion's public
 $10/MWh target. Four devices are priced, sharing one architecture and
 one plant environment in which build time and indirects are held, the
 cost of capital steps with the tiers (7/7/5/3% real), book life is an
-engineering entry (30/30/80/80 yr), and availability is derived from
+engineering entry (60/60/80/80 yr; the 60 is a series-consistency entry,
+not a record), and availability is derived from
 each grade's replacement schedule (Figure 1 and the ladder table's at-7%
 column keep the financing part of every grade separate from its physics
 and engineering), and differing only in the subsystem performance they
@@ -50,16 +51,16 @@ Helion's configuration is a constrained design-space scan optimum
 (chamber size, wall class, yield, burn mix), not an asserted operating
 point.
 
-Headline ladder at 1 GWe: records 119.3, Helion's requirements 111.0, extrapolations 26.8 (33.9 at 7% real cost of capital), speculation 10.6 (17.9 at 7%)
+Headline ladder at 1 GWe: records 112.1, Helion's requirements 105.9, extrapolations 26.8 (33.9 at 7% real cost of capital), speculation 10.6 (17.9 at 7%)
 $/MWh; at 3 GWe the speculation park reads 8.4 $/MWh (14.6 at 7%), so
 the $10 target is crossed by one internally consistent stack and only
 through its 3% real cost of capital, not through any physics or
 engineering entry; it holds at any availability above the model default.
 Every number grants Helion's 128 MJ shot, which no record supports and
 which implies a 0.3 to 0.7 s burn against Helion's stated pulse of
-hundreds of microseconds to milliseconds. The records device sits 6.5
+hundreds of microseconds to milliseconds. The records device sits 6.2
 $/MWh above Helion's requirements: reverting Helion's fourth nine of
-per-pulse fuel recovery is worth about 49 $/MWh at Helion's own mix,
+per-pulse fuel recovery is worth about 47 $/MWh at Helion's own mix,
 nearly all of which the records device's deuterium-rich mix recovers.
 See `docs/Helion_writeup.md` for the narrative results (`docs/Helion_short_writeup.md` is
 the half-length version) and `docs/ledger.md` for

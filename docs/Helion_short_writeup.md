@@ -22,7 +22,7 @@ Helion's published design and results as its starting point.
 **The findings, in brief.** Four devices share the architecture and
 differ only in the evidence grade of what they are granted: citable
 records alone, Helion's own requirements at face value, labeled
-extrapolations, and speculation. They read 112.1, 111.0, 26.8 and 10.6
+extrapolations, and speculation. They read 112.1, 105.9, 26.8 and 10.6
 $/MWh at 1 GWe. The speculation park reads 8.4 $/MWh at 3 GWe, so the
 target is crossed by that one stack, through a 3% real cost of capital
 (14.6 at 7%) and with the wall-and-coil replacement included. Every
@@ -107,8 +107,14 @@ combined-cycle gas turbine timeline). The cost of capital steps 7% real
 at the design basis and records grades (the IEA/NEA central case [9]),
 5% at extrapolations, 3% at speculation (the IEA/NEA low case [9]); it
 is the one financing entry, kept separate in Figure 1 and the at-7%
-column. Book life steps from 30 years through the records grade [10] to
-80 years above it (the US DOE hydropower lifespan [11]). Availability is
+column. Book life is 60 years through the records grade, a
+series-consistency entry rather than a record (the other candidate
+corridor studies hold 60 at their records rung; 60 is the standard
+first-renewal licence term, above the about 57 years of the
+longest-running units and below the 80-year subsequent renewals
+thirteen US plants hold [24], and above the fusion literature's 30-40
+year cluster [10]), and 80 years above it (the US DOE hydropower
+lifespan [11]). Availability is
 derived from 0.98 outside planned outages, less a routine outage every
 two years [12], a capacitor-bank swap at the bank's shot life, and a
 wall-and-coil changeout at the displacement-damage tolerance (20 dpa
@@ -164,7 +170,7 @@ and its conservatisms (no thermal bottoming).
 | device | 1 GWe | 3 GWe | at 7% real cost of capital, 1 GWe |
 |---|---|---|---|
 | citable records | 112.1 | 107.8 | 112.1 |
-| Helion's requirements | 111.0 | 106.9 | 111.0 |
+| Helion's requirements | 105.9 | 102.1 | 105.9 |
 | extrapolations | 26.8 | 23.6 | 33.9 |
 | speculation | 10.6 | 8.4 | 17.9 |
 
@@ -174,12 +180,12 @@ cheaper money is worth, 7.1 $/MWh at extrapolations and 7.2 at
 speculation. The stacks:
 
 - **citable records**: fuel recovery 0.999, 7% real cost of capital,
-  30-year life, 5-year build, Helion's shot granted; optimum: 25
+  60-year life, 5-year build, Helion's shot granted; optimum: 25
   panel-wall modules of 10 m x 0.75 m at 1 Hz, D-rich mix with its
   tritium plant
 - **Helion's requirements**: Helion's configuration (20 modules in the
   smallest chamber that survives the shot, Helion's mix with its tritium
-  plant, 7% real cost of capital, 30-year life, 5-year build) granted
+  plant, 7% real cost of capital, 60-year life, 5-year build) granted
   the shot and fuel recovery 0.9999
 - **extrapolations**: records + capacitor life 1e9, a 3 Hz ceiling, a
   purchasable divertor-class wall, fuel recovery 0.9999, 5% real cost of
@@ -197,13 +203,13 @@ chambers. Reconciliation brackets the extrapolation device within 21.8-31.1 $/MW
 GWe. The D-rich mix is the strict optimum at every grade because it
 breeds more He-3 than it burns.
 
-The records device sits 8.3 $/MWh above Helion's requirements on one
+The records device sits 6.2 $/MWh above Helion's requirements on one
 claim, Helion's fourth nine of fuel recovery. At Helion's own mix, which
 breeds less He-3 than it burns and keeps buying, that claim is worth
-about 49 $/MWh (Section 5.2 derives the multiplier); the records device
+about 47 $/MWh (Section 5.2 derives the multiplier); the records device
 escapes nearly all of it by running deuterium-rich. Both devices are
-dominated by scheduled replacement of the recovery chain, about eight
-times over a 30-year life at the 1e8-shot record.
+dominated by scheduled replacement of the recovery chain, about 17
+times over a 60-year life at the 1e8-shot record.
 
 ![The evidence ladder](figures/fig1_ladder.svg)
 
@@ -279,9 +285,9 @@ grade's rate; the prompt bred He-3 counts as extra burns, not as supply.
 A deuterium-rich plant buys He-3 only until the store covers its need,
 about eight years, so its levelized purchase is 16% of the perpetual one
 at the extrapolation device and 11% at speculation; Helion's mix keeps
-buying, at 82%. Bought in perpetuity at the ledger price, He-3 would
-cost the four devices 35, 4.5, 7.1 and 1.4 $/MWh more; free, it would
-save them 9.7, 20.3, 1.4 and 0.2, and re-run at zero price the
+buying, at 79%. Bought in perpetuity at the ledger price, He-3 would
+cost the four devices 35, 5.2, 7.1 and 1.4 $/MWh more; free, it would
+save them 9.7, 19.7, 1.4 and 0.2, and re-run at zero price the
 extrapolation and speculation devices leave the D-rich mix for the
 He-3-rich one (dd_frac 0.13) with no tritium plant, at 20.3 and 8.5
 $/MWh.
@@ -362,7 +368,7 @@ bf)):
 At four nines 80% of the He-3 burns; at three nines the loop wastes 71%
 of it; at two nines nearly everything leaks. A deuterium-rich plant is
 self-sufficient in He-3 at three nines, so the fourth nine is worth 6
-$/MWh at the extrapolation device; at Helion's mix it is worth 49.
+$/MWh at the extrapolation device; at Helion's mix it is worth 47.
 
 Both species' per-pass burn fractions derive from the same n tau, so the
 axis is swept coherently (Figure 5). At the patent burn point the
@@ -511,7 +517,7 @@ a fleet-learning term on equipment.
 
 ## 8. Conclusions
 
-Four devices on one architecture read 112.1, 111.0, 26.8 and 10.6 $/MWh
+Four devices on one architecture read 112.1, 105.9, 26.8 and 10.6 $/MWh
 at 1 GWe by evidence grade. Only the speculation park at 3 GWe, 8.4
 $/MWh, is under the target, and a 3% real cost of capital rather than
 physics takes it there. The floor is carried by site infrastructure and
@@ -620,3 +626,6 @@ startup.
 23. Slough, J. (2025). "A compact fusion reactor based on the staged
    compression of a field reversed configuration." Nuclear Fusion 65,
    106019.
+24. US Nuclear Regulatory Commission. Subsequent License Renewal,
+   status as of June 2026:
+   nrc.gov/reactors/operating/licensing/renewal/subsequent-license-renewal.

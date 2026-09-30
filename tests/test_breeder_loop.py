@@ -100,8 +100,8 @@ def test_two_machine_economy_pins(helion, extrap):
     lean, _ = run(model, dict(fwd, dhe3_dd_frac=0.314, f_rad=f_rad_floor(0.314), u_he3=0.0))
     br = breeder_module(model, res, "extract")
     loop = close_loop(lean, br, per_module_costs(res), "rpe", res.params["interest_rate"])
-    assert loop["eq"]["lcoe"] == pytest.approx(161.2, abs=0.2)
-    assert loop["eq"]["he3_musd_kg"] == pytest.approx(5.72, abs=0.02)
+    assert loop["eq"]["lcoe"] == pytest.approx(153.2, abs=0.2)
+    assert loop["eq"]["he3_musd_kg"] == pytest.approx(5.45, abs=0.02)
 
     model, fwd, res = extrap
     lean, _ = run(model, dict(fwd, dhe3_dd_frac=0.131, f_rad=f_rad_floor(0.131), u_he3=0.0))
@@ -161,8 +161,8 @@ def test_unit_cost_pins(helion, extrap):
     model, fwd, res = helion
     br = breeder_module(model, res, "extract")
     u, lcoe = device_at_breeder_price(model, fwd, res, br, per_module_costs(res), "rpe", 1.0)
-    assert u == pytest.approx(6.94e6, rel=0.01)
-    assert lcoe == pytest.approx(161.2, abs=0.3)
+    assert u == pytest.approx(6.60e6, rel=0.01)
+    assert lcoe == pytest.approx(151.1, abs=0.3)
     model, fwd, res = extrap
     br = breeder_module(model, res, "extract")
     u, lcoe = device_at_breeder_price(model, fwd, res, br, per_module_costs(res), "rpe", 1.0)
