@@ -152,8 +152,7 @@ in part:
   Kashiwazaki-Kariwa ABWR pair, 37 and 39 months from first concrete to
   fuel load [8], at the peak of a mature light-water supply chain), 2.5
   years at speculation (a combined-cycle gas turbine timeline for a
-  fusion module with a tritium facility). An engineering entry, and the
-  same ruling as the sister D-T study.
+  fusion module with a tritium facility). An engineering entry.
 - Cost of capital, stepped: 7% real at the design basis and records
   grades (the IEA/NEA central case [9]), 5% at extrapolations (a
   loan-guarantee blend with precedent), 3% at speculation (the IEA/NEA
