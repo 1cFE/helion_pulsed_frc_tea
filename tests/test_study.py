@@ -149,15 +149,15 @@ def test_records_device(model, base_cfg):
     tritium plant, in fat panel-wall chambers)."""
     _, fwd = device_fwd("records", 1000.0)
     _, diag = run(model, fwd)
-    assert diag["lcoe"] == pytest.approx(119.3, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(112.1, abs=0.2)
     assert not coherence_violations(fwd, diag, "tier2")
     _, diag3 = run(model, dict(fwd, net_electric_mw=3000.0))
-    assert diag3["lcoe"] == pytest.approx(114.6, abs=0.2)
+    assert diag3["lcoe"] == pytest.approx(107.8, abs=0.2)
 
 
 def test_tier1_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg, "best_case.yaml")
-    assert diag["lcoe"] == pytest.approx(160.5, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(153.2, abs=0.2)
 
 
 def test_tier2_rung(model, base_cfg):
@@ -375,13 +375,13 @@ def test_missing_schedule_inputs_fail_loudly(model, base_cfg):
 
 def test_financing_and_book_life_ladder():
     """Cost of capital steps 7/7/5/3% real with the tiers; book life
-    30/30/80/80 yr and construction time 5/5/3.25/2.5 yr are engineering
+    30/60/80/80 yr and construction time 5/5/3.25/2.5 yr are engineering
     entries; nothing else in the environment moves between rungs (the
     indirect fraction is the nominal 0.20 everywhere; its effective value
     follows the build through CAS30 = f x CAS20 x T/6)."""
     from study import PLANT_SIZES_MWE
 
-    expect = {"records": (0.07, 30.0, 5.0), "helion": (0.07, 30.0, 5.0),
+    expect = {"records": (0.07, 60.0, 5.0), "helion": (0.07, 30.0, 5.0),
               "extrap": (0.05, 80.0, 3.25), "spec": (0.03, 80.0, 2.5)}
     held = ("inflation_rate", "indirect_fraction",
             "availability_steady_state", "outage_days_routine", "routine_cycle_yr",

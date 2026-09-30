@@ -60,7 +60,7 @@ Devices at 1 / 3 GWe:
 
 | device | 1 GWe | at 7% real | 3 GWe | at 7% real |
 |---|---|---|---|---|
-| citable records (tier-1 stack, optimized) | 119.3 | 119.3 | 114.6 | 114.6 |
+| citable records (tier-1 stack, optimized) | 112.1 | 112.1 | 107.8 | 107.8 |
 | Helion's requirements (Helion's configuration) | 111.0 | 111.0 | 106.9 | 106.9 |
 | extrapolations (tier-2 stack, optimized) | 26.8 | 33.9 | 23.6 | 30.1 |
 | speculation (tier-3 stack, optimized) | 10.6 | 17.9 | 8.4 | 14.6 |
@@ -71,7 +71,7 @@ capital with everything else as its grade has it (`scripts/tiers.py`,
 difference: 7.1 and 6.5 $/MWh at extrapolations, 7.2 and 6.2 at speculation, zero at the two 7% grades.
 
 Stack evaluations at Helion's configuration (design-basis chamber), kept
-as internal regression pins: records 160.5 / 155.2, extrapolations 32.4 / 29.0, speculation 12.0 / 9.4. The records device sits above Helion's
+as internal regression pins: records 153.2 / 148.5, extrapolations 32.4 / 29.0, speculation 12.0 / 9.4. The records device sits above Helion's
 requirements because reverting Helion's per-pulse fuel recovery to the
 JET-analog three nines is worth about 49 $/MWh at Helion's own mix
 (dd_frac 0.49), nearly all of which the records device's deuterium-rich
@@ -517,7 +517,7 @@ constraints, at each evidence level:
 
 | device | LCOE | design |
 |---|---|---|
-| citable records, 1 GWe | **119.3** | design-basis shot, D-rich mix with tritium plant, 25 modules of 10 m x 0.75 m at 1 Hz (records-only optimum; the mix freedom every grade gets; the 15 m x 0.5 m chamber is 1.5 $/MWh behind, the best row at the 3:1 D:He-3 mix 43 behind) |
+| citable records, 1 GWe | **112.1** | design-basis shot, D-rich mix with tritium plant, 25 modules of 10 m x 0.75 m at 1 Hz (records-only optimum; the mix freedom every grade gets; the 15 m x 0.5 m chamber is 1.5 $/MWh behind, the best row at the 3:1 D:He-3 mix 43 behind) |
 | extrapolations, 1 GWe | **26.8** | design-basis shot (128.1 MJ), 7 modules at 2.7 Hz, 10 m x 1.5 m chambers, panel wall, D-rich mix with tritium plant (the best row at the 3:1 mix, 40.8, is 15 behind) |
 | speculation, 1 GWe | **10.6** | 300-1000 MJ shots in the same 30 m x 1.5 m panel-wall chamber sit at 10.6-10.7, within model precision (500 MJ at 3.5 Hz carried: the plateau's middle, with a 0.54 MJ/m^2 flash margin), single module, D-rich. The 3:1 mix (dd_frac 0.314) is 1.9 behind (12.5 in a 20 m x 1.5 m chamber), the preset's He-3-rich mix (0.131) 2.4 behind, and both rest on the tier-3 0.5 M$/kg He-3 entry |
 | speculation, 3 GWe | **8.4** | 3 modules of the 200 MJ / 30 m design at 9.0 Hz (larger shots trip the wall audit once the integer module count snaps down) |

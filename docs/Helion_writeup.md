@@ -28,7 +28,7 @@ Astera is set on investigating.
 **The findings, in brief.** Four devices share the architecture and
 differ only in the evidence grade of what they are granted: citable
 records alone, Helion's own requirements at face value, labeled
-extrapolations, and speculation. They read 119.3, 111.0, 26.8 and 10.6
+extrapolations, and speculation. They read 112.1, 111.0, 26.8 and 10.6
 $/MWh at 1 GWe. The speculation park reads 8.4 $/MWh at 3 GWe, so the
 public 1 cent/kWh target is crossed by that one stack, through a 3% real
 cost of capital (14.6 at 7%) and with the wall-and-coil replacement
@@ -227,7 +227,7 @@ than a point.
 
 | device | 1 GWe | 3 GWe | at 7% real cost of capital, 1 GWe |
 |---|---|---|---|
-| citable records | 119.3 | 114.6 | 119.3 |
+| citable records | 112.1 | 107.8 | 112.1 |
 | Helion's requirements | 111.0 | 106.9 | 111.0 |
 | extrapolations | 26.8 | 23.6 | 33.9 |
 | speculation | 10.6 | 8.4 | 17.9 |
@@ -276,10 +276,12 @@ it is the mix that breeds more He-3 than it burns: the 3:1 mix (dd_frac
 extrapolations, buying its He-3 at the stack's price entries, which
 Section 5.1 shows no market supports.
 
-The records device sits 8.3 $/MWh above Helion's requirements, 119.3
-against 111.0, and the evidentiary difference is one claim: Helion's
-fourth nine of per-pulse fuel recovery, which the records grade holds at
-the JET-supported three nines. At Helion's own configuration that claim
+The records device sits 1.1 $/MWh above Helion's requirements, 112.1
+against 111.0, and two entries pull against each other to leave it there.
+Reverting Helion's fourth nine of per-pulse fuel recovery to the
+JET-supported three nines raises the device by about 8.3; granting the
+60-year operating licence the fission fleet holds lowers it by about 7.2.
+The evidentiary difference on the physics is still that one claim: At Helion's own configuration that claim
 is worth about 49 $/MWh, because Helion's mix breeds less He-3 than it
 burns and keeps buying (Section 5.2 derives the multiplier); the records
 device escapes nearly all of it by running deuterium-rich, where the
@@ -764,7 +766,7 @@ None of these is in the evidence base at any grade.
 
 ## 8. Conclusions
 
-Four devices on one architecture read 119.3, 111.0, 26.8 and 10.6 $/MWh
+Four devices on one architecture read 112.1, 111.0, 26.8 and 10.6 $/MWh
 at 1 GWe by evidence grade. Only the speculation park at 3 GWe, 8.4
 $/MWh, is under the target, and a 3% real cost of capital rather than
 physics takes it there. The floor is carried by site infrastructure and
