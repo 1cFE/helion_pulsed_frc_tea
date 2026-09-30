@@ -107,6 +107,16 @@ N_D_PATENT_M3 = 0.75e22
 HE3_OVER_D_PATENT = 0.158
 VENDOR_PULSE_S = 1e-3
 X_S_REFERENCE = 0.7
+# Concept-YAML per-pulse D burnup: the default exposure behind the tritium
+# in-pulse burn floor when a point does not override burn_fraction.
+_BF_DEFAULT = 1.2e-4
+_T_I_CALIB_KEV = 70.0
+# Constraint 8: a shot's implied burn must fit inside the pulse period. One
+# burn section holds one plasmoid, so the next shot cannot be fired while
+# the last is still burning. 1.0 is the hard bound and leaves nothing for
+# exhaust, refill and recharge, which a duty-cycle analysis would have to
+# fit in the remainder.
+DUTY_MAX = 1.0
 
 # --- availability from the replacement schedule ----------------------------
 # Availability is derived per point, not asserted: the US fission fleet's
@@ -201,6 +211,29 @@ def breakeven_time_s(b_t: float = None, t_i_kev: float = None,
                                   + float(sigv_dd_p(t_i_kev)) * Q_DD_PT)) * MEV_J
     u = 1.5 * b_t**2 / (2.0 * _MU0)
     return u / p_fus
+
+
+def breakeven_time_at_point_s(fwd: dict) -> float:
+    """The breakeven time of the plasma this point actually burns.
+
+    The compression basis stays the patent's (n_D, B, T_i); what changes
+    with the burn mix is the composition, and with it the fusion power
+    density. The composition counted is the one the model's own fuel
+    accounting implies: purchased He-3 plus the bred He-3 that recycles and
+    burns at f_He3_eff, which is why a D-rich point is less power-dense
+    than the knob's naive He3/D map alone would say.
+    """
+    from mix import _sv_ratio, f_he3_eff, he3_over_d_from_burn
+
+    dd = float(fwd["dhe3_dd_frac"])
+    bf = float(fwd.get("burn_fraction", _BF_DEFAULT))
+    # Both species' per-pass burn fractions come from the same n tau, so
+    # the He-3 fraction is the D fraction times the reactivity ratio at the
+    # calibration temperature when a point does not carry its own.
+    bf_he3 = float(fwd.get("burn_fraction_he3",
+                           bf * _sv_ratio(_T_I_CALIB_KEV)))
+    f_he3 = f_he3_eff(bf_he3, float(fwd["fuel_recovery"]))
+    return breakeven_time_s(he3_over_d=he3_over_d_from_burn(dd, f_he3))
 
 
 def breakeven_time_dt_s(b_t: float, t_i_kev: float) -> float:
@@ -472,7 +505,8 @@ def run(model: CostModel, fwd: dict, tritium_adder: bool = True):
         "he3_purchase_fraction": phi,
         "tau_burn_implied_s": implied_burn_s(
             float(result.params["yield_per_shot_mj"]),
-            float(result.params["e_driver_mj"]), X_S_REFERENCE),
+            float(result.params["e_driver_mj"]), X_S_REFERENCE,
+            breakeven_time_at_point_s(fwd)),
         "tritium_adder_musd": tritium_musd,
         "availability": float(result.params["availability"]),
         "t_bank_yr": schedule.get("t_bank_yr", float("nan")),
@@ -486,10 +520,6 @@ def run(model: CostModel, fwd: dict, tritium_adder: bool = True):
     return result, diag
 
 
-# Concept-YAML per-pulse D burnup: the default exposure behind the tritium
-# in-pulse burn floor when a point does not override burn_fraction.
-_BF_DEFAULT = 1.2e-4
-_T_I_CALIB_KEV = 70.0
 F_T_FLOOR_TOL = 0.01  # flag only when the shortfall is material
 
 
@@ -533,6 +563,13 @@ def coherence_violations(fwd: dict, diag: dict, tier: str) -> list[str]:
         v.append(f"steady wall flux {diag['q_wall_mw_m2']:.2f} MW/m^2 over '{fwd.get('fw_class', 'panel')}' limit {q_lim}")
     if diag["e_flash_mj_m2"] > E_FLASH_MELT_MJ_M2:
         v.append(f"per-shot flash {diag['e_flash_mj_m2']:.2f} MJ/m^2 over tungsten melt bound {E_FLASH_MELT_MJ_M2}")
+    duty = diag["tau_burn_implied_s"] * diag["f_rep_hz"]
+    if duty > DUTY_MAX + 1e-9:
+        v.append(
+            f"duty {duty:.2f}: the implied burn "
+            f"{diag['tau_burn_implied_s']:.2f} s exceeds the "
+            f"{1.0 / diag['f_rep_hz']:.2f} s between shots at "
+            f"{diag['f_rep_hz']:.2f} Hz")
     return v
 
 
