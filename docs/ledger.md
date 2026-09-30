@@ -577,7 +577,7 @@ of the loop 3.3x faster per pass than it leaks), and the decay store's
 He-3 return, 0.42 atoms per primary event and equal to the prompt
 branch, is credited atom for atom against the purchased 1 - dd_frac per
 event, levelized over the store's build-up at the grade's rate
-(`study.he3_purchase_fraction`: 0.24 / 0.82 / 0.16 / 0.11 of the
+(`study.he3_purchase_fraction`: 0.22 / 0.82 / 0.16 / 0.11 of the
 perpetual purchase down the ladder; `he3_decay_return=False` restores
 the perpetual purchase). Without the credit the machine would import
 about 34 kg/yr in perpetuity; with it the D-rich device buys only during
@@ -632,13 +632,13 @@ the power price.
 
 | device | He-3 bought (kg/yr) | breeder output (kg/yr per module) | co-sited (M$/kg) | standalone (M$/kg) | device at co-sited / standalone price ($/MWh) |
 |---|---|---|---|---|---|
-| citable records | 176 | 12.8 | 2.2 | 2.5 | 120.1 / 121.8 |
+| citable records | 176 | 12.8 | 2.0 | 2.3 | 112.2 / 113.6 |
 | Helion's requirements | 98 | 5.6 | 6.9 | 7.9 | 161.2 / 170.4 |
 | extrapolations | 34 | 26.4 | 0.70 | 1.04 | 25.9 / 26.1 |
 | speculation | 25 | 133 | 0.18 | 0.54 | 10.5 / 10.6 |
 
 The ledger price of 2 M$/kg is read back within a tenth at the records
-grade (2.2 M$/kg co-sited), cannot be reached at the Helion device (a
+grade (2.0 M$/kg co-sited), cannot be reached at the Helion device (a
 module that breeds 5.6 kg/yr at a gain of 0.46), and is conservative
 from the extrapolation grade on. A central facility serving several
 devices reads 1.9 to 0.8 M$/kg at the extrapolation grade for one to

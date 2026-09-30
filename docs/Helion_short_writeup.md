@@ -280,8 +280,8 @@ A deuterium-rich plant buys He-3 only until the store covers its need,
 about eight years, so its levelized purchase is 16% of the perpetual one
 at the extrapolation device and 11% at speculation; Helion's mix keeps
 buying, at 82%. Bought in perpetuity at the ledger price, He-3 would
-cost the four devices 34, 4.5, 7.1 and 1.4 $/MWh more; free, it would
-save them 10.9, 20.3, 1.4 and 0.2, and re-run at zero price the
+cost the four devices 35, 4.5, 7.1 and 1.4 $/MWh more; free, it would
+save them 9.7, 20.3, 1.4 and 0.2, and re-run at zero price the
 extrapolation and speculation devices leave the D-rich mix for the
 He-3-rich one (dd_frac 0.13) with no tritium plant, at 20.3 and 8.5
 $/MWh.

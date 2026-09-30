@@ -413,12 +413,11 @@ regardless (constraint 4).
 
 A deuterium-rich plant therefore buys He-3 only until the store covers
 its need, about eight years, which takes its levelized purchase to a
-fraction of the perpetual one: 24% at the records device, whose 30-year
-life at 7% weights the build-up years most, 16% at extrapolations and
+fraction of the perpetual one: 22% at the records device, whose 7% rate weights the build-up years most, 16% at extrapolations and
 11% at speculation. Helion's own mix breeds less than it burns and keeps
 buying, at 82%. Bought in perpetuity at the ledger price instead, He-3
-would cost the four devices 34, 4.5, 7.1 and 1.4 $/MWh more; free, it
-would save them 10.9, 20.3, 1.4 and 0.2 at their own mixes, and it would
+would cost the four devices 35, 4.5, 7.1 and 1.4 $/MWh more; free, it
+would save them 9.7, 20.3, 1.4 and 0.2 at their own mixes, and it would
 change the mix (Section 7).
 
 The price matters because no cheap He-3 exists. The DOE Isotope
@@ -465,7 +464,7 @@ pure-D module of the same grade with its bred He-3 and tritium pumped
 out every pulse, priced per kilogram delivered as module ownership plus
 a throughput-sized tritium plant plus its net power at the device's own
 LCOE (`scripts/breeder_loop.py`; the tables are in the ledger). It reads
-the ledger's price back at the records grade, 2.2 M$/kg, cannot be
+the ledger's price back at the records grade, 2.0 M$/kg, cannot be
 reached at the Helion device (6.9 M$/kg), and charges about 0.7 M$/kg at
 extrapolations and 0.2 to 0.5 at speculation; since a self-supplying
 device buys He-3 only for its build-up, it moves the ladder little
