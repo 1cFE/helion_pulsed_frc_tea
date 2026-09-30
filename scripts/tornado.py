@@ -10,6 +10,7 @@ from study import (
     OUTPUT_DIR,
     apply_records,
     build_model,
+    coherence_violations,
     device_fwd,
     load_config,
     run,
@@ -47,10 +48,16 @@ if __name__ == "__main__":
         if knob == "dhe3_dd_frac":
             reverted["f_rad"] = tier1_fwd["f_rad"]
         _, diag = run(model, reverted)
+        # A reverted point is priced whether or not it stays coherent (the
+        # lever is what it is); the violations it trips are recorded so the
+        # writeup can mark them.
+        violations = coherence_violations(reverted, diag, "tier2")
         rows.append(dict(knob=knob, lcoe=diag["lcoe"],
                          delta=diag["lcoe"] - diag0["lcoe"],
                          kind=("financing" if knob == "interest_rate"
-                               else "engineering")))
+                               else "engineering"),
+                         coherent=(not violations),
+                         violations="; ".join(violations)))
 
     rows.sort(key=lambda r: -abs(r["delta"]))
     OUTPUT_DIR.mkdir(exist_ok=True)
@@ -59,4 +66,5 @@ if __name__ == "__main__":
         w.writeheader()
         w.writerows(rows)
     for r in rows:
-        print(f"{r['knob']:<24} revert -> {r['lcoe']:>6.1f}  ({r['delta']:+.1f})  [{r['kind']}]")
+        print(f"{r['knob']:<24} revert -> {r['lcoe']:>6.1f}  ({r['delta']:+.1f})  [{r['kind']}]"
+              + (f"  NOT coherent: {r['violations']}" if not r["coherent"] else ""))

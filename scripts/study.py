@@ -20,6 +20,9 @@ combine values the review ruled mutually inconsistent:
 - tritium adder: a D-rich burn mix breeds tens of kg of tritium per year;
   the fuel-handling account is raised to a tritium-plant scope whenever
   the mix crosses into that regime.
+- yield bound and duty: every point carries the burn time its shot
+  implies at the point's own burn mix (constraint 7), and that burn must
+  fit inside the pulse period at the solved rep rate (constraint 8).
 """
 import os
 
@@ -378,27 +381,70 @@ def wall_area_m2(fwd: dict) -> float:
 # --- the four devices the writeup prices -----------------------------------
 # One machine per evidence grade. records, extrap and spec are the coherent
 # design-search optima (scripts/coherent_min.py); helion is the vendor
-# configuration on the design basis. The 3 GWe speculation park uses the
-# 200 MJ shot: larger shots trip the wall audit once the integer module
-# count snaps down (coherent_min.py footer). Every script and test builds
-# its forward dict from here, so a moved optimum is a one-place change.
+# configuration on the design basis. The search chooses the burn mix with
+# the chamber, each mix on its bremsstrahlung floor, and constraint 8
+# (the burn must fit the pulse period, a cap on one burn section's fusion
+# power of chi E_del / tau_f) sets how deuterium-rich each grade can run:
+# dd_frac 0.80 at the records grade (1 Hz, 24 modules), Helion's own 0.488
+# at extrapolations (2.7 Hz, 6 modules) and the He-3-rich preset 0.131 at
+# speculation (a single 1 GWe module). The D-rich mix (0.85) breeds more
+# He-3 than it burns but is power-sparse, so its burn does not fit the
+# period at any grade; its designs are kept in D_RICH_DEVICES below as
+# counterfactuals. A 3 GWe park that needs a different shot or chamber
+# carries it in size_overrides (the integer module count snaps, and the
+# 1 GWe optimum can trip the wall audit; see the coherent_min.py footer).
+# Every script and test builds its forward dict from here, so a moved
+# optimum is a one-place change.
 DEVICES = {
     "records": dict(
         configs=("best_case.yaml",),
-        overrides=dict(dhe3_dd_frac=0.85, f_rad=0.28, chamber_length=10.0,
-                       plasma_t=0.75, r_bore=0.85, fw_class="panel"),
+        overrides=dict(dhe3_dd_frac=0.8, f_rad=f_rad_floor(0.8),
+                       chamber_length=10.0, plasma_t=0.75, r_bore=0.85,
+                       fw_class="panel"),
         size_overrides={},
     ),
     "helion": dict(configs=(), overrides={}, size_overrides={}),
     "extrap": dict(
         configs=("best_case.yaml", "tier2.yaml"),
-        overrides=dict(chamber_length=10.0, plasma_t=1.5, r_bore=1.6,
+        overrides=dict(dhe3_dd_frac=0.488, f_rad=f_rad_floor(0.488),
+                       chamber_length=15.0, plasma_t=0.75, r_bore=0.85,
+                       fw_class="panel"),
+        size_overrides={3000.0: dict(chamber_length=10.0, plasma_t=1.5,
+                                     r_bore=1.6)},
+    ),
+    "spec": dict(
+        configs=("best_case.yaml", "tier2.yaml", "tier3.yaml"),
+        overrides=dict(dhe3_dd_frac=0.131, f_rad=f_rad_floor(0.131),
+                       yield_per_shot_mj=500.0, chamber_length=15.0,
+                       plasma_t=1.5, r_bore=1.6, fw_class="panel"),
+        size_overrides={3000.0: dict(yield_per_shot_mj=200.0)},
+    ),
+}
+# The D-rich counterfactuals: the best D-rich design at each grade under
+# constraints 1 to 7, which constraint 8 excludes (its burn is longer than
+# the period between shots at the solved rep rate). They carry the tritium
+# plant and the store-and-decay fuel cycle, so the tritium-store analysis
+# (scripts/tritium_burn.py, scripts/burnup_scan.py) and the duty audit
+# across x_s (scripts/yield_bound.py) price them beside the devices.
+D_RICH_DEVICES = {
+    "records": dict(
+        configs=("best_case.yaml",),
+        overrides=dict(dhe3_dd_frac=0.85, f_rad=f_rad_floor(0.85),
+                       chamber_length=10.0, plasma_t=0.75, r_bore=0.85,
+                       fw_class="panel"),
+        size_overrides={},
+    ),
+    "extrap": dict(
+        configs=("best_case.yaml", "tier2.yaml"),
+        overrides=dict(dhe3_dd_frac=0.85, f_rad=f_rad_floor(0.85),
+                       chamber_length=10.0, plasma_t=1.5, r_bore=1.6,
                        fw_class="panel"),
         size_overrides={},
     ),
     "spec": dict(
         configs=("best_case.yaml", "tier2.yaml", "tier3.yaml"),
-        overrides=dict(yield_per_shot_mj=500.0, chamber_length=30.0,
+        overrides=dict(dhe3_dd_frac=0.85, f_rad=f_rad_floor(0.85),
+                       yield_per_shot_mj=500.0, chamber_length=30.0,
                        plasma_t=1.5, r_bore=1.6, fw_class="panel"),
         size_overrides={3000.0: dict(yield_per_shot_mj=200.0)},
     ),
@@ -412,15 +458,17 @@ DEVICE_ORDER = (
 PLANT_SIZES_MWE = (1000.0, 3000.0)
 
 
-def device_fwd(name: str, net_electric_mw: float) -> tuple[dict, dict]:
+def device_fwd(name: str, net_electric_mw: float,
+               devices: dict = DEVICES) -> tuple[dict, dict]:
     """(baseline cfg, forward dict) for one of the four devices at a plant
-    size. Sizes other than PLANT_SIZES_MWE have no device definition (the
-    speculation design is size-dependent) and raise KeyError."""
+    size, or for a D-rich counterfactual when devices=D_RICH_DEVICES. Sizes
+    other than PLANT_SIZES_MWE have no device definition (the speculation
+    design is size-dependent) and raise KeyError."""
     if net_electric_mw not in PLANT_SIZES_MWE:
         raise KeyError(f"no device definition at {net_electric_mw} MWe")
     cfg = load_config("baseline.yaml")
     fwd = dict(cfg["forward"])
-    dev = DEVICES[name]
+    dev = devices[name]
     for c in dev["configs"]:
         apply_records(fwd, c)
     fwd.update(dev["overrides"])

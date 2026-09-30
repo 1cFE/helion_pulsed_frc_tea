@@ -12,9 +12,10 @@ delivered) instead of an assumed one.
 
 Construction, per ladder device:
 - The breeder is the device's own module and shot with the He-3 taken out
-  of the fill. At dd_frac 0.85 the device is already 85% D-D by event count,
-  so this is a small perturbation of what it does; on the vendor's lean
-  shot it is not, and the gain collapses. At the same ion density,
+  of the fill. At a deuterium-rich mix the device is already mostly D-D by
+  event count, so this is a small perturbation of what it does; on a lean
+  shot (Helion's mix, the He-3-rich preset) it is not, and the gain
+  collapses. At the same ion density,
   temperature, dwell and volume (pressure balance at the basis field;
   merging heats per ion) the D-D primary yield is the device yield times
   dd_frac x Q_DD / ((1 - x_He3)^2 q_eff), with x_He3 the He-3 ion fraction
@@ -267,9 +268,12 @@ def unit_cost_table():
         bought, _ = he3_demand_kg_yr(res)
         _, d0 = run(model, dict(fwd, u_he3=0.0))
         br = breeder_module(model, res, "extract")
+        mwh_yr = fwd["net_electric_mw"] * 8760.0 * cm["availability"]
         row = dict(device=name, ladder_lcoe=round(diag["lcoe"], 1),
                    u_he3_ledger=float(res.params["u_he3"]),
                    he3_bought_kg_yr=round(bought, 1),
+                   # electricity at the device's own LCOE per kilogram bought
+                   elec_musd_per_kg=round(diag["lcoe"] * mwh_yr / bought / 1e6, 2),
                    he3_line_ledger=round(diag["lcoe"] - d0["lcoe"], 1),
                    breeder_gain=round(br["gain"], 2),
                    breeder_p_net_mw=round(br["p_net"], 1),
@@ -362,11 +366,12 @@ if __name__ == "__main__":
     unit = unit_cost_table()
     _write("breeder_unit_cost.csv", unit)
     print("== He-3 unit cost from a breeder of the same grade (M$/kg) and the device at that price ==")
-    print(f"{'device':<8} {'LCOE':>6} {'bought':>7} {'line':>5} {'gain':>5} "
+    print(f"{'device':<8} {'LCOE':>6} {'bought':>7} {'elec/kg':>7} {'line':>5} {'gain':>5} "
           f"{'rpe eq':>7} {'rpe pv':>7} {'full eq':>8} {'full pv':>8} "
           f"{'LCOE rpe eq':>11} {'full eq':>8} {'full pv':>8}")
     for x in unit:
         print(f"{x['device']:<8} {x['ladder_lcoe']:>6.1f} {x['he3_bought_kg_yr']:>7.1f} "
+              f"{x['elec_musd_per_kg']:>7.2f} "
               f"{x['he3_line_ledger']:>5.1f} {x['breeder_gain']:>5.2f} "
               f"{x['unit_rpe_eq_musd_kg']:>7.2f} {x['unit_rpe_pv_musd_kg']:>7.2f} "
               f"{x['unit_full_eq_musd_kg']:>8.2f} {x['unit_full_pv_musd_kg']:>8.2f} "

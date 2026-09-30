@@ -1,19 +1,35 @@
-"""Constraint 7: the shot against the plasma energy and the burn time.
+"""Constraints 7 and 8: the shot against the plasma energy and the burn
+time, and the burn against the pulse period.
 
 The plasma at peak compression holds chi of the delivered driver energy
 and burns at the fusion power density of the burn point, so a shot's yield
 is bounded by gain <= chi x tau_burn / tau_f, with tau_f the plasma's
 energy breakeven time (study.breakeven_time_s). This script prints the
 bound for the design-basis and speculation shots across the reconciliation
-x_s span and against the vendor's stated pulse; every point that
-study.run evaluates carries the same quantity at the reference x_s as
-diag["tau_burn_implied_s"].
+x_s span at the patent point and against the vendor's stated pulse; every
+point that study.run evaluates carries the same quantity at the reference
+x_s and at its own burn mix as diag["tau_burn_implied_s"].
+
+The duty table then reads constraint 8 across the same span: for the four
+devices and the D-rich counterfactuals, the burn the shot implies at the
+point's own mix (study.breakeven_time_at_point_s) times the solved rep
+rate. The constraint is enforced at x_s 0.7; the table shows where a
+design would sit at the fat-FRC edge (0.85) and the thin one (0.5). Since
+duty = (yield x f_rep) x tau_f / (chi E_del), the constraint is a cap on
+the fusion power of one burn section, chi E_del / tau_f, whatever the
+split between shot size and rep rate; the table prints that cap beside
+the module's fusion power.
 """
 import csv
 
 from study import (  # noqa: I001  sets COSTINGFE_BACKEND before costingfe imports
+    D_RICH_DEVICES,
+    DEVICES,
+    DUTY_MAX,
     OUTPUT_DIR,
     VENDOR_PULSE_S,
+    X_S_REFERENCE,
+    breakeven_time_at_point_s,
     breakeven_time_dt_s,
     breakeven_time_s,
     build_model,
@@ -47,6 +63,32 @@ def bound_table() -> list[dict]:
     return rows
 
 
+def duty_table() -> list[dict]:
+    """One row per (design, x_s): the four devices and the D-rich
+    counterfactuals at 1 GWe, each with the breakeven time of its own burn
+    mix, the burn its shot implies at that x_s, and the duty that burn
+    makes at the solved rep rate."""
+    rows = []
+    for table, tag in ((DEVICES, ""), (D_RICH_DEVICES, " (D-rich)")):
+        for name in table:
+            cfg, fwd = device_fwd(name, 1000.0, table)
+            result, diag = run(build_model(cfg), fwd)
+            y = float(result.params["yield_per_shot_mj"])
+            e = float(result.params["e_driver_mj"])
+            tau_f = breakeven_time_at_point_s(fwd)
+            for x_s in X_S_SPAN:
+                tau = implied_burn_s(y, e, x_s, tau_f)
+                rows.append(dict(
+                    design=name + tag, dd_frac=fwd["dhe3_dd_frac"],
+                    yield_mj=y, f_rep_hz=diag["f_rep_hz"], x_s=x_s,
+                    tau_f_s=tau_f, tau_burn_s=tau,
+                    duty=tau * diag["f_rep_hz"],
+                    p_fus_module_mw=y * diag["f_rep_hz"],
+                    p_fus_cap_mw=chi_from_xs(x_s) * e / tau_f,
+                ))
+    return rows
+
+
 def main():
     tau_f = breakeven_time_s()
     tau_f_cold = breakeven_time_s(te_over_ti=0.1)
@@ -69,6 +111,30 @@ def main():
         w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
         w.writeheader()
         w.writerows(rows)
+
+    print(f"\nconstraint 8 across x_s (enforced at {X_S_REFERENCE}, "
+          f"duty <= {DUTY_MAX}): burn at the design's own mix x solved rep rate")
+    print(f"{'design':18} {'dd':>5} {'yield MJ':>9} {'f_rep Hz':>9} "
+          f"{'tau_f ms':>9} {'P_fus MW':>9} {'cap@0.7':>8} "
+          + " ".join(f"{'x_s ' + str(x):>14}" for x in X_S_SPAN))
+    duty = duty_table()
+    designs = []
+    for r in duty:
+        if r["design"] not in designs:
+            designs.append(r["design"])
+    for d in designs:
+        rr = [r for r in duty if r["design"] == d]
+        r0 = rr[0]
+        cap = next(r for r in rr if r["x_s"] == X_S_REFERENCE)["p_fus_cap_mw"]
+        print(f"{d:18} {r0['dd_frac']:>5.2f} {r0['yield_mj']:>9.1f} "
+              f"{r0['f_rep_hz']:>9.2f} {r0['tau_f_s'] * 1e3:>9.0f} "
+              f"{r0['p_fus_module_mw']:>9.0f} {cap:>8.0f} "
+              + " ".join(f"{r['tau_burn_s']:>6.2f} s {r['duty']:>5.2f}"
+                         for r in rr))
+    with open(OUTPUT_DIR / "duty.csv", "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(duty[0].keys()))
+        w.writeheader()
+        w.writerows(duty)
 
 
 if __name__ == "__main__":

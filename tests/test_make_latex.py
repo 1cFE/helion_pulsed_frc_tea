@@ -115,7 +115,7 @@ def test_two_tex_builds_are_byte_identical(tmp_path):
 
 def test_ledger_tex_renders_every_table_as_a_longtable(tmp_path):
     tex = build_tex(LEDGER_MD, tmp_path / "ledger.tex").read_text(encoding="utf-8")
-    assert tex.count("\\begin{longtable}") == 10
+    assert tex.count("\\begin{longtable}") == 11
     assert "\\real{" in tex
 
 

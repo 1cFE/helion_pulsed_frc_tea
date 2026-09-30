@@ -6,7 +6,11 @@ design space the machine actually controls - shot yield, chamber size, wall
 class, burn mix - under the red-team coherence constraints (study.py):
 bremsstrahlung-consistent f_rad, composite recovery cap, steady wall flux
 within the bought wall class, per-shot flash energy under tungsten melt,
-tritium plant charged whenever the mix is D-rich.
+tritium plant charged whenever the mix is D-rich, and the shot's implied
+burn (at the point's own mix) fitting inside the pulse period at the
+solved rep rate (constraint 8), which is what rules the D-rich mix out
+of the cheap designs: the footer prints the best D-rich design that
+constraint 8 alone excludes.
 
 Two evidence levels:
 - tier2: the extrapolation stack; the shot is the design-basis one
@@ -38,10 +42,15 @@ from study import (
 
 # Each burn mix sits exactly on its bremsstrahlung floor (constraint 1):
 # the concept preset's He-3-rich mix, the 3:1 D:He-3 mix that buys its
-# fuel and makes few neutrons, and the D-rich mix that breeds He-3 and
-# carries the tritium plant.
+# fuel and makes few neutrons, Helion's own mix (the patent's He3/D 0.158,
+# the first mix that stores tritium and carries the tritium plant), three
+# mixes between it and the D-rich one, and the D-rich mix that breeds
+# more He-3 than it burns. Constraint 8 turns the mix into a continuous
+# trade (breeding against burn length) whose optimum sits where the burn
+# just fits the period, so the grid is dense on the deuterium side.
 BURN_BRANCHES = tuple(
-    {"dhe3_dd_frac": dd, "f_rad": f_rad_floor(dd)} for dd in (0.131, 0.314, 0.85)
+    {"dhe3_dd_frac": dd, "f_rad": f_rad_floor(dd)}
+    for dd in (0.131, 0.314, 0.488, 0.6, 0.7, 0.8, 0.85)
 )
 FW_CLASSES = ("panel", "hhf")
 LENGTHS_M = (10.0, 15.0, 20.0, 30.0, 45.0, 60.0)
@@ -131,36 +140,67 @@ if __name__ == "__main__":
                 f"{r['n_mod']:>5} {r['f_rep_hz']:>6.2f} {r['q_wall_mw_m2']:>6.2f} "
                 f"{r['e_flash_mj_m2']:>6.2f}"
             )
+        model3 = build_model(load_config("baseline.yaml"))
+        check_tier = "tier2" if tier == "tier1" else tier
+
+        def at_3gwe(cand):
+            branch = next(
+                b for b in BURN_BRANCHES if b["dhe3_dd_frac"] == cand["dd_frac"]
+            )
+            fwd3 = point_fwd(
+                tier_fwd(tier), cand["yield_mj"], cand["length_m"],
+                cand["radius_m"], cand["fw_class"], branch,
+            )
+            fwd3["net_electric_mw"] = 3000.0
+            try:
+                _, d3 = run(model3, fwd3)
+            except SizingInfeasible:
+                return None, ["sizing infeasible"]
+            return d3, coherence_violations(fwd3, d3, check_tier)
+
+        def design(r):
+            return (f"yield {r['yield_mj']:.0f} MJ, L {r['length_m']:.0f} m, "
+                    f"r {r['radius_m']:.2f} m, {r['fw_class']} wall, "
+                    f"dd {r['dd_frac']:.2f}")
+
         if ok:
             # The same designs sold as a 3 GWe park (same module, more of them).
             # Sizing snaps to an integer module count, so a design that is
             # coherent at 1 GWe can trip the wall audit at 3; take the best
-            # design that stays coherent at the larger plant.
-            model3 = build_model(load_config("baseline.yaml"))
+            # design that stays coherent at the larger plant, and report
+            # the 1 GWe optimum's own 3 GWe reading beside it.
+            d3, v3 = at_3gwe(ok[0])
+            print(f"  the 1 GWe optimum at 3 GWe: "
+                  + (f"LCOE {d3['lcoe']:.1f}, n_mod {d3['n_mod']}, "
+                     f"f_rep {d3['f_rep_hz']:.2f} Hz" if d3 else "")
+                  + (f"; NOT coherent: {'; '.join(v3)}" if v3 else ""))
             best3 = None
             for cand in ok[:20]:
-                branch = next(
-                    b for b in BURN_BRANCHES if b["dhe3_dd_frac"] == cand["dd_frac"]
-                )
-                fwd3 = point_fwd(
-                    tier_fwd(tier), cand["yield_mj"], cand["length_m"],
-                    cand["radius_m"], cand["fw_class"], branch,
-                )
-                fwd3["net_electric_mw"] = 3000.0
-                try:
-                    _, d3 = run(model3, fwd3)
-                except SizingInfeasible:
-                    continue
-                if coherence_violations(
-                        fwd3, d3, "tier2" if tier == "tier1" else tier):
+                d3, v3 = at_3gwe(cand)
+                if d3 is None or v3:
                     continue
                 if best3 is None or d3["lcoe"] < best3[1]["lcoe"]:
                     best3 = (cand, d3)
             if best3 is not None:
                 cand, d3 = best3
                 print(f"  best coherent at 3 GWe: LCOE {d3['lcoe']:.1f}, "
-                      f"yield {cand['yield_mj']:.0f} MJ, L {cand['length_m']:.0f} m, "
-                      f"n_mod {d3['n_mod']}, f_rep {d3['f_rep_hz']:.2f} Hz")
+                      f"{design(cand)}, n_mod {d3['n_mod']}, "
+                      f"f_rep {d3['f_rep_hz']:.2f} Hz")
+        # The D-rich mix's best design among the rows that constraint 8
+        # alone excludes: what the search would pick without the duty check.
+        d_rich = [r for r in rows if r["dd_frac"] == 0.85 and not r["coherent"]
+                  and all(v.startswith("duty") for v in r["violations"].split("; "))]
+        d_rich.sort(key=lambda r: r["lcoe"])
+        if d_rich:
+            r = d_rich[0]
+            print(f"  best D-rich design, excluded by constraint 8 alone: "
+                  f"LCOE {r['lcoe']:.1f}, {design(r)}, n_mod {r['n_mod']}, "
+                  f"f_rep {r['f_rep_hz']:.2f} Hz ({r['violations']})")
+            d3, v3 = at_3gwe(r)
+            if d3 is not None:
+                print(f"    the same design at 3 GWe: LCOE {d3['lcoe']:.1f}, "
+                      f"n_mod {d3['n_mod']}, f_rep {d3['f_rep_hz']:.2f} Hz"
+                      + (f" ({'; '.join(v3)})" if v3 else ""))
     with open(OUTPUT_DIR / "coherent_min.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(all_rows[0]))
         w.writeheader()

@@ -71,10 +71,10 @@ def dd_frac_from_he3_over_d_burn(he3_over_d: float, f_he3: float, t_i_kev: float
 
 # The study's mixes, as the configs and ledger carry them.
 STUDY_DD_FRACS = {
-    "concept preset (1:1 D:He-3)": 0.131,
-    "3:1 D:He-3": 0.314,
+    "He-3-rich, the concept preset (1:1; speculation)": 0.131,
+    "3:1 D:He-3 (records, extrapolations)": 0.314,
     "Helion's mix (patent He3/D = 0.158)": 0.488,
-    "D-rich (records, extrapolations, speculation)": 0.85,
+    "D-rich (counterfactual)": 0.85,
 }
 
 if __name__ == "__main__":

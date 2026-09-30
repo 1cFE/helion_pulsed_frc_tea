@@ -1,8 +1,9 @@
 """Untangle the small-modular question: module count vs plant size.
 
-Two controlled sweeps at the tier-3 stack, holding the physics fixed
-(constant Q_sci = 6, constant f_rep ceiling, wall loading held by scaling
-chamber length with module power, driver energy scaled with yield):
+Two controlled sweeps at the speculation device, holding the physics
+fixed (constant gain, constant f_rep ceiling, wall loading held by
+scaling chamber length with module power, driver energy scaled with
+yield):
 
 1. Module-size sweep at fixed 1 GWe plant: what does the model charge for
    delivering the same plant from more, smaller modules?
@@ -20,38 +21,34 @@ import csv
 
 from study import (
     OUTPUT_DIR,
-    apply_records,
     build_model,
-    load_config,
+    device_fwd,
     run,
 )
 
 MODULE_MWE = (1000.0, 500.0, 250.0, 100.0, 50.0)
-REF_YIELD_MJ = 500.0
-REF_DRIVER_MJ = 50.0
-REF_LENGTH_M = 30.0
+REF_DRIVER_MJ = 50.0  # the sourced bank, when the point does not carry its own
 MIN_LENGTH_M = 3.0
 
 
 def tier3_fwd():
-    cfg = load_config("baseline.yaml")
-    fwd = dict(cfg["forward"])
-    for c in ("best_case.yaml", "tier2.yaml", "tier3.yaml"):
-        apply_records(fwd, c)
-    return cfg, fwd
+    """The speculation device at 1 GWe: the sweeps scale its shot and
+    chamber with module power."""
+    return device_fwd("spec", 1000.0)
 
 
 def scaled(fwd, module_mwe, plant_mwe):
+    """The point's shot and chamber scaled with module power: yield, driver
+    energy and chamber length go as the module's share of 1 GWe (constant
+    gain and wall loading); radius, bore and wall class stay the point's
+    own."""
     s = module_mwe / 1000.0
     return dict(
         fwd,
         net_electric_mw=plant_mwe,
-        yield_per_shot_mj=REF_YIELD_MJ * s,
-        e_driver_mj=REF_DRIVER_MJ * s,
-        chamber_length=max(REF_LENGTH_M * s, MIN_LENGTH_M),
-        plasma_t=1.5,
-        r_bore=1.6,
-        fw_class="panel",
+        yield_per_shot_mj=fwd["yield_per_shot_mj"] * s,
+        e_driver_mj=fwd.get("e_driver_mj", REF_DRIVER_MJ) * s,
+        chamber_length=max(fwd["chamber_length"] * s, MIN_LENGTH_M),
     )
 
 

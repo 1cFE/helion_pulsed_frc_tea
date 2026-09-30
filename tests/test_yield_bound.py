@@ -1,10 +1,12 @@
-"""Constraint 7: the shot yield against the plasma energy and the burn time.
+"""Constraints 7 and 8: the shot yield against the plasma energy and the
+burn time, and the burn against the pulse period.
 
 gain <= chi x burn time / breakeven time, with chi the plasma-thermal share
 of the delivered driver energy (chi_from_xs) and the breakeven time the
 plasma's energy density over its fusion power density at the burn point.
 Pinned at costingfe 44434d9 on the patent burn point of config/baseline.yaml
-(22 T, 70 keV, n_D 0.75e22 m^-3, He3/D 0.158).
+(22 T, 70 keV, n_D 0.75e22 m^-3, He3/D 0.158); each device's own burn is
+read at the mix it actually burns (study.breakeven_time_at_point_s).
 """
 import sys
 from pathlib import Path
@@ -67,15 +69,51 @@ def test_bound_and_implied_burn_are_inverses():
 
 def test_run_reports_the_implied_burn_of_every_point(model):
     """The seventh constraint is applied by construction: every point carries
-    the burn time its shot implies at the reference x_s (0.7, chi 0.52)."""
+    the burn time its shot implies at the reference x_s (0.7, chi 0.52) and
+    at its own burn mix. Helion's device holds He3/D 0.22 with the recycled
+    bred He-3 counted (the patent's 0.16 is the purchased share), so its
+    128 MJ shot reads 0.32 s against 0.42 s at the patent mix; the
+    speculation device's 500 MJ He-3-rich shot reads 0.28 s."""
     assert X_S_REFERENCE == 0.7
     assert chi_from_xs(X_S_REFERENCE) == pytest.approx(0.52, abs=0.01)
     _, fwd = device_fwd("helion", 1000.0)
     _, diag = run(model, fwd)
-    assert diag["tau_burn_implied_s"] == pytest.approx(0.42, abs=0.02)
+    assert diag["tau_burn_implied_s"] == pytest.approx(0.32, abs=0.02)
+    assert implied_burn_s(128.1, 50.0, X_S_REFERENCE) == pytest.approx(0.42, abs=0.02)
     _, fwd = device_fwd("spec", 1000.0)
     _, diag = run(model, fwd)
-    assert diag["tau_burn_implied_s"] == pytest.approx(1.65, abs=0.05)
+    assert diag["tau_burn_implied_s"] == pytest.approx(0.28, abs=0.02)
+
+
+def test_duty_table_reads_constraint_8_across_the_xs_span():
+    """At the reference x_s every device fits its period and every D-rich
+    counterfactual overruns it; at x_s 0.5 (chi 0.30) the three optimized
+    devices would overrun too, and at 0.85 all pass. The duty is the module's
+    fusion power over the cap chi E_del / breakeven time."""
+    from yield_bound import duty_table
+
+    rows = duty_table()
+    designs = {r["design"] for r in rows}
+    assert designs == {"records", "helion", "extrap", "spec",
+                       "records (D-rich)", "extrap (D-rich)", "spec (D-rich)"}
+    for r in rows:
+        assert r["duty"] == pytest.approx(r["p_fus_module_mw"] / r["p_fus_cap_mw"], rel=1e-9)
+        at_ref = r["x_s"] == 0.7
+        if "(D-rich)" in r["design"]:
+            if at_ref:
+                assert r["duty"] > 1.0
+        elif at_ref:
+            assert r["duty"] <= 1.0
+    ref = {r["design"]: r["duty"] for r in rows if r["x_s"] == 0.7}
+    assert ref["records (D-rich)"] == pytest.approx(1.00, abs=0.01)
+    assert ref["extrap (D-rich)"] == pytest.approx(1.87, abs=0.02)
+    assert ref["spec (D-rich)"] == pytest.approx(9.4, abs=0.1)
+    thin = {r["design"]: r["duty"] for r in rows if r["x_s"] == 0.5}
+    fat = {r["design"]: r["duty"] for r in rows if r["x_s"] == 0.85}
+    assert all(thin[d] > 1.0 for d in ("records", "extrap", "spec"))
+    assert thin["helion"] < 1.0
+    assert all(fat[d] < 1.0 for d in ("records", "helion", "extrap", "spec"))
+    assert fat["records (D-rich)"] < 1.0 < thin["records (D-rich)"]
 
 
 def test_bound_table_lists_both_shots_across_the_xs_span():

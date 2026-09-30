@@ -117,8 +117,14 @@ _F_PDV = r"f_{\mathrm{pdv}}"
 _E_DEL = r"E_{\mathrm{del}}"
 _SV = r"\langle\sigma v\rangle"
 INLINE_FORMULAS = [
+    ("burn time x repetition rate = (yield x repetition rate) x breakeven time / (chi E_del)",
+     rf"\text{{burn time}} \times \text{{repetition rate}} = (\text{{yield}} \times \text{{repetition rate}}) \times \text{{breakeven time}} / (\chi {_E_DEL})"),
+    ("burn time x repetition rate <= 1",
+     r"\text{burn time} \times \text{repetition rate} \le 1"),
     ("gain <= chi x burn time / breakeven time",
      r"\mathrm{gain} \le \chi \times \text{burn time} / \text{breakeven time}"),
+    ("chi E_del / breakeven time", rf"\chi {_E_DEL} / \text{{breakeven time}}"),
+    ("x f_rep <= 1", r"\times f_{\mathrm{rep}} \le 1"),
     ("chi(x_s) = 1.5 <beta> x_s^2 / (1.5 <beta> x_s^2 + 1 - x_s^2)",
      r"\chi(x_s) = 1.5\langle\beta\rangle x_s^2 / (1.5\langle\beta\rangle x_s^2 + 1 - x_s^2)"),
     ("chi = 1.5 <beta> x_s^2 / (1.5 <beta> x_s^2 + 1 - x_s^2)",

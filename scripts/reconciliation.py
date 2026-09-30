@@ -131,8 +131,33 @@ def analyze(label, spec):
         ("first wall (C220101)", d22["C220101"] * n_mod),
         ("DEC power electronics (C220109)", d22["C220109"] * n_mod),
         ("coils (C220103)", d22["C220103"] * n_mod),
+        ("driver capacitor bank (C220107)", d22["C220107"] * n_mod),
     ):
         print(f"    {label:<46} {musd:7.0f} M$  {musd * lev:5.2f} $/MWh")
+    # The wall-and-coil replacement event against the reactor account's
+    # own capital service: below this interval the levelized replacement
+    # (the model's closed form, as burnup_scan.py prices it) outspends
+    # CAS22 x CRF, and the reactor line is replacement-dominated.
+    from costingfe.layers.economics import levelized_replacement_cost
+
+    event = (d22["C220101"] + d22["C220103"]) * n_mod
+
+    def replacement_threshold_yr(rate):
+        service = float(c.cas22) * crf(rate, n)
+        lo, hi = 0.25, 400.0
+        for _ in range(60):
+            mid = 0.5 * (lo + hi)
+            if float(levelized_replacement_cost(event, mid, rate, n)) > service:
+                lo = mid
+            else:
+                hi = mid
+        return 0.5 * (lo + hi)
+
+    print(f"  wall-and-coil event (C220101 + C220103) {event:.0f} M$ against the "
+          f"reactor account {float(c.cas22):.0f} M$: replacement outspends the "
+          f"account's capital service below an interval of "
+          f"{replacement_threshold_yr(i):.1f} yr at {i:.0%} real "
+          f"({replacement_threshold_yr(0.07):.1f} yr at 7%)")
     print(f"    {'O&M (CAS70)':<46} {float(c.cas70):7.0f} M$/yr  "
           f"{float(c.cas70) * 1e6 / mwh_per_year:5.2f} $/MWh")
     print(f"    {'fuel (CAS80)':<46} {float(c.cas80):7.0f} M$/yr  "

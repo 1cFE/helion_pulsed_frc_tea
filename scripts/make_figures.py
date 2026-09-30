@@ -240,7 +240,8 @@ def fig4_anatomy(model, cfg):
         ("heat rejection + electrical plant (CAS24-26)",
          float(c.cas24) + float(c.cas25) + float(c.cas26)),
         ("vacuum + per-pulse exhaust pumping (C220106)", d22["C220106"]),
-        ("first wall, 30 m chamber (C220101)", d22["C220101"]),
+        (f"first wall, {TIER3_MIN['chamber_length']:.0f} m chamber (C220101)",
+         d22["C220101"]),
         ("DEC power electronics (C220109)", d22["C220109"]),
         ("driver capacitor bank (C220107)", d22["C220107"]),
     ]

@@ -37,31 +37,35 @@ are granted: citable records, Helion's own requirements taken at face
 value, labelled extrapolations, and labelled speculation
 (`config/baseline.yaml` carries the common basis and Helion's
 configuration; the stacks are `config/best_case.yaml`,
-`config/tier2.yaml`, `config/tier3.yaml`). Seven physics-coherence
+`config/tier2.yaml`, `config/tier3.yaml`). Eight physics-coherence
 constraints are enforced on every quoted point: the radiated fraction is
 coupled to the burn mix through the bremsstrahlung floor, recovery
 efficiency is capped as a composite (eta_dec x f_pdv), the wall must
 survive its steady flux and per-shot flash energy in the wall class it
 is costed at, a D-rich burn mix carries its tritium-plant consequences,
 the in-plasma tritium burn is floored by the burnup closure, f_pdv is
-capped per point by the chamber's adiabatic expansion bound, and the
-shot yield is bounded by the plasma energy and the burn time, so every
-point carries the burn time its shot implies. Every device except
-Helion's configuration is a constrained design-space scan optimum
-(chamber size, wall class, yield, burn mix), not an asserted operating
-point.
+capped per point by the chamber's adiabatic expansion bound, the shot
+yield is bounded by the plasma energy and the burn time, so every point
+carries the burn time its shot implies at its own burn mix, and that
+burn must fit inside the pulse period, which caps one burn section's
+fusion power and sets how deuterium-rich each grade can run. Every
+device except Helion's configuration is a constrained design-space scan
+optimum (chamber size, wall class, yield, burn mix), not an asserted
+operating point.
 
-Headline ladder at 1 GWe: records 112.1, Helion's requirements 105.9, extrapolations 26.8 (33.9 at 7% real cost of capital), speculation 10.6 (17.9 at 7%)
-$/MWh; at 3 GWe the speculation park reads 8.4 $/MWh (14.6 at 7%), so
-the $10 target is crossed by one internally consistent stack and only
-through its 3% real cost of capital, not through any physics or
-engineering entry; it holds at any availability above the model default.
-Every number grants Helion's 128 MJ shot, which no record supports and
-which implies a 0.3 to 0.7 s burn against Helion's stated pulse of
-hundreds of microseconds to milliseconds. The records device sits 6.2
-$/MWh above Helion's requirements: reverting Helion's fourth nine of
-per-pulse fuel recovery is worth about 47 $/MWh at Helion's own mix,
-nearly all of which the records device's deuterium-rich mix recovers.
+Headline ladder at 1 GWe: records 115.3, Helion's requirements 105.9,
+extrapolations 37.7 (44.3 at 7% real cost of capital), speculation 13.0
+(18.2 at 7%) $/MWh; at 3 GWe the speculation park reads 11.0 $/MWh (15.4
+at 7%), so no internally consistent stack crosses the $10 target: the
+deuterium-rich designs that would (8.4 as a 3 GWe park) burn for longer
+than the period between their shots, and the closest approach rests on
+a 3% real cost of capital worth 4.4 $/MWh. Every number grants Helion's
+128 MJ shot, which no record supports and which implies a 0.3 to 0.7 s
+burn against Helion's stated pulse of hundreds of microseconds to
+milliseconds. The records device sits 9.4 $/MWh above Helion's
+requirements: reverting Helion's fourth nine of per-pulse fuel recovery
+is worth about 47 $/MWh at Helion's own mix, most of which the records
+device recovers by running as deuterium-rich as its 1 Hz period allows.
 See `docs/Helion_writeup.md` for the narrative results (`docs/Helion_short_writeup.md` is
 the half-length version) and `docs/ledger.md` for
 record-by-record sourcing, the tornado ranking, and the knob-by-knob
@@ -109,7 +113,7 @@ python3 module_scan.py     # module-count vs standalone-plant-size sweeps
 python3 tritium_burn.py    # in-pulse T burn vs breed rate; dhe3_f_T audit
 python3 mix.py             # He3/D ion ratio <-> dd_frac map at the study's mixes
 python3 burnup_scan.py     # burn_fraction axis under both triton-fate limits
-python3 yield_bound.py     # constraint 7: the shot against the plasma energy and burn time
+python3 yield_bound.py     # constraints 7 and 8: the shot against the plasma energy and burn time, and the burn against the pulse period across x_s
 python3 reconciliation.py  # adders/credits the model cannot price, honest bands
 python3 make_figures.py    # paper figures into docs/figures/
 python3 make_html.py       # writeup, short writeup and ledger -> outputs/Helion_writeup_notion.html, Helion_short_writeup_notion.html, ledger_notion.html (deterministic, figures embedded)

@@ -14,7 +14,10 @@ concession is worth across the burn-mix span, at the tier-2
 coherent-minimum machine. f_rad is coupled to the mix via the
 bremsstrahlung floor; the tritium adder fires on the D-rich side. The
 dd_frac 0.95 column probes how close deeper breeding gets to He-3
-self-sufficiency (price-insensitivity is the test).
+self-sufficiency (price-insensitivity is the test). A cell whose point
+violates a coherence constraint at that chamber and rep rate (the D-rich
+mixes fail constraint 8, their burn longer than the pulse period) is
+starred.
 
 A price concession also changes which mix the design search picks, so
 the footer re-runs the search at u_he3 = 0 per burn mix (optimum_by_mix)
@@ -119,9 +122,12 @@ if __name__ == "__main__":
         for dd in DD_FRACS:
             fwd = dict(fwd0, u_he3=u, dhe3_dd_frac=dd, f_rad=f_rad_floor(dd))
             _, diag = run(model, fwd)
+            violations = coherence_violations(fwd, diag, "tier2")
             rows.append(dict(u_he3=u, dd_frac=dd, f_rad=round(f_rad_floor(dd), 3),
                              lcoe=diag["lcoe"],
-                             tritium_adder=diag["tritium_adder_musd"]))
+                             tritium_adder=diag["tritium_adder_musd"],
+                             coherent=(not violations),
+                             violations="; ".join(violations)))
     OUTPUT_DIR.mkdir(exist_ok=True)
     with open(OUTPUT_DIR / "he3_scan.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0]))
@@ -132,8 +138,9 @@ if __name__ == "__main__":
         line = f"{u:>12.0f} "
         for d in DD_FRACS:
             r = next(x for x in rows if x["u_he3"] == u and x["dd_frac"] == d)
-            line += f"{r['lcoe']:<9.1f}"
+            line += f"{r['lcoe']:.1f}{'*' if not r['coherent'] else ' ':<3}"
         print(line)
+    print("(* = violates a coherence constraint at that chamber and rep rate)")
 
     # The He-3 credit per device: the same machine with the decay return
     # withdrawn (bought in perpetuity at the ledger price) and with He-3

@@ -107,8 +107,8 @@ def test_two_machine_economy_pins(helion, extrap):
     lean, _ = run(model, dict(fwd, dhe3_dd_frac=0.131, f_rad=f_rad_floor(0.131), u_he3=0.0))
     br = breeder_module(model, res, "extract")
     loop = close_loop(lean, br, per_module_costs(res), "rpe", res.params["interest_rate"])
-    assert loop["eq"]["lcoe"] == pytest.approx(29.0, abs=0.2)
-    assert loop["eq"]["he3_musd_kg"] == pytest.approx(0.67, abs=0.02)
+    assert loop["eq"]["lcoe"] == pytest.approx(36.6, abs=0.2)
+    assert loop["eq"]["he3_musd_kg"] == pytest.approx(1.30, abs=0.02)
 
 
 def test_neutron_power_per_he3_bred_is_the_dd_branch_identity(extrap):
@@ -151,7 +151,9 @@ def test_central_facility_unit_cost_falls_with_fleet_and_converges(extrap):
     fleet = [central_unit_cost(model, fwd, res, br, cm, n, res.costs.lcoe)["unit"]
              for n in (1, 2, 5, 10, 20)]
     assert all(a >= b for a, b in zip(fleet, fleet[1:]))
-    assert fleet[0] > 2.0 * u_marginal
+    # one device's purchase carries the standalone intercept and the fixed
+    # tritium core alone; twenty spread them to within a sixth of the margin
+    assert fleet[0] > 1.3 * u_marginal
     assert fleet[-1] < 1.15 * u_marginal
 
 
@@ -166,5 +168,5 @@ def test_unit_cost_pins(helion, extrap):
     model, fwd, res = extrap
     br = breeder_module(model, res, "extract")
     u, lcoe = device_at_breeder_price(model, fwd, res, br, per_module_costs(res), "rpe", 1.0)
-    assert u == pytest.approx(6.97e5, rel=0.01)
-    assert lcoe == pytest.approx(25.9, abs=0.2)
+    assert u == pytest.approx(1.35e6, rel=0.01)
+    assert lcoe == pytest.approx(32.8, abs=0.2)

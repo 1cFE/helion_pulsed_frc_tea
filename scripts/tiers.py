@@ -10,6 +10,7 @@ flagged in the output rather than silently reported.
 import csv
 
 from study import (
+    D_RICH_DEVICES,
     DEVICE_ORDER,
     OUTPUT_DIR,
     PLANT_SIZES_MWE,
@@ -21,11 +22,13 @@ from study import (
     run,
 )
 
-# The tier-3 rung keeps the concept-YAML chamber (0.5 m x 10 m, coherent
-# under the tier-2 hhf wall at the solved rep rate); the resized-chamber
-# optimum (yield 300 MJ, 45 m x 1.0 m, panel wall, 17.0 at 1 GWe) is owned
-# and reported by scripts/coherent_min.py. Override here only to make the
-# ladder itself quote a different tier-3 design.
+# The ladder's rungs are the tier stacks evaluated on Helion's own chamber
+# (0.61 m x 10 m), kept as regression pins; the resized-chamber optima are
+# owned by scripts/coherent_min.py and priced as the four devices below.
+# The tier-2 and tier-3 rungs carry the D-rich mix of tier2.yaml, whose
+# burn does not fit the pulse period at their rep rates, so constraint 8
+# flags them here rather than reporting them silently. Override here only
+# to make the ladder itself quote a different tier-3 design.
 TIER3_GEOMETRY = {}
 
 
@@ -94,7 +97,36 @@ def devices():
                 lcoe_at_a095=round(run(model, dict(fwd, availability=0.95))[1]["lcoe"], 1),
                 n_mod=d["n_mod"], f_rep_hz=round(d["f_rep_hz"], 2),
                 tau_burn_implied_s=round(d["tau_burn_implied_s"], 2),
+                duty=round(d["tau_burn_implied_s"] * d["f_rep_hz"], 2),
+                f_pdv_cap=round(d["f_pdv_cap"], 3),
+                f_pdv_eff=round(d["f_pdv_eff"], 3),
                 tritium_adder_musd=round(d["tritium_adder_musd"], 1),
+            ))
+    return rows
+
+
+def counterfactuals():
+    """The D-rich designs constraint 8 excludes, priced at both plant sizes
+    with the duty and the violations they carry, so the writeup can quote
+    what the search would have picked without the duty check."""
+    model = build_model(load_config("baseline.yaml"))
+    labels = dict(DEVICE_ORDER)
+    rows = []
+    for name in D_RICH_DEVICES:
+        for p in PLANT_SIZES_MWE:
+            _, fwd = device_fwd(name, p, D_RICH_DEVICES)
+            _, d = run(model, fwd)
+            tier = "tier3" if name == "spec" else "tier2"
+            v = coherence_violations(fwd, d, tier)
+            rows.append(dict(
+                device=f"{labels[name]} (D-rich)", plant_mwe=p,
+                lcoe=round(d["lcoe"], 1), n_mod=d["n_mod"],
+                f_rep_hz=round(d["f_rep_hz"], 2),
+                tau_burn_implied_s=round(d["tau_burn_implied_s"], 2),
+                duty=round(d["tau_burn_implied_s"] * d["f_rep_hz"], 2),
+                tritium_adder_musd=round(d["tritium_adder_musd"], 1),
+                availability=round(d["availability"], 3),
+                violations="; ".join(v),
             ))
     return rows
 
@@ -126,7 +158,8 @@ if __name__ == "__main__":
         w.writerows(dev)
     print(f"\n{'device':<22} {'MWe':>5} {'LCOE':>6} {'at 7%':>6} {'fin.':>5} "
           f"{'rate':>5} {'life':>5} {'avail':>6} {'rout.':>6} {'bank':>6} {'wall':>6} "
-          f"{'t_bank':>6} {'t_wall':>6} {'n_mod':>5} {'A=.85':>6} {'A=.95':>6} {'burn s':>6}")
+          f"{'t_bank':>6} {'t_wall':>6} {'n_mod':>5} {'A=.85':>6} {'A=.95':>6} {'burn s':>6} "
+          f"{'duty':>5} {'pdv cap':>7} {'T M$':>5}")
     for r in dev:
         print(f"{r['device']:<22} {r['plant_mwe']:>5.0f} {r['lcoe']:>6.1f} "
               f"{r['lcoe_at_7pct']:>6.1f} {r['financing_part']:>+5.1f} "
@@ -134,4 +167,18 @@ if __name__ == "__main__":
               f"{r['availability']:>6.3f} {r['outage_routine']:>6.4f} {r['outage_bank']:>6.4f} "
               f"{r['outage_wall']:>6.4f} {r['t_bank_yr']:>6.1f} {r['t_wall_yr']:>6.1f} "
               f"{r['n_mod']:>5} {r['lcoe_at_a085']:>6.1f} {r['lcoe_at_a095']:>6.1f} "
-              f"{r['tau_burn_implied_s']:>6.2f}")
+              f"{r['tau_burn_implied_s']:>6.2f} {r['duty']:>5.2f} {r['f_pdv_cap']:>7.3f} "
+              f"{r['tritium_adder_musd']:>5.0f}")
+
+    cf = counterfactuals()
+    with open(OUTPUT_DIR / "devices_d_rich.csv", "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(cf[0]))
+        w.writeheader()
+        w.writerows(cf)
+    print(f"\nD-rich counterfactuals (excluded by constraint 8):")
+    print(f"{'design':<32} {'MWe':>5} {'LCOE':>6} {'n_mod':>5} {'f_rep':>6} "
+          f"{'burn s':>6} {'duty':>5} {'T M$':>5}  violations")
+    for r in cf:
+        print(f"{r['device']:<32} {r['plant_mwe']:>5.0f} {r['lcoe']:>6.1f} "
+              f"{r['n_mod']:>5} {r['f_rep_hz']:>6.2f} {r['tau_burn_implied_s']:>6.2f} "
+              f"{r['duty']:>5.2f} {r['tritium_adder_musd']:>5.0f}  {r['violations']}")

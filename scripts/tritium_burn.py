@@ -37,6 +37,7 @@ import math
 import numpy as np
 
 from study import (  # noqa: I001  sets COSTINGFE_BACKEND before costingfe imports
+    D_RICH_DEVICES,
     DEVICES,
     N_D_PATENT_M3,
     OUTPUT_DIR,
@@ -62,14 +63,35 @@ T_I_KEV = (20.0, 50.0, 70.0)
 N_D_M3 = (1e22, 3e22, 1e23)  # compression-peak D density
 TAU_S = (1e-4, 3e-4, 1e-3, 3e-3)  # dwell at fusion conditions
 
-# Ladder points that carry a D-rich burn (dd_frac 0.85).
+# The points where the store-and-decay cycle applies (Helion's own device,
+# the records and extrapolation devices, which store tritium at dd_frac
+# 0.80 and Helion's 0.488, and the D-rich counterfactuals: the
+# extrapolation stack on Helion's chamber and the D-rich speculation
+# design), plus the speculation device itself, whose He-3-rich mix breeds
+# little and buys its He-3.
 POINTS = {
+    "helion": dict(tier="tier2", tier_cfgs=(), overrides={}),
+    "records": dict(
+        tier="tier2",
+        tier_cfgs=DEVICES["records"]["configs"],
+        overrides=DEVICES["records"]["overrides"],
+    ),
+    "extrap": dict(
+        tier="tier2",
+        tier_cfgs=DEVICES["extrap"]["configs"],
+        overrides=DEVICES["extrap"]["overrides"],
+    ),
     "tier2_rung": dict(
         tier="tier2", tier_cfgs=("best_case.yaml", "tier2.yaml"), overrides={},
     ),
-    "tier3_min": dict(
+    "spec_d_rich": dict(
         tier="tier3",
-        tier_cfgs=("best_case.yaml", "tier2.yaml", "tier3.yaml"),
+        tier_cfgs=D_RICH_DEVICES["spec"]["configs"],
+        overrides=D_RICH_DEVICES["spec"]["overrides"],
+    ),
+    "spec": dict(
+        tier="tier3",
+        tier_cfgs=DEVICES["spec"]["configs"],
         overrides=DEVICES["spec"]["overrides"],
     ),
 }
