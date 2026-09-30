@@ -9,11 +9,16 @@
 # record) and cap_shot_lifetime 1e9 (published TARGET resting on a vendor
 # catalog extrapolation, not a life test) are REMOVED from this tier and
 # carried in tier2.yaml as labelled extrapolations. The plant-environment
-# entries that step with the tiers (interest_rate, lifetime_yr,
-# construction_time_yr, wall_dpa_tolerance) have no tier-1 entry: no fusion plant has a record
-# for any of them, so this grade holds the design-basis values.
+# entries interest_rate, construction_time_yr and wall_dpa_tolerance have no
+# tier-1 entry: no fusion plant has a record for any of them, so this grade
+# holds the design-basis values. lifetime_yr does take a record here, for
+# consistency with the D-T corridor studies, which grant the 60-year operating
+# licence at their records rung; see the entry below.
 
 records:
+  lifetime_yr:
+    value: 60.0
+    source: "Book life (engineering), series-consistency entry: the operating US fission fleet runs under 60-year licences with the oldest units about 55 years in, a demonstrated value, and the series defines this grade as the best value a real project has held. The D-T corridor studies grant it at this rung. This study previously held the 30 yr design basis here on the stricter reading that no FUSION plant has a book-life record, which is the reading still applied to interest_rate and construction_time_yr. Tier 2 re-grants 80 yr with its own mechanism (US DOE hydropower civil-works lifespan). Raising this rung from 30 to 60 yr moves the citable-records device from 119.3 to 112.1 $/MWh at 1 GWe and 114.6 to 107.8 at 3 GWe."
   fuel_recovery:
     value: 0.999
     source: "Anti-record reversion from the vendor-implied 0.9999 basis: the per-pulse loss channel is wall retention plus pump slip in a sealed recirculation loop, and the measured analog is JET-ILW gas-balance long-term fuel retention, 0.1-0.3% of injected throughput (Brezinsek et al., JET-ILW fuel retention studies), i.e. per-pass recovery about 0.997-0.999 with helium retaining less than hydrogen. Records support three nines, not four."

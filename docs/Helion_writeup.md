@@ -28,7 +28,7 @@ Astera is set on investigating.
 **The findings, in brief.** Four devices share the architecture and
 differ only in the evidence grade of what they are granted: citable
 records alone, Helion's own requirements at face value, labeled
-extrapolations, and speculation. They read 119.3, 111.0, 26.8 and 10.6
+extrapolations, and speculation. They read 112.1, 111.0, 26.8 and 10.6
 $/MWh at 1 GWe. The speculation park reads 8.4 $/MWh at 3 GWe, so the
 public 1 cent/kWh target is crossed by that one stack, through a 3% real
 cost of capital (14.6 at 7%) and with the wall-and-coil replacement
@@ -228,7 +228,7 @@ every quoted point in this text:
 
 | device | 1 GWe | 3 GWe | at 7% real cost of capital, 1 GWe |
 |---|---|---|---|
-| citable records | 119.3 | 114.6 | 119.3 |
+| citable records | 112.1 | 107.8 | 112.1 |
 | Helion's requirements | 111.0 | 106.9 | 111.0 |
 | extrapolations | 26.8 | 23.6 | 33.9 |
 | speculation | 10.6 | 8.4 | 17.9 |
@@ -277,10 +277,12 @@ it is the mix that breeds more He-3 than it burns: the 3:1 mix (dd_frac
 extrapolations, buying its He-3 at the stack's price entries, which
 Section 5.1 shows no market supports.
 
-The records device sits 8.3 $/MWh above Helion's requirements, 119.3
-against 111.0, and the evidentiary difference is one claim: Helion's
-fourth nine of per-pulse fuel recovery, which the records grade holds at
-the JET-supported three nines. At Helion's own configuration that claim
+The records device sits 1.1 $/MWh above Helion's requirements, 112.1
+against 111.0, and two entries pull against each other to leave it there.
+Reverting Helion's fourth nine of per-pulse fuel recovery to the
+JET-supported three nines raises the device by about 8.3; granting the
+60-year operating licence the fission fleet holds lowers it by about 7.2.
+The evidentiary difference on the physics is still that one claim: At Helion's own configuration that claim
 is worth about 49 $/MWh, because Helion's mix breeds less He-3 than it
 burns and keeps buying (Section 5.2 derives the multiplier); the records
 device escapes nearly all of it by running deuterium-rich, where the
@@ -317,18 +319,18 @@ One-at-a-time reversion from the extrapolation device ranks the levers:
 | max_f_rep -> 1 Hz | 38.4 | +11.6 |
 | interest_rate -> 0.07 (financing) | 33.9 | +7.1 |
 | fuel_recovery -> 0.999 (JET-analog) | 33.2 | +6.4 |
-| lifetime_yr -> 30 | 31.3 | +4.5 |
 | eta_dec -> 0.85 | 28.7 | +1.9 |
 | construction_time_yr -> 5 yr | 28.5 | +1.7 |
 | f_rad -> 0.23 (incoherent) | 25.3 | -1.5 |
 | eta_pin -> 0.95 (driver wall-plug) | 27.4 | +0.6 |
+| lifetime_yr -> 60 | 27.3 | +0.5 |
 | wall_dpa_tolerance -> 20 | 27.0 | +0.2 |
 
 The capacitor cycle life dominates; the burn mix and the rep rate follow
 at a third of its weight; then come the cost of capital (the grey
 financing bar, 7.1 $/MWh), the fourth nine of fuel recovery (6.4 $/MWh,
-most of it the He-3 bought while the store builds up), the 80-year book
-life (4.5 $/MWh) and the 3.25-year build (1.7 $/MWh). f_pdv and the shot
+most of it the He-3 bought while the store builds up), the 3.25-year build (1.7 $/MWh) and, against the 60 years the records
+grade now holds, the 80-year book life (0.5 $/MWh). f_pdv and the shot
 are absent from the table: the extrapolation stack leaves f_pdv at the
 basis 0.80 under a cap that does not bind, and the shot's record value
 is no plant. The conversion efficiencies, once capped as a composite,
@@ -411,12 +413,11 @@ regardless (constraint 4).
 
 A deuterium-rich plant therefore buys He-3 only until the store covers
 its need, about eight years, which takes its levelized purchase to a
-fraction of the perpetual one: 24% at the records device, whose 30-year
-life at 7% weights the build-up years most, 16% at extrapolations and
+fraction of the perpetual one: 22% at the records device, whose 7% rate weights the build-up years most, 16% at extrapolations and
 11% at speculation. Helion's own mix breeds less than it burns and keeps
 buying, at 82%. Bought in perpetuity at the ledger price instead, He-3
-would cost the four devices 34, 4.5, 7.1 and 1.4 $/MWh more; free, it
-would save them 10.9, 20.3, 1.4 and 0.2 at their own mixes, and it would
+would cost the four devices 35, 4.5, 7.1 and 1.4 $/MWh more; free, it
+would save them 9.7, 20.3, 1.4 and 0.2 at their own mixes, and it would
 change the mix (Section 7).
 
 The price matters because no cheap He-3 exists. The DOE Isotope
@@ -463,7 +464,7 @@ pure-D module of the same grade with its bred He-3 and tritium pumped
 out every pulse, priced per kilogram delivered as module ownership plus
 a throughput-sized tritium plant plus its net power at the device's own
 LCOE (`scripts/breeder_loop.py`; the tables are in the ledger). It reads
-the ledger's price back at the records grade, 2.2 M$/kg, cannot be
+the ledger's price back at the records grade, 2.0 M$/kg, cannot be
 reached at the Helion device (6.9 M$/kg), and charges about 0.7 M$/kg at
 extrapolations and 0.2 to 0.5 at speculation; since a self-supplying
 device buys He-3 only for its build-up, it moves the ladder little
@@ -806,7 +807,7 @@ None of these is in the evidence base at any grade.
 
 ## 8. Conclusions
 
-Four devices on one architecture read 119.3, 111.0, 26.8 and 10.6 $/MWh
+Four devices on one architecture read 112.1, 111.0, 26.8 and 10.6 $/MWh
 at 1 GWe by evidence grade. Only the speculation park at 3 GWe, 8.4
 $/MWh, is under the target, and a 3% real cost of capital rather than
 physics takes it there. The floor is carried by site infrastructure and

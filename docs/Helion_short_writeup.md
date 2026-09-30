@@ -22,7 +22,7 @@ Helion's published design and results as its starting point.
 **The findings, in brief.** Four devices share the architecture and
 differ only in the evidence grade of what they are granted: citable
 records alone, Helion's own requirements at face value, labeled
-extrapolations, and speculation. They read 119.3, 111.0, 26.8 and 10.6
+extrapolations, and speculation. They read 112.1, 111.0, 26.8 and 10.6
 $/MWh at 1 GWe. The speculation park reads 8.4 $/MWh at 3 GWe, so the
 target is crossed by that one stack, through a 3% real cost of capital
 (14.6 at 7%) and with the wall-and-coil replacement included. Every
@@ -163,7 +163,7 @@ and its conservatisms (no thermal bottoming).
 
 | device | 1 GWe | 3 GWe | at 7% real cost of capital, 1 GWe |
 |---|---|---|---|
-| citable records | 119.3 | 114.6 | 119.3 |
+| citable records | 112.1 | 107.8 | 112.1 |
 | Helion's requirements | 111.0 | 106.9 | 111.0 |
 | extrapolations | 26.8 | 23.6 | 33.9 |
 | speculation | 10.6 | 8.4 | 17.9 |
@@ -223,11 +223,11 @@ One-at-a-time reversion from the extrapolation device ranks the levers:
 | max_f_rep -> 1 Hz | 38.4 | +11.6 |
 | interest_rate -> 0.07 (financing) | 33.9 | +7.1 |
 | fuel_recovery -> 0.999 (JET-analog) | 33.2 | +6.4 |
-| lifetime_yr -> 30 | 31.3 | +4.5 |
 | eta_dec -> 0.85 | 28.7 | +1.9 |
 | construction_time_yr -> 5 yr | 28.5 | +1.7 |
 | f_rad -> 0.23 (incoherent) | 25.3 | -1.5 |
 | eta_pin -> 0.95 (driver wall-plug) | 27.4 | +0.6 |
+| lifetime_yr -> 60 | 27.3 | +0.5 |
 | wall_dpa_tolerance -> 20 | 27.0 | +0.2 |
 
 The capacitor cycle life dominates; the burn mix and the rep rate follow
@@ -280,8 +280,8 @@ A deuterium-rich plant buys He-3 only until the store covers its need,
 about eight years, so its levelized purchase is 16% of the perpetual one
 at the extrapolation device and 11% at speculation; Helion's mix keeps
 buying, at 82%. Bought in perpetuity at the ledger price, He-3 would
-cost the four devices 34, 4.5, 7.1 and 1.4 $/MWh more; free, it would
-save them 10.9, 20.3, 1.4 and 0.2, and re-run at zero price the
+cost the four devices 35, 4.5, 7.1 and 1.4 $/MWh more; free, it would
+save them 9.7, 20.3, 1.4 and 0.2, and re-run at zero price the
 extrapolation and speculation devices leave the D-rich mix for the
 He-3-rich one (dd_frac 0.13) with no tritium plant, at 20.3 and 8.5
 $/MWh.
@@ -511,7 +511,7 @@ a fleet-learning term on equipment.
 
 ## 8. Conclusions
 
-Four devices on one architecture read 119.3, 111.0, 26.8 and 10.6 $/MWh
+Four devices on one architecture read 112.1, 111.0, 26.8 and 10.6 $/MWh
 at 1 GWe by evidence grade. Only the speculation park at 3 GWe, 8.4
 $/MWh, is under the target, and a 3% real cost of capital rather than
 physics takes it there. The floor is carried by site infrastructure and

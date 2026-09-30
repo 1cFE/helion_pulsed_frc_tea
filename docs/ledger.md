@@ -69,7 +69,7 @@ design-optimized. Devices at 1 / 3 GWe:
 
 | device | 1 GWe | at 7% real | 3 GWe | at 7% real |
 |---|---|---|---|---|
-| citable records (tier-1 stack, optimized) | 119.3 | 119.3 | 114.6 | 114.6 |
+| citable records (tier-1 stack, optimized) | 112.1 | 112.1 | 107.8 | 107.8 |
 | Helion's requirements (Helion's configuration) | 111.0 | 111.0 | 106.9 | 106.9 |
 | extrapolations (tier-2 stack, optimized) | 26.8 | 33.9 | 23.6 | 30.1 |
 | speculation (tier-3 stack, optimized) | 10.6 | 17.9 | 8.4 | 14.6 |
@@ -81,8 +81,8 @@ difference: 7.1 and 6.5 $/MWh at extrapolations, 7.2 and 6.2 at
 speculation, zero at the two 7% grades.
 
 **Regression pins.** Stack evaluations at Helion's configuration
-(design-basis chamber), kept as internal regression pins: records 160.5
-/ 155.2, extrapolations 32.4 / 29.0, speculation 12.0 / 9.4. The records
+(design-basis chamber), kept as internal regression pins: records 153.2
+/ 148.5, extrapolations 32.4 / 29.0, speculation 12.0 / 9.4. The records
 device sits above Helion's requirements because reverting Helion's
 per-pulse fuel recovery to the JET-analog three nines is worth about 49
 $/MWh at Helion's own mix (dd_frac 0.49), nearly all of which the
@@ -373,7 +373,7 @@ Stepped with the tiers:
 | knob | design basis | records | extrapolations | speculation | what it is | source |
 |---|---|---|---|---|---|---|
 | interest_rate (real) | 0.07 | 0.07 | 0.05 | 0.03 | financing: the cost of capital, a change of risk-bearer rather than of technology; Figure 1 and the at-7% column keep it separate | IEA/NEA 2020 (3%, 7%, 10% real cases, 7% central); 5% a loan-guarantee blend with precedent, 3% sovereign-class capital with no mechanism; no fusion plant has a record at any grade |
-| lifetime_yr | 30 | 30 | 80 | 80 | engineering: what cannot be replaced sets it; bank and wall replacements are priced at every grade, so 80 yr is worth 4.5 $/MWh at the extrapolation device against 30 | 30: model default and the low end of the fusion literature (Böhnlein et al. 2026, median 30-40 yr; ARIES 40); 80: US DOE hydropower lifespan 65-85 yr, every core component on its own replacement schedule |
+| lifetime_yr | 30 | 60 | 80 | 80 | engineering: what cannot be replaced sets it; bank and wall replacements are priced at every grade, so 80 yr is worth 4.5 $/MWh at the extrapolation device against 30 and 0.5 against the 60 yr the records grade now holds; the 60 yr rung is worth 7.2 at the records device against 30 | 30: model default and the low end of the fusion literature (Böhnlein et al. 2026, median 30-40 yr; ARIES 40); 60: the operating US fission fleet runs under 60-year licences, with the oldest units about 55 years in, the best value a real project has held; 80: US DOE hydropower lifespan 65-85 yr, every core component on its own replacement schedule |
 | construction_time_yr | 5.0 | 5.0 | 3.25 | 2.5 | engineering: the build, which also sets the effective indirects through CAS30's build-time scaling; worth 1.7 $/MWh at the extrapolation device against 5 yr | 5 yr: the serial Hualong One builds, about 60 months from first concrete to grid (Zhangzhou 1, construction start October 2019 to grid 28 November 2024, World Nuclear News 2025); 3.25 yr: the Kashiwazaki-Kariwa ABWR pair, 37 and 39 months from first concrete to fuel load (Omoto 2002, Nuclear Engineering International), at the peak of a mature LWR supply chain; 2.5 yr: CCGT-class build (Siemens Energy 1200 MW block in about 30 months), which no fusion plant has a record of |
 | availability | derived | derived | derived | derived | 0.98 outside planned outages, less a routine bundle (34 d every 2 yr), the bank swaps (34 d each at the shot life) and the wall-and-coil changeouts (84 d each at the dpa tolerance); `study.replacement_schedule` | US fission fleet (WNA, EIA, IAEA PRIS) for the 0.98 and the 34 d; Thea Energy Helios for the 84 d; see below |
 | wall_dpa_tolerance | 20 | 20 | 50 | 50 | engineering: sets the changeout interval in the availability derivation (0.2 $/MWh at the extrapolation device) | 20 dpa: demonstrated RAFM database edge; 50 dpa: DEMO-class design target |
@@ -432,11 +432,12 @@ isotope-processing plant adds (could be far higher); helium behaves
 differently again. 0.999 is the defensible center of a range spanning at
 least 0.99-0.9999, and the model default carries it.
 
+**lifetime_yr: 30 at the design basis, 60 at the records grade (series-consistency entry).** This study previously held the 30 yr design basis here on the stricter reading that no FUSION plant has a book-life record, which is the reading still applied to interest_rate and construction_time_yr. The series defines this grade as the best value a real project has held, and the operating US fission fleet runs under 60-year licences with the oldest units about 55 years in. Granting it moves the citable-records device from 119.3 to 112.1 $/MWh at 1 GWe and 114.6 to 107.8 at 3 GWe. With the 1e8-shot bank at 1 Hz the bank turns over about eight times in 30 years and about sixteen in 60, and the model prices every one of them. Tier 2 re-grants 80 yr with its own mechanism (US DOE hydropower civil-works lifespan).
+
 **Held at baseline in tier 1:**
 
 | knob | why not moved |
 |------|---------------|
-| lifetime_yr (30) | No fusion plant has a book-life record, so the design-basis 30 yr holds here; the 80 yr civil-works entry is a tier-2 extrapolation. With the 1e8-shot bank at 1 Hz the bank turns over about eight times in 30 years, and the model prices every one of them. |
 | c_cap_allin_per_joule (0.5) | Already at the optimistic end of its own documented 0.5-4.0 range; the industry statement is that Hz-rate operation still requires a 5-10x cost reduction. No record below the baseline exists. |
 | eta_dec (0.85) | 0.97 is not tier-1-admissible: it is the top of a patent's prophetic circuit-only band (US 2024/0275198 A1), and Helion's "95% proven" statements trace to no-fusion circuit tests. Tier 2 carries 0.90 under the composite cap. |
 | cap_shot_lifetime (1e8) | The 1e9 figure is a published NOAK *target* (Pacific Fusion's pulsed-power driver; Langtry et al. 2025, arXiv:2504.10680) resting on a vendor-catalog derating extrapolation, not a life test; the largest rep-rated MJ-class precedent is 1.3e4 shots. Tier-2 material by the study's own convention. |
@@ -496,7 +497,7 @@ constraints, at each evidence level:
 
 | device | LCOE | design |
 |---|---|---|
-| citable records, 1 GWe | **119.3** | design-basis shot, D-rich mix with tritium plant, 25 modules of 10 m x 0.75 m at 1 Hz (records-only optimum; the mix freedom every grade gets; the 15 m x 0.5 m chamber is 1.5 $/MWh behind, the best row at the 3:1 D:He-3 mix 43 behind) |
+| citable records, 1 GWe | **112.1** | design-basis shot, D-rich mix with tritium plant, 25 modules of 10 m x 0.75 m at 1 Hz (records-only optimum; the mix freedom every grade gets; the 15 m x 0.5 m chamber is 1.5 $/MWh behind, the best row at the 3:1 D:He-3 mix 43 behind) |
 | extrapolations, 1 GWe | **26.8** | design-basis shot (128.1 MJ), 7 modules at 2.7 Hz, 10 m x 1.5 m chambers, panel wall, D-rich mix with tritium plant (the best row at the 3:1 mix, 40.8, is 15 behind) |
 | speculation, 1 GWe | **10.6** | 300-1000 MJ shots in the same 30 m x 1.5 m panel-wall chamber sit at 10.6-10.7, within model precision (500 MJ at 3.5 Hz carried: the plateau's middle, with a 0.54 MJ/m^2 flash margin), single module, D-rich. The 3:1 mix (dd_frac 0.314) is 1.9 behind (12.5 in a 20 m x 1.5 m chamber), the preset's He-3-rich mix (0.131) 2.4 behind, and both rest on the tier-3 0.5 M$/kg He-3 entry |
 | speculation, 3 GWe | **8.4** | 3 modules of the 200 MJ / 30 m design at 9.0 Hz (larger shots trip the wall audit once the integer module count snaps down) |
@@ -576,7 +577,7 @@ of the loop 3.3x faster per pass than it leaks), and the decay store's
 He-3 return, 0.42 atoms per primary event and equal to the prompt
 branch, is credited atom for atom against the purchased 1 - dd_frac per
 event, levelized over the store's build-up at the grade's rate
-(`study.he3_purchase_fraction`: 0.24 / 0.82 / 0.16 / 0.11 of the
+(`study.he3_purchase_fraction`: 0.22 / 0.82 / 0.16 / 0.11 of the
 perpetual purchase down the ladder; `he3_decay_return=False` restores
 the perpetual purchase). Without the credit the machine would import
 about 34 kg/yr in perpetuity; with it the D-rich device buys only during
@@ -631,13 +632,13 @@ the power price.
 
 | device | He-3 bought (kg/yr) | breeder output (kg/yr per module) | co-sited (M$/kg) | standalone (M$/kg) | device at co-sited / standalone price ($/MWh) |
 |---|---|---|---|---|---|
-| citable records | 176 | 12.8 | 2.2 | 2.5 | 120.1 / 121.8 |
+| citable records | 176 | 12.8 | 2.0 | 2.3 | 112.2 / 113.6 |
 | Helion's requirements | 98 | 5.6 | 6.9 | 7.9 | 161.2 / 170.4 |
 | extrapolations | 34 | 26.4 | 0.70 | 1.04 | 25.9 / 26.1 |
 | speculation | 25 | 133 | 0.18 | 0.54 | 10.5 / 10.6 |
 
 The ledger price of 2 M$/kg is read back within a tenth at the records
-grade (2.2 M$/kg co-sited), cannot be reached at the Helion device (a
+grade (2.0 M$/kg co-sited), cannot be reached at the Helion device (a
 module that breeds 5.6 kg/yr at a gain of 0.46), and is conservative
 from the extrapolation grade on. A central facility serving several
 devices reads 1.9 to 0.8 M$/kg at the extrapolation grade for one to
@@ -656,11 +657,11 @@ One-at-a-time reversion from the 26.8 point (`scripts/tornado.py`):
 | max_f_rep -> 1 Hz | 38.4 | +11.6 |
 | interest_rate -> 0.07 (financing) | 33.9 | +7.1 |
 | fuel_recovery -> 0.999 (JET-analog) | 33.2 | +6.4 |
-| lifetime_yr -> 30 | 31.3 | +4.5 |
 | eta_dec -> 0.85 | 28.7 | +1.9 |
 | construction_time_yr -> 5 yr | 28.5 | +1.7 |
 | f_rad -> 0.23 (incoherent: floor violated) | 25.3 | -1.5 |
 | eta_pin -> 0.95 | 27.4 | +0.6 |
+| lifetime_yr -> 60 | 27.3 | +0.5 |
 | wall_dpa_tolerance -> 20 | 27.0 | +0.2 |
 
 The cap-life lever counts the full shot-cycled recovery chain (bank,
@@ -672,8 +673,8 @@ the rep rate follow at +12 and +12 (an unsourced sweep endpoint and an
 unsourced roadmap band), and the per-pulse fuel recovery, +6 with the
 store's He-3 return credited (an extrapolated nine beyond the JET
 retention record), sits with the two environment entries, the cost of
-capital (financing, +7.1), the book life (+4.5) and the build (+1.7);
-f_pdv does not appear: the extrapolation stack leaves it at the basis
+capital (financing, +7.1), the build (+1.7) and the book life (+0.5,
+against the 60 years the records grade now holds); f_pdv does not appear: the extrapolation stack leaves it at the basis
 0.80 under a cap that does not bind. None is a record. That is the
 honest quality of the 26.8 figure.
 
