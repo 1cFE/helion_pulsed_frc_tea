@@ -402,7 +402,7 @@ Stepped with the tiers:
 | knob | design basis | records | extrapolations | speculation | what it is | source |
 |---|---|---|---|---|---|---|
 | interest_rate (real) | 0.07 | 0.07 | 0.05 | 0.03 | financing: the cost of capital, a change of risk-bearer rather than of technology; Figure 1 and the at-7% column keep it separate | IEA/NEA 2020 (3%, 7%, 10% real cases, 7% central); 5% a loan-guarantee blend with precedent, 3% sovereign-class capital with no mechanism; no fusion plant has a record at any grade |
-| lifetime_yr | 30 | 60 | 80 | 80 | engineering: what cannot be replaced sets it; bank and wall replacements are priced at every grade, so 80 yr is worth 4.5 $/MWh at the extrapolation device against 30, and the 60 yr records rung is worth 7.2 at the records device against 30 | 30: model default and the low end of the fusion literature (Böhnlein et al. 2026, median 30-40 yr; ARIES 40); 60: the operating US fission fleet runs under 60-year licences, with the oldest units about 55 years in, the best value a real project has held and the ruling the D-T corridor studies and the Borealis ledger make at this rung; 80: US DOE hydropower lifespan 65-85 yr, every core component on its own replacement schedule |
+| lifetime_yr | 30 | 60 | 80 | 80 | engineering: what cannot be replaced sets it; bank and wall replacements are priced at every grade, so 80 yr is worth 4.5 $/MWh at the extrapolation device against 30 and 0.5 against the 60 yr the records grade now holds; the 60 yr rung is worth 7.2 at the records device against 30 | 30: model default and the low end of the fusion literature (Böhnlein et al. 2026, median 30-40 yr; ARIES 40); 60: the operating US fission fleet runs under 60-year licences, with the oldest units about 55 years in, the best value a real project has held and the ruling the D-T corridor studies and the Borealis ledger make at this rung; 80: US DOE hydropower lifespan 65-85 yr, every core component on its own replacement schedule |
 | construction_time_yr | 5.0 | 5.0 | 3.25 | 2.5 | engineering: the build, which also sets the effective indirects through CAS30's build-time scaling; worth 1.7 $/MWh at the extrapolation device against 5 yr | 5 yr: the serial Hualong One builds, about 60 months from first concrete to grid (Zhangzhou 1, construction start October 2019 to grid 28 November 2024, World Nuclear News 2025); 3.25 yr: the Kashiwazaki-Kariwa ABWR pair, 37 and 39 months from first concrete to fuel load (Omoto 2002, Nuclear Engineering International), at the peak of a mature LWR supply chain; 2.5 yr: CCGT-class build (Siemens Energy 1200 MW block in about 30 months), which no fusion plant has a record of; the same ruling as the Magnetic D-T Corridor ladder |
 | availability | derived | derived | derived | derived | 0.98 outside planned outages, less a routine bundle (34 d every 2 yr), the bank swaps (34 d each at the shot life) and the wall-and-coil changeouts (84 d each at the dpa tolerance); `study.replacement_schedule` | US fission fleet (WNA, EIA, IAEA PRIS) for the 0.98 and the 34 d; Thea Energy Helios for the 84 d; see below |
 | wall_dpa_tolerance | 20 | 20 | 50 | 50 | engineering: sets the changeout interval in the availability derivation (0.2 $/MWh at the extrapolation device) | 20 dpa: demonstrated RAFM database edge; 50 dpa: DEMO-class design target |
@@ -674,11 +674,11 @@ One-at-a-time reversion from the 26.8 point (`scripts/tornado.py`):
 | max_f_rep -> 1 Hz | 38.4 | +11.6 |
 | interest_rate -> 0.07 (financing) | 33.9 | +7.1 |
 | fuel_recovery -> 0.999 (JET-analog) | 33.2 | +6.4 |
-| lifetime_yr -> 30 | 31.3 | +4.5 |
 | eta_dec -> 0.85 | 28.7 | +1.9 |
 | construction_time_yr -> 5 yr | 28.5 | +1.7 |
 | f_rad -> 0.23 (incoherent: floor violated) | 25.3 | -1.5 |
 | eta_pin -> 0.95 | 27.4 | +0.6 |
+| lifetime_yr -> 60 | 27.3 | +0.5 |
 | wall_dpa_tolerance -> 20 | 27.0 | +0.2 |
 
 The cap-life lever counts the full shot-cycled recovery chain (bank,
@@ -688,7 +688,7 @@ life. Four extrapolation entries carry the number: the capacitor life
 dominates at +37 $/MWh (a published derating target), the burn mix and the rep rate follow at +12 and +12 (an unsourced sweep endpoint and an
 unsourced roadmap band), and the per-pulse fuel recovery, +6 with the
 store's He-3 return credited (an extrapolated nine beyond the JET
-retention record), sits with the two environment entries, the cost of capital (financing, +7.1), the book life (+4.5) and the build (+1.7); f_pdv does not
+retention record), sits with the two environment entries, the cost of capital (financing, +7.1), the build (+1.7) and the book life (+0.5, against the 60 years the records grade now holds); f_pdv does not
 appear: the extrapolation stack leaves it at the basis 0.80 under a cap
 that does not bind. None is a record. That is the honest quality of the 26.8 figure.
 

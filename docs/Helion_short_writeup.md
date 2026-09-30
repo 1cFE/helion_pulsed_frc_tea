@@ -222,11 +222,11 @@ One-at-a-time reversion from the extrapolation device ranks the levers:
 | max_f_rep -> 1 Hz | 38.4 | +11.6 |
 | interest_rate -> 0.07 (financing) | 33.9 | +7.1 |
 | fuel_recovery -> 0.999 (JET-analog) | 33.2 | +6.4 |
-| lifetime_yr -> 30 | 31.3 | +4.5 |
 | eta_dec -> 0.85 | 28.7 | +1.9 |
 | construction_time_yr -> 5 yr | 28.5 | +1.7 |
 | f_rad -> 0.23 (incoherent) | 25.3 | -1.5 |
 | eta_pin -> 0.95 (driver wall-plug) | 27.4 | +0.6 |
+| lifetime_yr -> 60 | 27.3 | +0.5 |
 | wall_dpa_tolerance -> 20 | 27.0 | +0.2 |
 
 The capacitor cycle life dominates; the burn mix and the rep rate follow
