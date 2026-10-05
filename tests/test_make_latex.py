@@ -119,11 +119,10 @@ def test_ledger_tex_renders_every_table_as_a_longtable(tmp_path):
     assert "\\real{" in tex
 
 
-def test_build_all_compiles_all_three_documents(tmp_path):
+def test_build_all_compiles_both_documents(tmp_path):
     written = build_all(tmp_path)
     names = sorted(p.name for p in written)
-    assert names == ["Helion_short_writeup.pdf", "Helion_short_writeup.tex", "Helion_writeup.pdf",
-                     "Helion_writeup.tex", "ledger.pdf", "ledger.tex"]
+    assert names == ["Helion_writeup.pdf", "Helion_writeup.tex", "ledger.pdf", "ledger.tex"]
     for p in written:
         if p.suffix == ".pdf":
             assert p.stat().st_size > 50_000
