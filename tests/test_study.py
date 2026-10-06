@@ -146,15 +146,19 @@ def test_helion_requirements_device(model, base_cfg):
 
 def test_records_device(model, base_cfg):
     """The citable-records device: design-optimized under the record
-    stack alone, as deuterium-rich as its 1 Hz period allows (dd_frac
-    0.80 with its tritium plant, in fat panel-wall chambers)."""
+    stack alone, the deuterium-rich end of the mix grid (dd_frac 0.85
+    with its tritium plant, in fat panel-wall chambers) fired under its
+    own 1.02 s burn's duty bound, 26 modules at 0.95 Hz, below the 1 Hz
+    grant."""
     _, fwd = device_fwd("records", 1000.0)
     _, diag = run(model, fwd)
-    assert diag["lcoe"] == pytest.approx(115.3, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(113.3, abs=0.2)
+    assert (diag["n_mod"], round(diag["f_rep_hz"], 2)) == (26, 0.95)
     assert not coherence_violations(fwd, diag, "tier2")
     assert diag["tritium_adder_musd"] > 0
     _, diag3 = run(model, dict(fwd, net_electric_mw=3000.0))
-    assert diag3["lcoe"] == pytest.approx(111.0, abs=0.2)
+    assert diag3["lcoe"] == pytest.approx(108.6, abs=0.2)
+    assert diag3["n_mod"] == 76
 
 
 def test_tier1_rung(model, base_cfg):
@@ -187,64 +191,102 @@ def test_tier3_rung(model, base_cfg):
 
 
 def test_tier2_coherent_minimum(model, base_cfg):
-    """The extrapolation device burns Helion's own mix, the richest that
-    fits the 2.7 Hz period, with its tritium plant; the 3 GWe park takes
-    the 10 m x 1.5 m chamber (the 15 m x 0.75 m one trips the panel wall's
-    steady flux once the module count snaps to 17)."""
+    """The extrapolation device burns dd_frac 0.80 with its tritium plant
+    in 12 modules at 1.58 Hz, the fewest modules whose rate fits its 0.62 s
+    burn, under the 3 Hz grant; the 3 GWe park is the same module tripled.
+    Fired at the grant instead, the same machine overruns its period (and
+    the panel wall's steady flux) in 7 modules at 2.67 Hz."""
     _, fwd = device_fwd("extrap", 1000.0)
     _, diag = run(model, fwd)
-    assert fwd["dhe3_dd_frac"] == pytest.approx(0.488)
-    assert diag["lcoe"] == pytest.approx(37.7, abs=0.2)
+    assert fwd["dhe3_dd_frac"] == pytest.approx(0.8)
+    assert diag["lcoe"] == pytest.approx(30.1, abs=0.2)
+    assert (diag["n_mod"], round(diag["f_rep_hz"], 2)) == (12, 1.58)
     assert not coherence_violations(fwd, diag, "tier2")
     assert diag["tritium_adder_musd"] > 0
     _, fwd3 = device_fwd("extrap", 3000.0)
     _, diag3 = run(model, fwd3)
-    assert diag3["lcoe"] == pytest.approx(34.9, abs=0.2)
+    assert diag3["lcoe"] == pytest.approx(27.3, abs=0.2)
+    assert diag3["n_mod"] == 36
     assert not coherence_violations(fwd3, diag3, "tier2")
-    _, same3 = run(model, dict(fwd, net_electric_mw=3000.0))
-    assert "wall flux" in "; ".join(coherence_violations(dict(fwd, net_electric_mw=3000.0), same3, "tier2"))
+    at_grant = dict(fwd, max_f_rep=3.0)
+    _, dg = run(model, at_grant)
+    v = "; ".join(coherence_violations(at_grant, dg, "tier2"))
+    assert dg["n_mod"] == 7 and "duty" in v and "wall flux" in v
 
 
 def test_tier3_coherent_minimum(model, base_cfg):
-    """The speculation device: a single 1 GWe module at the He-3-rich
-    preset mix, the only mix whose burn fits the period at that module
-    power, with no tritium plant."""
+    """The speculation device: 150 MJ shots at dd_frac 0.70 with a tritium
+    plant, 7 modules at 1.65 Hz in 10 m x 0.75 m panel-wall chambers, the
+    fewest whose rate fits the 0.60 s burn, under the 10 Hz grant; the 3
+    GWe park is the same module tripled. The chamber's adiabatic bound
+    (0.940) clips the tier's f_pdv claim (0.947) and the composite stays
+    under the speculation cap."""
     _, fwd = device_fwd("spec", 1000.0)
     _, diag = run(model, fwd)
-    assert fwd["dhe3_dd_frac"] == pytest.approx(0.131)
-    assert diag["lcoe"] == pytest.approx(13.0, abs=0.2)
+    assert fwd["dhe3_dd_frac"] == pytest.approx(0.7)
+    assert diag["lcoe"] == pytest.approx(12.4, abs=0.2)
+    assert (diag["n_mod"], round(diag["f_rep_hz"], 2)) == (7, 1.65)
     assert not coherence_violations(fwd, diag, "tier3")
     assert diag["e_flash_mj_m2"] < E_FLASH_MELT_MJ_M2
-    assert diag["tritium_adder_musd"] == 0.0
-    # the 3 GWe park uses the 200 MJ design: larger shots trip the wall
-    # audit and the duty bound once the integer module count snaps down
+    assert diag["tritium_adder_musd"] > 0
+    assert diag["f_pdv_eff"] == pytest.approx(diag["f_pdv_cap"]) and diag["f_pdv_cap"] < 0.947
     _, fwd3 = device_fwd("spec", 3000.0)
     _, diag3 = run(model, fwd3)
-    assert diag3["lcoe"] == pytest.approx(11.0, abs=0.2)
+    assert diag3["lcoe"] == pytest.approx(10.1, abs=0.2)
+    assert diag3["n_mod"] == 21
     assert not coherence_violations(fwd3, diag3, "tier3")
 
 
-def test_d_rich_counterfactuals_are_excluded_by_the_duty_bound_alone(model):
-    """The D-rich designs breed more He-3 than they burn and would be the
-    cheapest at every grade, but their power-sparse burn overruns the
-    period between shots; constraint 8 is the only constraint they trip."""
-    from study import D_RICH_DEVICES
+def test_the_deuterium_rich_end_fits_its_period_in_more_modules(model):
+    """The deuterium-rich end of the mix grid (dd_frac 0.85) breeds more
+    He-3 than it burns; fired at its grade's granted ceiling its
+    power-sparse burn overruns the period, but fired slower in more
+    modules it is coherent at every grade: the records device itself, and
+    0.6 $/MWh behind the 0.80 and 0.70 devices at the other two grades."""
+    from study import D_RICH_DEVICES, DEVICES
 
+    assert D_RICH_DEVICES["records"] is DEVICES["records"]
+    grants = {"records": 1.0, "extrap": 3.0, "spec": 10.0}
+    expect = {"records": (113.3, 26), "extrap": (30.8, 14), "spec": (13.0, 10)}
     for name, tier in (("records", "tier2"), ("extrap", "tier2"), ("spec", "tier3")):
         _, cf = device_fwd(name, 1000.0, D_RICH_DEVICES)
         _, dcf = run(model, cf)
-        v = coherence_violations(cf, dcf, tier)
-        assert v and all(x.startswith("duty") for x in v), (name, v)
-        assert dcf["tau_burn_implied_s"] * dcf["f_rep_hz"] > 1.0
+        assert not coherence_violations(cf, dcf, tier), name
+        assert dcf["tau_burn_implied_s"] * dcf["f_rep_hz"] <= 1.0
+        assert dcf["lcoe"] == pytest.approx(expect[name][0], abs=0.2)
+        assert dcf["n_mod"] == expect[name][1]
         _, dev = device_fwd(name, 1000.0)
         _, ddev = run(model, dev)
-        assert dcf["lcoe"] < ddev["lcoe"], name
-    _, cf = device_fwd("records", 1000.0, D_RICH_DEVICES)
-    _, dcf = run(model, cf)
-    assert dcf["lcoe"] == pytest.approx(112.1, abs=0.2)
+        assert ddev["lcoe"] <= dcf["lcoe"] < ddev["lcoe"] + 0.8, name
+        at_grant = dict(cf, max_f_rep=grants[name])
+        _, dg = run(model, at_grant)
+        assert any(x.startswith("duty") for x in coherence_violations(at_grant, dg, tier))
+        assert dg["n_mod"] < dcf["n_mod"] and dg["lcoe"] < dcf["lcoe"]
     _, cf = device_fwd("spec", 3000.0, D_RICH_DEVICES)
     _, dcf = run(model, cf)
-    assert dcf["lcoe"] == pytest.approx(8.4, abs=0.2)
+    assert dcf["lcoe"] == pytest.approx(10.7, abs=0.2)
+
+
+def test_every_optimized_device_fires_at_or_below_its_grant_and_its_duty_bound(model):
+    """The rate the search chose: each optimized device's ceiling sits at
+    or below its grade's grant and at or below the duty-bound rate of its
+    own burn (within the rounding to the thousandth), its solved rate
+    fits the burn at 95% or more of the bound, and raising the ceiling
+    to the grant would overrun the period."""
+    from study import DEVICES, duty_bound_rate_hz
+
+    grants = {"records": 1.0, "extrap": 3.0, "spec": 10.0}
+    for name, grant in grants.items():
+        _, fwd = device_fwd(name, 1000.0)
+        bound = duty_bound_rate_hz(fwd, 50.0)
+        ceiling = DEVICES[name]["overrides"]["max_f_rep"]
+        assert ceiling <= grant and bound - 0.001 <= ceiling <= bound, name
+        _, d = run(model, fwd)
+        duty = d["tau_burn_implied_s"] * d["f_rep_hz"]
+        assert 0.95 <= duty <= 1.0, (name, duty)
+        if ceiling < grant:
+            _, dg = run(model, dict(fwd, max_f_rep=grant))
+            assert dg["tau_burn_implied_s"] * dg["f_rep_hz"] > 1.0, name
 
 
 def test_tier_stacks_are_coherent(model, base_cfg):
@@ -332,31 +374,31 @@ def test_tritium_burn_floor_constraint(model, base_cfg):
 
 def test_device_fwd_matches_the_pinned_definitions(base_cfg):
     """study.DEVICES is the single source of the four devices; each
-    optimized device carries its burn mix on the bremsstrahlung floor; the
-    3 GWe extrapolation park swaps its chamber and the 3 GWe speculation
-    park its shot, and nothing else changes."""
+    optimized device carries its burn mix on the bremsstrahlung floor and
+    the rate ceiling the search chose; the 3 GWe parks are the same
+    module tripled, so only the plant power changes."""
     from study import DEVICES, DEVICE_ORDER, device_fwd
 
     assert [name for name, _ in DEVICE_ORDER] == ["records", "helion", "extrap", "spec"]
-    for name, dd in (("records", 0.8), ("extrap", 0.488), ("spec", 0.131)):
+    for name, dd in (("records", 0.85), ("extrap", 0.8), ("spec", 0.7)):
         _, f = device_fwd(name, 1000.0)
         assert f["dhe3_dd_frac"] == pytest.approx(dd)
         assert f["f_rad"] == pytest.approx(f_rad_floor(dd))
+        assert f["max_f_rep"] == DEVICES[name]["overrides"]["max_f_rep"]
+        assert (f["chamber_length"], f["plasma_t"]) == (10.0, 0.75)
     cfg, fwd = device_fwd("extrap", 1000.0)
     assert cfg == base_cfg
     assert fwd["net_electric_mw"] == 1000.0
-    assert fwd["chamber_length"] == DEVICES["extrap"]["overrides"]["chamber_length"]
-    _, fwd3 = device_fwd("extrap", 3000.0)
-    assert (fwd3["chamber_length"], fwd3["plasma_t"]) == (10.0, 1.5)
-    assert fwd3["dhe3_dd_frac"] == fwd["dhe3_dd_frac"]
+    _, helion = device_fwd("helion", 1000.0)
+    assert "max_f_rep" not in helion  # Helion's configuration fires at its 1 Hz grant
+    for name in ("records", "extrap", "spec"):
+        _, f1 = device_fwd(name, 1000.0)
+        _, f3 = device_fwd(name, 3000.0)
+        assert f3["net_electric_mw"] == 3000.0
+        assert {k: v for k, v in f1.items() if k != "net_electric_mw"} == \
+            {k: v for k, v in f3.items() if k != "net_electric_mw"}
     _, f1 = device_fwd("spec", 1000.0)
-    _, f3 = device_fwd("spec", 3000.0)
-    assert f1["yield_per_shot_mj"] == 500.0
-    assert f3["yield_per_shot_mj"] == 200.0
-    assert f3["net_electric_mw"] == 3000.0
-    skip = ("yield_per_shot_mj", "net_electric_mw")
-    assert {k: v for k, v in f1.items() if k not in skip} == \
-        {k: v for k, v in f3.items() if k not in skip}
+    assert f1["yield_per_shot_mj"] == 150.0
     with pytest.raises(KeyError):
         device_fwd("spec", 2000.0)
 
@@ -410,8 +452,8 @@ def test_run_derives_availability_and_pins_honored(model):
 
 
 def test_availability_rises_up_the_ladder(model):
-    """Longer capacitor life and higher rep rate stretch the bank-swap
-    interval: both cheaper devices sit above the records device."""
+    """Longer capacitor life stretches the bank-swap interval: both
+    cheaper devices sit above the records device."""
     a = {}
     for name in ("records", "extrap", "spec"):
         _, fwd = device_fwd(name, 1000.0)

@@ -73,7 +73,7 @@ def test_run_reports_the_implied_burn_of_every_point(model):
     at its own burn mix. Helion's device holds He3/D 0.22 with the recycled
     bred He-3 counted (the patent's 0.16 is the purchased share), so its
     128 MJ shot reads 0.32 s against 0.42 s at the patent mix; the
-    speculation device's 500 MJ He-3-rich shot reads 0.28 s."""
+    speculation device's 150 MJ shot at dd_frac 0.70 reads 0.60 s."""
     assert X_S_REFERENCE == 0.7
     assert chi_from_xs(X_S_REFERENCE) == pytest.approx(0.52, abs=0.01)
     _, fwd = device_fwd("helion", 1000.0)
@@ -82,45 +82,42 @@ def test_run_reports_the_implied_burn_of_every_point(model):
     assert implied_burn_s(128.1, 50.0, X_S_REFERENCE) == pytest.approx(0.42, abs=0.02)
     _, fwd = device_fwd("spec", 1000.0)
     _, diag = run(model, fwd)
-    assert diag["tau_burn_implied_s"] == pytest.approx(0.28, abs=0.02)
+    assert diag["tau_burn_implied_s"] == pytest.approx(0.60, abs=0.02)
 
 
 def test_duty_table_reads_constraint_8_across_the_xs_span():
-    """At the reference x_s every device fits its period and every D-rich
-    counterfactual overruns it; at x_s 0.5 (chi 0.30) the three optimized
-    devices would overrun too, and at 0.85 all pass. The duty is the module's
-    fusion power over the cap chi E_del / breakeven time."""
+    """At the reference x_s every design fits its period, the optimized
+    ones at 94 to 100% of it since the search fires each in the fewest
+    modules whose rate fits its burn; at x_s 0.5 (chi 0.30) every
+    optimized design would overrun, and at 0.85 all pass. The duty is the
+    module's fusion power over the cap chi E_del / breakeven time. The
+    records device is the deuterium-rich end itself, so it is listed once."""
     from yield_bound import duty_table
 
     rows = duty_table()
     designs = {r["design"] for r in rows}
     assert designs == {"records", "helion", "extrap", "spec",
-                       "records (D-rich)", "extrap (D-rich)", "spec (D-rich)"}
+                       "extrap (D-rich)", "spec (D-rich)"}
     for r in rows:
         assert r["duty"] == pytest.approx(r["p_fus_module_mw"] / r["p_fus_cap_mw"], rel=1e-9)
-        at_ref = r["x_s"] == 0.7
-        if "(D-rich)" in r["design"]:
-            if at_ref:
-                assert r["duty"] > 1.0
-        elif at_ref:
+        if r["x_s"] == 0.7:
             assert r["duty"] <= 1.0
     ref = {r["design"]: r["duty"] for r in rows if r["x_s"] == 0.7}
-    assert ref["records (D-rich)"] == pytest.approx(1.00, abs=0.01)
-    assert ref["extrap (D-rich)"] == pytest.approx(1.87, abs=0.02)
-    assert ref["spec (D-rich)"] == pytest.approx(9.4, abs=0.1)
+    assert ref["helion"] == pytest.approx(0.32, abs=0.01)
+    for d in ("records", "extrap", "spec", "extrap (D-rich)", "spec (D-rich)"):
+        assert 0.94 <= ref[d] <= 1.0, d
     thin = {r["design"]: r["duty"] for r in rows if r["x_s"] == 0.5}
     fat = {r["design"]: r["duty"] for r in rows if r["x_s"] == 0.85}
-    assert all(thin[d] > 1.0 for d in ("records", "extrap", "spec"))
+    assert all(thin[d] > 1.0 for d in designs - {"helion"})
     assert thin["helion"] < 1.0
-    assert all(fat[d] < 1.0 for d in ("records", "helion", "extrap", "spec"))
-    assert fat["records (D-rich)"] < 1.0 < thin["records (D-rich)"]
+    assert all(fat[d] < 1.0 for d in designs)
 
 
 def test_bound_table_lists_both_shots_across_the_xs_span():
     from yield_bound import bound_table
     rows = bound_table()
     shots = sorted({r["yield_mj"] for r in rows})
-    assert shots == [128.1, 500.0]
+    assert shots == [128.1, 150.0]
     assert sorted({r["x_s"] for r in rows}) == [0.5, 0.7, 0.85]
     row = next(r for r in rows if r["yield_mj"] == 128.1 and r["x_s"] == 0.85)
     assert row["tau_burn_s"] == pytest.approx(0.31, abs=0.02)

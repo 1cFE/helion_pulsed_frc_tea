@@ -23,12 +23,13 @@ from study import (
 )
 
 # The ladder's rungs are the tier stacks evaluated on Helion's own chamber
-# (0.61 m x 10 m), kept as regression pins; the resized-chamber optima are
-# owned by scripts/coherent_min.py and priced as the four devices below.
-# The tier-2 and tier-3 rungs carry the D-rich mix of tier2.yaml, whose
-# burn does not fit the pulse period at their rep rates, so constraint 8
-# flags them here rather than reporting them silently. Override here only
-# to make the ladder itself quote a different tier-3 design.
+# (0.61 m x 10 m) at each stack's granted rate ceiling, kept as regression
+# pins; the resized-chamber optima, with the rate chosen, are owned by
+# scripts/coherent_min.py and priced as the four devices below. The tier-2
+# and tier-3 rungs carry the D-rich mix of tier2.yaml, whose burn does not
+# fit the pulse period at their ceilings, so constraint 8 flags them here
+# rather than reporting them silently. Override here only to make the
+# ladder itself quote a different tier-3 design.
 TIER3_GEOMETRY = {}
 
 
@@ -75,7 +76,9 @@ def ladder():
 def devices():
     """The four writeup devices at both plant sizes, each also priced at the
     design-basis 7% real rate with everything else as the rung has it, so
-    the financing part of each rung (lcoe - lcoe_at_7pct) is quotable."""
+    the financing part of each rung (lcoe - lcoe_at_7pct) is quotable, and
+    at the fusion literature's 30-year book life, so the ledger's lifetime
+    row can quote what the 60 and 80 years are worth."""
     model = build_model(load_config("baseline.yaml"))
     rows = []
     for name, label in DEVICE_ORDER:
@@ -95,7 +98,9 @@ def devices():
                 t_bank_yr=round(d["t_bank_yr"], 1), t_wall_yr=round(d["t_wall_yr"], 1),
                 lcoe_at_a085=round(run(model, dict(fwd, availability=0.85))[1]["lcoe"], 1),
                 lcoe_at_a095=round(run(model, dict(fwd, availability=0.95))[1]["lcoe"], 1),
+                lcoe_at_30yr=round(run(model, dict(fwd, lifetime_yr=30.0))[1]["lcoe"], 1),
                 n_mod=d["n_mod"], f_rep_hz=round(d["f_rep_hz"], 2),
+                max_f_rep=fwd.get("max_f_rep", model._eng_defaults["max_f_rep"]),
                 tau_burn_implied_s=round(d["tau_burn_implied_s"], 2),
                 duty=round(d["tau_burn_implied_s"] * d["f_rep_hz"], 2),
                 f_pdv_cap=round(d["f_pdv_cap"], 3),
@@ -105,10 +110,12 @@ def devices():
     return rows
 
 
-def counterfactuals():
-    """The D-rich designs constraint 8 excludes, priced at both plant sizes
-    with the duty and the violations they carry, so the writeup can quote
-    what the search would have picked without the duty check."""
+def d_rich_end():
+    """The deuterium-rich end of the mix grid (dd_frac 0.85): its best
+    design at each grade under all eight constraints, the rate included,
+    priced at both plant sizes beside the device it is compared against
+    (at the records grade it is the device), so the writeup can quote what
+    He-3 self-sufficiency costs at each grade."""
     model = build_model(load_config("baseline.yaml"))
     labels = dict(DEVICE_ORDER)
     rows = []
@@ -116,12 +123,14 @@ def counterfactuals():
         for p in PLANT_SIZES_MWE:
             _, fwd = device_fwd(name, p, D_RICH_DEVICES)
             _, d = run(model, fwd)
+            _, dev = run(model, device_fwd(name, p)[1])
             tier = "tier3" if name == "spec" else "tier2"
             v = coherence_violations(fwd, d, tier)
             rows.append(dict(
-                device=f"{labels[name]} (D-rich)", plant_mwe=p,
-                lcoe=round(d["lcoe"], 1), n_mod=d["n_mod"],
-                f_rep_hz=round(d["f_rep_hz"], 2),
+                device=f"{labels[name]} (D-rich end)", plant_mwe=p,
+                lcoe=round(d["lcoe"], 1), device_lcoe=round(dev["lcoe"], 1),
+                n_mod=d["n_mod"], f_rep_hz=round(d["f_rep_hz"], 2),
+                max_f_rep=fwd["max_f_rep"],
                 tau_burn_implied_s=round(d["tau_burn_implied_s"], 2),
                 duty=round(d["tau_burn_implied_s"] * d["f_rep_hz"], 2),
                 tritium_adder_musd=round(d["tritium_adder_musd"], 1),
@@ -158,7 +167,7 @@ if __name__ == "__main__":
         w.writerows(dev)
     print(f"\n{'device':<22} {'MWe':>5} {'LCOE':>6} {'at 7%':>6} {'fin.':>5} "
           f"{'rate':>5} {'life':>5} {'avail':>6} {'rout.':>6} {'bank':>6} {'wall':>6} "
-          f"{'t_bank':>6} {'t_wall':>6} {'n_mod':>5} {'A=.85':>6} {'A=.95':>6} {'burn s':>6} "
+          f"{'t_bank':>6} {'t_wall':>6} {'n_mod':>5} {'ceil':>6} {'f_rep':>5} {'A=.85':>6} {'A=.95':>6} {'30 yr':>6} {'burn s':>6} "
           f"{'duty':>5} {'pdv cap':>7} {'T M$':>5}")
     for r in dev:
         print(f"{r['device']:<22} {r['plant_mwe']:>5.0f} {r['lcoe']:>6.1f} "
@@ -166,19 +175,20 @@ if __name__ == "__main__":
               f"{r['interest_rate']:>5.2f} {r['lifetime_yr']:>5.0f} "
               f"{r['availability']:>6.3f} {r['outage_routine']:>6.4f} {r['outage_bank']:>6.4f} "
               f"{r['outage_wall']:>6.4f} {r['t_bank_yr']:>6.1f} {r['t_wall_yr']:>6.1f} "
-              f"{r['n_mod']:>5} {r['lcoe_at_a085']:>6.1f} {r['lcoe_at_a095']:>6.1f} "
+              f"{r['n_mod']:>5} {r['max_f_rep']:>6.3f} {r['f_rep_hz']:>5.2f} {r['lcoe_at_a085']:>6.1f} {r['lcoe_at_a095']:>6.1f} {r['lcoe_at_30yr']:>6.1f} "
               f"{r['tau_burn_implied_s']:>6.2f} {r['duty']:>5.2f} {r['f_pdv_cap']:>7.3f} "
               f"{r['tritium_adder_musd']:>5.0f}")
 
-    cf = counterfactuals()
+    cf = d_rich_end()
     with open(OUTPUT_DIR / "devices_d_rich.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(cf[0]))
         w.writeheader()
         w.writerows(cf)
-    print(f"\nD-rich counterfactuals (excluded by constraint 8):")
-    print(f"{'design':<32} {'MWe':>5} {'LCOE':>6} {'n_mod':>5} {'f_rep':>6} "
-          f"{'burn s':>6} {'duty':>5} {'T M$':>5}  violations")
+    print(f"\nthe deuterium-rich end (dd_frac 0.85), best design under all eight constraints:")
+    print(f"{'design':<36} {'MWe':>5} {'LCOE':>6} {'device':>6} {'n_mod':>5} {'ceil':>6} "
+          f"{'f_rep':>6} {'burn s':>6} {'duty':>5} {'T M$':>5}  violations")
     for r in cf:
-        print(f"{r['device']:<32} {r['plant_mwe']:>5.0f} {r['lcoe']:>6.1f} "
-              f"{r['n_mod']:>5} {r['f_rep_hz']:>6.2f} {r['tau_burn_implied_s']:>6.2f} "
-              f"{r['duty']:>5.2f} {r['tritium_adder_musd']:>5.0f}  {r['violations']}")
+        print(f"{r['device']:<36} {r['plant_mwe']:>5.0f} {r['lcoe']:>6.1f} "
+              f"{r['device_lcoe']:>6.1f} {r['n_mod']:>5} {r['max_f_rep']:>6.3f} "
+              f"{r['f_rep_hz']:>6.2f} {r['tau_burn_implied_s']:>6.2f} "
+              f"{r['duty']:>5.2f} {r['tritium_adder_musd']:>5.0f}  {r['violations'] or 'coherent'}")

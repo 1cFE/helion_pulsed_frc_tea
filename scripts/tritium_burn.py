@@ -63,12 +63,11 @@ T_I_KEV = (20.0, 50.0, 70.0)
 N_D_M3 = (1e22, 3e22, 1e23)  # compression-peak D density
 TAU_S = (1e-4, 3e-4, 1e-3, 3e-3)  # dwell at fusion conditions
 
-# The points where the store-and-decay cycle applies (Helion's own device,
-# the records and extrapolation devices, which store tritium at dd_frac
-# 0.80 and Helion's 0.488, and the D-rich counterfactuals: the
-# extrapolation stack on Helion's chamber and the D-rich speculation
-# design), plus the speculation device itself, whose He-3-rich mix breeds
-# little and buys its He-3.
+# The points where the store-and-decay cycle applies: Helion's own device,
+# the records, extrapolation and speculation devices, which store tritium
+# at dd_frac 0.85, 0.80 and 0.70, the extrapolation stack on Helion's
+# chamber at its 3 Hz ceiling (the tier-2 regression pin, which
+# constraint 8 flags), and the deuterium-rich end's speculation design.
 POINTS = {
     "helion": dict(tier="tier2", tier_cfgs=(), overrides={}),
     "records": dict(

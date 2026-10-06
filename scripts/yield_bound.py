@@ -11,14 +11,15 @@ point that study.run evaluates carries the same quantity at the reference
 x_s and at its own burn mix as diag["tau_burn_implied_s"].
 
 The duty table then reads constraint 8 across the same span: for the four
-devices and the D-rich counterfactuals, the burn the shot implies at the
-point's own mix (study.breakeven_time_at_point_s) times the solved rep
-rate. The constraint is enforced at x_s 0.7; the table shows where a
-design would sit at the fat-FRC edge (0.85) and the thin one (0.5). Since
-duty = (yield x f_rep) x tau_f / (chi E_del), the constraint is a cap on
-the fusion power of one burn section, chi E_del / tau_f, whatever the
-split between shot size and rep rate; the table prints that cap beside
-the module's fusion power.
+devices and the deuterium-rich end's designs where they differ from the
+device, the burn the shot implies at the point's own mix
+(study.breakeven_time_at_point_s) times the solved rep rate. The
+constraint is enforced at x_s 0.7, where the design search sets each
+device's rate; the table shows where a design would sit at the fat-FRC
+edge (0.85) and the thin one (0.5). Since duty = (yield x f_rep) x tau_f
+/ (chi E_del), the constraint is a cap on the fusion power of one burn
+section, chi E_del / tau_f, whatever the split between shot size and rep
+rate; the table prints that cap beside the module's fusion power.
 """
 import csv
 
@@ -26,6 +27,7 @@ from study import (  # noqa: I001  sets COSTINGFE_BACKEND before costingfe impor
     D_RICH_DEVICES,
     DEVICES,
     DUTY_MAX,
+    N_D_PATENT_M3,
     OUTPUT_DIR,
     VENDOR_PULSE_S,
     X_S_REFERENCE,
@@ -64,13 +66,15 @@ def bound_table() -> list[dict]:
 
 
 def duty_table() -> list[dict]:
-    """One row per (design, x_s): the four devices and the D-rich
-    counterfactuals at 1 GWe, each with the breakeven time of its own burn
+    """One row per (design, x_s): the four devices and the deuterium-rich
+    end's designs at 1 GWe, each with the breakeven time of its own burn
     mix, the burn its shot implies at that x_s, and the duty that burn
     makes at the solved rep rate."""
     rows = []
     for table, tag in ((DEVICES, ""), (D_RICH_DEVICES, " (D-rich)")):
         for name in table:
+            if table is D_RICH_DEVICES and D_RICH_DEVICES[name] is DEVICES[name]:
+                continue  # the device is the deuterium-rich end itself
             cfg, fwd = device_fwd(name, 1000.0, table)
             result, diag = run(build_model(cfg), fwd)
             y = float(result.params["yield_per_shot_mj"])
@@ -102,6 +106,17 @@ def main():
     for r in rows:
         print(f"{r['device']:8} {r['yield_mj']:9.1f} {r['x_s']:5.2f} {r['chi']:5.2f} "
               f"{r['yield_at_vendor_pulse_mj']:18.2f} {r['tau_burn_s']:15.2f}")
+    # The burnup closure over each shot's burn span (writeup Section 5.2):
+    # the thermalized-limit in-pulse tritium burn at the patent point.
+    from tritium_burn import in_pulse_burn_vs_dwell
+
+    for name in ("helion", "spec"):
+        rr = [r for r in rows if r["device"] == name]
+        lo, hi = min(r["tau_burn_s"] for r in rr), max(r["tau_burn_s"] for r in rr)
+        f_d, f_t = in_pulse_burn_vs_dwell([lo, hi], N_D_PATENT_M3, 70.0)
+        print(f"  {rr[0]['yield_mj']:.0f} MJ shot, burn {lo:.2f} to {hi:.2f} s at the "
+              f"patent point: D burnup {f_d[0]:.1%} to {f_d[1]:.1%}, thermalized "
+              f"in-pulse tritium burn {f_t[0]:.0%} to {f_t[1]:.0%}")
     tau_dt = breakeven_time_dt_s(34.8, 15.0)
     print(f"cross-check, Slough 2025 CFR2 (D-T, 34.8 T, 15 keV): breakeven "
           f"{tau_dt*1e3:.2f} ms; gain 9.1 on the FRC energy is a "

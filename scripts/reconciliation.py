@@ -84,6 +84,40 @@ def crf(i, n):
     return i * (1 + i) ** n / ((1 + i) ** n - 1)
 
 
+# costingfe's CAS22 detail is per module for the C2201xx reactor accounts
+# and plant-wide from C220200 up (C220000 = per-module equipment x n_mod
+# + labor at the multi-unit factor + plant-wide), so the anatomy scales
+# the reactor accounts by the module count and the fuel-handling account
+# (with the tritium adder study.run charges once) not at all.
+PER_MODULE_PREFIX = "C2201"
+
+
+def anatomy_items(result) -> list[tuple[str, float]]:
+    """The capital accounts carrying a device, as (label, plant M$)."""
+    d22 = {k: float(v) for k, v in result.cas22_detail.items()}
+    n_mod = int(result.solved_n_mod)
+    c = result.costs
+
+    def acct(key):
+        return d22[key] * (n_mod if key.startswith(PER_MODULE_PREFIX) else 1)
+
+    length = float(result.params["chamber_length"])
+    return [
+        ("buildings (CAS21)", float(c.cas21)),
+        ("CAS50 incl. decommissioning", float(c.cas50)),
+        ("fuel handling + tritium plant (C220500)", acct("C220500")),
+        ("heat rejection + electrical plant (CAS24-26)",
+         float(c.cas24) + float(c.cas25) + float(c.cas26)),
+        ("vacuum + exhaust (C220106)", acct("C220106")),
+        (f"first wall, {n_mod} x {length:.0f} m chambers (C220101)"
+         if n_mod > 1 else f"first wall, {length:.0f} m chamber (C220101)",
+         acct("C220101")),
+        ("DEC power electronics (C220109)", acct("C220109")),
+        ("coils (C220103)", acct("C220103")),
+        ("driver capacitor bank (C220107)", acct("C220107")),
+    ]
+
+
 def analyze(label, spec):
     base_cfg = load_config("baseline.yaml")
     model = build_model(base_cfg)
@@ -104,9 +138,10 @@ def analyze(label, spec):
     print(f"\n=== {label}: LCOE {diag['lcoe']:.1f} $/MWh, n_mod {n_mod}, "
           f"f_rep {diag['f_rep_hz']:.2f} Hz, {diag['capital_per_kw']} $/kW ===")
 
-    # --- anatomy: top per-module CAS22 accounts + plant accounts ---
+    # --- anatomy: top CAS22 accounts (C2201xx per module, the rest
+    # plant-wide) + plant accounts ---
     top = sorted(d22.items(), key=lambda kv: -kv[1])[:8]
-    print("  top CAS22 accounts (M$/module):",
+    print("  top CAS22 accounts (M$; C2201xx per module, C2202xx and up plant-wide):",
           ", ".join(f"{k} {v:.0f}" for k, v in top if v > 0.5))
     c = result.costs
     for name in ("cas10", "cas21", "cas22", "cas23", "cas24", "cas25",
@@ -121,19 +156,12 @@ def analyze(label, spec):
     lev = float(c.cas90) / float(c.total_capital) * 1e6 / mwh_per_year
     print(f"  levelized capital: {lev * 1e3:.3f} $/MWh per G$ of total capital "
           f"(CAS90 {float(c.cas90):.1f} M$/yr over {mwh_per_year / 1e6:.2f} TWh/yr)")
-    for label, musd in (
-        ("buildings (CAS21)", float(c.cas21)),
-        ("CAS50 incl. decommissioning", float(c.cas50)),
-        ("fuel handling + tritium plant (C220500)", d22["C220500"] * n_mod),
-        ("heat rejection + electrical plant (CAS24-26)",
-         float(c.cas24) + float(c.cas25) + float(c.cas26)),
-        ("vacuum + exhaust (C220106)", d22["C220106"] * n_mod),
-        ("first wall (C220101)", d22["C220101"] * n_mod),
-        ("DEC power electronics (C220109)", d22["C220109"] * n_mod),
-        ("coils (C220103)", d22["C220103"] * n_mod),
-        ("driver capacitor bank (C220107)", d22["C220107"] * n_mod),
-    ):
+    for label, musd in anatomy_items(result):
         print(f"    {label:<46} {musd:7.0f} M$  {musd * lev:5.2f} $/MWh")
+    print(f"    {'of which per-pulse exhaust pumping (C220106_pump)':<46} "
+          f"{d22['C220106_pump'] * n_mod:7.0f} M$")
+    print(f"    {'of which the tritium-plant adder':<46} "
+          f"{diag['tritium_adder_musd']:7.0f} M$")
     # The wall-and-coil replacement event against the reactor account's
     # own capital service: below this interval the levelized replacement
     # (the model's closed form, as burnup_scan.py prices it) outspends

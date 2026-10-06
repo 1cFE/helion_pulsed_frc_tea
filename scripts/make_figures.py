@@ -28,6 +28,7 @@ from tritium_burn import (  # noqa: E402
     f_t_from_burnup,
     in_pulse_burn_vs_dwell,
 )
+from reconciliation import anatomy_items  # noqa: E402
 from yield_bound import bound_table  # noqa: E402
 
 BLUE, ORANGE, AQUA, RED, GREY = "#2a78d6", "#eb6834", "#1baf7a", "#e34948", "#a6a5a1"
@@ -144,7 +145,7 @@ def fig2_tornado(model, cfg):
     ax.axvline(0, color=INK2, linewidth=1)
     ax.set_yticks(y, labels)
     ax.set_xlabel(f"change in LCOE when reverted to the record value "
-                  f"(\\$/MWh, from the {d0['lcoe']:.1f} extrapolation device)")
+                  f"(\\$/MWh, from {d0['lcoe']:.1f})")
     ax.set_xlim(min(deltas) - 6, max(deltas) + 7)
     ax.set_axisbelow(True)
     ax.grid(axis="x", color=GRID, linewidth=0.8)
@@ -166,9 +167,17 @@ def fig_tritium_burn(model, cfg):
     helion, spec = span("helion"), span("spec")
     fig, ax = plt.subplots(figsize=(7.2, 3.6))
     bands = [((1e-4, VENDOR_PULSE_S), "Helion's stated pulse", GREY),
-             (PATENT_CONFINEMENT_S, "patent confinement", GREY),
-             (helion[:2], f"{helion[2]:.0f} MJ shot", ORANGE),
-             (spec[:2], f"{spec[2]:.0f} MJ shot", ORANGE)]
+             (PATENT_CONFINEMENT_S, "patent confinement", GREY)]
+    if spec[0] <= helion[1] and helion[0] <= spec[1]:
+        # the two shots' burns overlap: one band, both yields named
+        lo, hi = min(helion[0], spec[0]), max(helion[1], spec[1])
+        yields = sorted({round(helion[2]), round(spec[2])})
+        label = (" to ".join(f"{y:.0f}" for y in yields) + " MJ shots"
+                 if len(yields) > 1 else f"{yields[0]:.0f} MJ shot")
+        bands.append(((lo, hi), label, ORANGE))
+    else:
+        bands += [(helion[:2], f"{helion[2]:.0f} MJ shot", ORANGE),
+                  (spec[:2], f"{spec[2]:.0f} MJ shot", ORANGE)]
     for (lo, hi), label, color in bands:
         ax.axvspan(lo, hi, color=color, alpha=0.18, linewidth=0)
         ax.text(np.sqrt(lo * hi), 2.2e-5, label, rotation=90, fontsize=7.5,
@@ -230,21 +239,10 @@ def fig3_burnup(model, cfg):
 
 
 def fig4_anatomy(model, cfg):
+    # The same accounts reconciliation.py prints, per-module accounts
+    # scaled by the module count, the coils dropped as the smallest bar.
     r, d = run(model, stack(cfg, *TIERS[2], **TIER3_MIN))
-    d22 = {k: float(v) for k, v in r.cas22_detail.items()}
-    c = r.costs
-    items = [
-        ("buildings (CAS21)", float(c.cas21)),
-        ("fuel handling + tritium plant (C220500)", d22["C220500"]),
-        ("CAS50 incl. decommissioning provision", float(c.cas50)),
-        ("heat rejection + electrical plant (CAS24-26)",
-         float(c.cas24) + float(c.cas25) + float(c.cas26)),
-        ("vacuum + per-pulse exhaust pumping (C220106)", d22["C220106"]),
-        (f"first wall, {TIER3_MIN['chamber_length']:.0f} m chamber (C220101)",
-         d22["C220101"]),
-        ("DEC power electronics (C220109)", d22["C220109"]),
-        ("driver capacitor bank (C220107)", d22["C220107"]),
-    ]
+    items = [kv for kv in anatomy_items(r) if not kv[0].startswith("coils")]
     items.sort(key=lambda kv: kv[1])
     labels = [k for k, _ in items]
     vals = [v for _, v in items]

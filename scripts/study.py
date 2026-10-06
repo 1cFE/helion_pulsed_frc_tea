@@ -4,7 +4,11 @@ Loads a study config, builds the costingfe model, and runs the rep-rate
 sizing path (size_from_power=True): costingfe holds the cited shot fixed,
 bisects f_rep against the per-module net target, and solves the integer
 module count off the max_f_rep ceiling. Unlike Borealis there is no
-geometric closure to write; the framework closes the machine.
+geometric closure to write; the framework closes the machine. The ceiling
+is therefore the study's firing-rate lever: a grade's granted ceiling is
+permission, not obligation, and the design search (scripts/coherent_min.py)
+sets max_f_rep at or below it, never above, to fire slower in more modules
+where a point's burn needs the longer period.
 
 This module also carries the study's coherence constraints, which encode
 the red-team review's physics findings so no scan point can silently
@@ -270,6 +274,16 @@ def implied_burn_s(yield_mj: float, e_del_mj: float, x_s: float,
     return yield_mj / (chi_from_xs(x_s) * e_del_mj) * tau_f_s
 
 
+def duty_bound_rate_hz(fwd: dict, e_del_mj: float) -> float:
+    """The highest firing rate at which the burn a point's shot implies
+    (constraint 7, at the reference x_s and the point's own mix) fits the
+    pulse period (constraint 8): DUTY_MAX over the implied burn. The design
+    search fires at or below min(granted ceiling, this)."""
+    tau = implied_burn_s(float(fwd["yield_per_shot_mj"]), e_del_mj,
+                         X_S_REFERENCE, breakeven_time_at_point_s(fwd))
+    return DUTY_MAX / tau
+
+
 def wall_load_14mev_equivalent(result) -> float:
     """14-MeV-equivalent neutron wall load [MW/m^2] per module from the
     model's own reaction rates: the D-D 2.45 MeV flux at DPA_REL_DD, the
@@ -381,72 +395,78 @@ def wall_area_m2(fwd: dict) -> float:
 # --- the four devices the writeup prices -----------------------------------
 # One machine per evidence grade. records, extrap and spec are the coherent
 # design-search optima (scripts/coherent_min.py); helion is the vendor
-# configuration on the design basis. The search chooses the burn mix with
-# the chamber, each mix on its bremsstrahlung floor, and constraint 8
-# (the burn must fit the pulse period, a cap on one burn section's fusion
-# power of chi E_del / tau_f) sets how deuterium-rich each grade can run:
-# dd_frac 0.80 at the records grade (1 Hz, 24 modules), Helion's own 0.488
-# at extrapolations (2.7 Hz, 6 modules) and the He-3-rich preset 0.131 at
-# speculation (a single 1 GWe module). The D-rich mix (0.85) breeds more
-# He-3 than it burns but is power-sparse, so its burn does not fit the
-# period at any grade; its designs are kept in D_RICH_DEVICES below as
-# counterfactuals. A 3 GWe park that needs a different shot or chamber
-# carries it in size_overrides (the integer module count snaps, and the
-# 1 GWe optimum can trip the wall audit; see the coherent_min.py footer).
+# configuration on the design basis. The search chooses the burn mix, the
+# chamber and the firing rate together, each mix on its bremsstrahlung
+# floor, under constraint 8 (the burn must fit the pulse period, a cap on
+# one burn section's fusion power of chi E_del / tau_f). The rate enters as
+# max_f_rep: a grade's granted ceiling (1 Hz at the design basis and
+# records, 3 Hz at extrapolations, 10 Hz at speculation) is permission, not
+# obligation, and each optimized device carries the ceiling the search
+# chose, the duty-bound rate of its own burn (1 / tau_burn, rounded down
+# to the thousandth) at or below the grant, never above, so costingfe
+# builds it in the fewest modules whose rate fits that burn. Within every
+# mix the scan finds cost rising with each added module, so the optimum
+# sits at that top rung, at 95 to 100% of the duty bound: dd_frac 0.85 in
+# 26 modules at 0.95 Hz at the records grade, 0.80 in 12 modules at 1.58
+# Hz at extrapolations (under the 3 Hz grant) and 0.70 in 7 modules at
+# 1.65 Hz at speculation (under the 10 Hz grant), each with its tritium
+# plant, each in a 10 m x 0.75 m panel-wall chamber. The design-basis
+# shot is the optimum at every grade: at speculation the 128.1 to 200 MJ
+# shots read within 0.02 $/MWh of each other and 150 MJ is carried. The
+# same module tripled makes the 3 GWe park, so no size_overrides remain;
+# the slot is kept for a park that needs a different shot or chamber.
 # Every script and test builds its forward dict from here, so a moved
 # optimum is a one-place change.
 DEVICES = {
     "records": dict(
         configs=("best_case.yaml",),
-        overrides=dict(dhe3_dd_frac=0.8, f_rad=f_rad_floor(0.8),
+        overrides=dict(dhe3_dd_frac=0.85, f_rad=f_rad_floor(0.85),
                        chamber_length=10.0, plasma_t=0.75, r_bore=0.85,
-                       fw_class="panel"),
+                       fw_class="panel", max_f_rep=0.980),
         size_overrides={},
     ),
     "helion": dict(configs=(), overrides={}, size_overrides={}),
     "extrap": dict(
         configs=("best_case.yaml", "tier2.yaml"),
-        overrides=dict(dhe3_dd_frac=0.488, f_rad=f_rad_floor(0.488),
-                       chamber_length=15.0, plasma_t=0.75, r_bore=0.85,
-                       fw_class="panel"),
-        size_overrides={3000.0: dict(chamber_length=10.0, plasma_t=1.5,
-                                     r_bore=1.6)},
+        overrides=dict(dhe3_dd_frac=0.8, f_rad=f_rad_floor(0.8),
+                       chamber_length=10.0, plasma_t=0.75, r_bore=0.85,
+                       fw_class="panel", max_f_rep=1.608),
+        size_overrides={},
     ),
     "spec": dict(
         configs=("best_case.yaml", "tier2.yaml", "tier3.yaml"),
-        overrides=dict(dhe3_dd_frac=0.131, f_rad=f_rad_floor(0.131),
-                       yield_per_shot_mj=500.0, chamber_length=15.0,
-                       plasma_t=1.5, r_bore=1.6, fw_class="panel"),
-        size_overrides={3000.0: dict(yield_per_shot_mj=200.0)},
-    ),
-}
-# The D-rich counterfactuals: the best D-rich design at each grade under
-# constraints 1 to 7, which constraint 8 excludes (its burn is longer than
-# the period between shots at the solved rep rate). They carry the tritium
-# plant and the store-and-decay fuel cycle, so the tritium-store analysis
-# (scripts/tritium_burn.py, scripts/burnup_scan.py) and the duty audit
-# across x_s (scripts/yield_bound.py) price them beside the devices.
-D_RICH_DEVICES = {
-    "records": dict(
-        configs=("best_case.yaml",),
-        overrides=dict(dhe3_dd_frac=0.85, f_rad=f_rad_floor(0.85),
-                       chamber_length=10.0, plasma_t=0.75, r_bore=0.85,
-                       fw_class="panel"),
+        overrides=dict(dhe3_dd_frac=0.7, f_rad=f_rad_floor(0.7),
+                       yield_per_shot_mj=150.0, chamber_length=10.0,
+                       plasma_t=0.75, r_bore=0.85, fw_class="panel",
+                       max_f_rep=1.663),
         size_overrides={},
     ),
+}
+# The deuterium-rich end of the mix grid (dd_frac 0.85, the mix that
+# breeds more He-3 than it burns): its best design at each grade under all
+# eight constraints, the rate included. At the records grade it is the
+# device itself; at extrapolations and speculation it sits 0.6 $/MWh
+# behind the device's 0.80 and 0.70 mixes, in more modules at a lower
+# rate. These designs carry the largest tritium stores, so the
+# tritium-store analysis (scripts/tritium_burn.py, scripts/burnup_scan.py)
+# and the duty audit across x_s (scripts/yield_bound.py) price them beside
+# the devices.
+D_RICH_DEVICES = {
+    "records": DEVICES["records"],
     "extrap": dict(
         configs=("best_case.yaml", "tier2.yaml"),
         overrides=dict(dhe3_dd_frac=0.85, f_rad=f_rad_floor(0.85),
-                       chamber_length=10.0, plasma_t=1.5, r_bore=1.6,
-                       fw_class="panel"),
+                       chamber_length=10.0, plasma_t=0.75, r_bore=0.85,
+                       fw_class="panel", max_f_rep=1.469),
         size_overrides={},
     ),
     "spec": dict(
         configs=("best_case.yaml", "tier2.yaml", "tier3.yaml"),
         overrides=dict(dhe3_dd_frac=0.85, f_rad=f_rad_floor(0.85),
-                       yield_per_shot_mj=500.0, chamber_length=30.0,
-                       plasma_t=1.5, r_bore=1.6, fw_class="panel"),
-        size_overrides={3000.0: dict(yield_per_shot_mj=200.0)},
+                       yield_per_shot_mj=150.0, chamber_length=10.0,
+                       plasma_t=0.75, r_bore=0.85, fw_class="panel",
+                       max_f_rep=1.254),
+        size_overrides={},
     ),
 }
 DEVICE_ORDER = (
@@ -461,9 +481,9 @@ PLANT_SIZES_MWE = (1000.0, 3000.0)
 def device_fwd(name: str, net_electric_mw: float,
                devices: dict = DEVICES) -> tuple[dict, dict]:
     """(baseline cfg, forward dict) for one of the four devices at a plant
-    size, or for a D-rich counterfactual when devices=D_RICH_DEVICES. Sizes
-    other than PLANT_SIZES_MWE have no device definition (the speculation
-    design is size-dependent) and raise KeyError."""
+    size, or for the deuterium-rich end's design when
+    devices=D_RICH_DEVICES. Sizes other than PLANT_SIZES_MWE have no device
+    definition and raise KeyError."""
     if net_electric_mw not in PLANT_SIZES_MWE:
         raise KeyError(f"no device definition at {net_electric_mw} MWe")
     cfg = load_config("baseline.yaml")

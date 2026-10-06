@@ -1,9 +1,10 @@
 """Untangle the small-modular question: module count vs plant size.
 
 Two controlled sweeps at the speculation device, holding the physics
-fixed (constant gain, constant f_rep ceiling, wall loading held by
-scaling chamber length with module power, driver energy scaled with
-yield):
+fixed (constant gain, constant f_rep ceiling and so constant duty, wall
+loading held by scaling chamber length with module power, driver energy
+scaled with yield), the shot and chamber scaled from the device's own
+module (1 GWe over its module count):
 
 1. Module-size sweep at fixed 1 GWe plant: what does the model charge for
    delivering the same plant from more, smaller modules?
@@ -37,12 +38,12 @@ def tier3_fwd():
     return device_fwd("spec", 1000.0)
 
 
-def scaled(fwd, module_mwe, plant_mwe):
+def scaled(fwd, module_mwe, plant_mwe, module_mwe_ref=1000.0):
     """The point's shot and chamber scaled with module power: yield, driver
-    energy and chamber length go as the module's share of 1 GWe (constant
-    gain and wall loading); radius, bore and wall class stay the point's
-    own."""
-    s = module_mwe / 1000.0
+    energy and chamber length go as the module's share of the reference
+    module (constant gain, duty and wall loading); radius, bore and wall
+    class stay the point's own."""
+    s = module_mwe / module_mwe_ref
     return dict(
         fwd,
         net_electric_mw=plant_mwe,
@@ -52,11 +53,11 @@ def scaled(fwd, module_mwe, plant_mwe):
     )
 
 
-def sweep(model, fwd, plant_of_module):
+def sweep(model, fwd, plant_of_module, module_mwe_ref):
     rows = []
     for module in MODULE_MWE:
         plant = plant_of_module(module)
-        r, d = run(model, scaled(fwd, module, plant))
+        r, d = run(model, scaled(fwd, module, plant, module_mwe_ref))
         c = r.costs
         mwh = plant * 8760 * float(r.params["availability"])
         rows.append(dict(
@@ -89,8 +90,13 @@ def show(title, rows):
 if __name__ == "__main__":
     cfg, fwd = tier3_fwd()
     model = build_model(cfg)
-    fixed_plant = sweep(model, fwd, lambda m: 1000.0)
-    standalone = sweep(model, fwd, lambda m: m)
+    _, d0 = run(model, fwd)
+    module_ref = fwd["net_electric_mw"] / d0["n_mod"]
+    print(f"speculation device: {d0['n_mod']} modules of {module_ref:.0f} MWe "
+          f"at {d0['f_rep_hz']:.2f} Hz, {d0['lcoe']:.1f} $/MWh; the sweeps "
+          f"scale that module")
+    fixed_plant = sweep(model, fwd, lambda m: 1000.0, module_ref)
+    standalone = sweep(model, fwd, lambda m: m, module_ref)
     show("module size at fixed 1 GWe plant", fixed_plant)
     show("standalone plant of one module", standalone)
     OUTPUT_DIR.mkdir(exist_ok=True)

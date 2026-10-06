@@ -48,24 +48,30 @@ capped per point by the chamber's adiabatic expansion bound, the shot
 yield is bounded by the plasma energy and the burn time, so every point
 carries the burn time its shot implies at its own burn mix, and that
 burn must fit inside the pulse period, which caps one burn section's
-fusion power and sets how deuterium-rich each grade can run. Every
-device except Helion's configuration is a constrained design-space scan
-optimum (chamber size, wall class, yield, burn mix), not an asserted
-operating point.
+fusion power and sets the burn mix and the firing rate together: a
+grade's granted rate ceiling is permission, not obligation, and the
+search fires each device at or below the lower of its grant and the
+duty bound of its own burn, in the fewest modules whose rate fits.
+Every device except Helion's configuration is a constrained
+design-space scan optimum (chamber size, wall class, yield, burn mix,
+firing rate), not an asserted operating point.
 
-Headline ladder at 1 GWe: records 115.3, Helion's requirements 105.9,
-extrapolations 37.7 (44.3 at 7% real cost of capital), speculation 13.0
-(18.2 at 7%) $/MWh; at 3 GWe the speculation park reads 11.0 $/MWh (15.4
-at 7%), so no internally consistent stack crosses the $10 target: the
-deuterium-rich designs that would (8.4 as a 3 GWe park) burn for longer
-than the period between their shots, and the closest approach rests on
-a 3% real cost of capital worth 4.4 $/MWh. Every number grants Helion's
-128 MJ shot, which no record supports and which implies a 0.3 to 0.7 s
-burn against Helion's stated pulse of hundreds of microseconds to
-milliseconds. The records device sits 9.4 $/MWh above Helion's
-requirements: reverting Helion's fourth nine of per-pulse fuel recovery
-is worth about 47 $/MWh at Helion's own mix, most of which the records
-device recovers by running as deuterium-rich as its 1 Hz period allows.
+Headline ladder at 1 GWe: records 113.3, Helion's requirements 105.9,
+extrapolations 30.1 (38.5 at 7% real cost of capital), speculation 12.4
+(20.5 at 7%) $/MWh; at 3 GWe the speculation park reads 10.1 $/MWh (17.3
+at 7%), so no internally consistent stack crosses the $10 target, and
+the closest approach, 0.1 $/MWh short, rests on a 3% real cost of
+capital worth 7.2 $/MWh. The cheap machines run deuterium-rich and slow,
+in more modules than their granted ceilings would need (26 at 0.95 Hz,
+12 at 1.58 Hz and 7 at 1.65 Hz), at 95 to 100% of the duty bound, and
+every one of them stores a tonne-class tritium inventory. Every number
+grants Helion's 128 MJ shot, which no record supports and which implies
+a 0.3 to 0.7 s burn against Helion's stated pulse of hundreds of
+microseconds to milliseconds. The records device sits 7.4 $/MWh above
+Helion's requirements: reverting Helion's fourth nine of per-pulse fuel
+recovery is worth about 47 $/MWh at Helion's own mix, most of which the
+records device recovers by running at the deuterium-rich end of the mix
+grid, where the tritium store's He-3 return covers most of its need.
 See `docs/Helion_writeup.md` for the narrative results and
 `docs/ledger.md` for record-by-record sourcing and the tornado ranking.
 
@@ -102,7 +108,7 @@ study's solver paths.
 cd scripts
 python3 run_baseline.py    # design-basis point (Helion's implied point)
 python3 tiers.py           # the evidence ladder at 1 and 3 GWe
-python3 coherent_min.py    # constrained minimum hunt (the headline numbers)
+python3 coherent_min.py    # constrained minimum hunt over chamber, wall, yield, mix and firing rate (the headline numbers)
 python3 tornado.py         # one-at-a-time reversion from the extrapolation device
 python3 he3_scan.py        # He-3 price x burn-mix sweep, and the free-He-3 optimum re-chosen per mix
 python3 breeder_loop.py    # dedicated pure-D breeders in the loop: park LCOE, endogenous He-3 cost

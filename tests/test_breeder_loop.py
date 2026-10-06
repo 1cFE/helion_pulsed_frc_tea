@@ -95,7 +95,8 @@ def test_breeders_in_the_loop_cost_more_than_free_he3(extrap):
 def test_two_machine_economy_pins(helion, extrap):
     """Park LCOE with breeders (extract mode, co-sited basis, equilibrium
     store) and the implied He-3 cost: the vendor grade prices its own He-3
-    far above the 2 M$/kg baseline entry; the extrapolation grade below 1."""
+    far above the 2 M$/kg baseline entry; the extrapolation grade, whose
+    0.80 mix already breeds most of what it burns, under 1."""
     model, fwd, res = helion
     lean, _ = run(model, dict(fwd, dhe3_dd_frac=0.314, f_rad=f_rad_floor(0.314), u_he3=0.0))
     br = breeder_module(model, res, "extract")
@@ -107,8 +108,8 @@ def test_two_machine_economy_pins(helion, extrap):
     lean, _ = run(model, dict(fwd, dhe3_dd_frac=0.131, f_rad=f_rad_floor(0.131), u_he3=0.0))
     br = breeder_module(model, res, "extract")
     loop = close_loop(lean, br, per_module_costs(res), "rpe", res.params["interest_rate"])
-    assert loop["eq"]["lcoe"] == pytest.approx(36.6, abs=0.2)
-    assert loop["eq"]["he3_musd_kg"] == pytest.approx(1.30, abs=0.02)
+    assert loop["eq"]["lcoe"] == pytest.approx(33.6, abs=0.2)
+    assert loop["eq"]["he3_musd_kg"] == pytest.approx(0.85, abs=0.02)
 
 
 def test_neutron_power_per_he3_bred_is_the_dd_branch_identity(extrap):
@@ -168,5 +169,5 @@ def test_unit_cost_pins(helion, extrap):
     model, fwd, res = extrap
     br = breeder_module(model, res, "extract")
     u, lcoe = device_at_breeder_price(model, fwd, res, br, per_module_costs(res), "rpe", 1.0)
-    assert u == pytest.approx(1.35e6, rel=0.01)
-    assert lcoe == pytest.approx(32.8, abs=0.2)
+    assert u == pytest.approx(0.89e6, rel=0.01)
+    assert lcoe == pytest.approx(28.7, abs=0.2)

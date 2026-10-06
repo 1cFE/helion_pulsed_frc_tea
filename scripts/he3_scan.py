@@ -20,10 +20,11 @@ mixes fail constraint 8, their burn longer than the pulse period) is
 starred.
 
 A price concession also changes which mix the design search picks, so
-the footer re-runs the search at u_he3 = 0 per burn mix (optimum_by_mix)
+the footer re-runs the search at u_he3 = 0 per burn mix (optimum_by_mix,
+chamber, wall and firing rate chosen as the design search chooses them)
 at the extrapolation and speculation grades and both plant sizes: free
-He-3 is priced at the He-3-rich machine it would buy, not at the D-rich
-machine the ledger price chose.
+He-3 is priced at the machine it would buy, not at the machine the ledger
+price chose.
 """
 import csv
 import itertools
@@ -37,6 +38,7 @@ from coherent_min import (
     RADII_M,
     YIELDS_MJ,
     point_fwd,
+    rate_designs,
     tier_fwd,
 )
 from study import (
@@ -53,7 +55,7 @@ from study import (
 )
 
 U_HE3_USD_KG = (2e7, 4.5e6, 2e6, 1e6, 5e5, 1e5, 0.0)
-DD_FRACS = (0.131, 0.314, 0.5, 0.7, 0.85, 0.95)
+DD_FRACS = (0.131, 0.314, 0.5, 0.7, 0.8, 0.85, 0.95)
 RE_PRICE_TOP_N = 5
 
 
@@ -61,12 +63,13 @@ def optimum_by_mix(model, u_he3, net_electric_mw=1000.0, tier="tier3",
                    yields=YIELDS_MJ, lengths=LENGTHS_M, radii=RADII_M,
                    walls=FW_CLASSES):
     """Best coherent design per burn mix at one He-3 price: the
-    coherent_min grid re-run with u_he3 overridden, so a price concession
-    is priced at the mix and chamber it would choose rather than at the
-    machine the ledger price chose. A tier-3 grid keeps the yield free;
-    any other tier keeps the stack's design-basis shot. The 1 GWe grid is
-    scanned in full; a larger plant re-prices the top designs per mix,
-    since the integer module count can trip the wall audit at size."""
+    coherent_min grid, rate ladder included, re-run with u_he3 overridden,
+    so a price concession is priced at the mix, chamber and rate it would
+    choose rather than at the machine the ledger price chose. A tier-3
+    grid keeps the yield free; any other tier keeps the stack's
+    design-basis shot. The 1 GWe grid is scanned in full; a larger plant
+    re-prices the top designs per mix, since the integer module count can
+    trip the wall audit at size."""
     fwd0 = tier_fwd(tier)
     if tier != "tier3":
         yields = (fwd0["yield_per_shot_mj"],)
@@ -74,19 +77,16 @@ def optimum_by_mix(model, u_he3, net_electric_mw=1000.0, tier="tier3",
     for branch in BURN_BRANCHES:
         cands = []
         for y, length, radius, fw in itertools.product(yields, lengths, radii, walls):
-            fwd = point_fwd(fwd0, y, length, radius, fw, branch)
-            fwd["u_he3"] = u_he3
-            try:
-                _, diag = run(model, fwd)
-            except SizingInfeasible:
-                continue
-            if coherence_violations(fwd, diag, tier):
-                continue
-            cands.append((diag["lcoe"], y, length, radius, fw))
+            point = point_fwd(fwd0, y, length, radius, fw, branch)
+            point["u_he3"] = u_he3
+            for fwd, diag in rate_designs(model, point):
+                if coherence_violations(fwd, diag, tier):
+                    continue
+                cands.append((diag["lcoe"], y, length, radius, fw, fwd["max_f_rep"]))
         cands.sort()
         best = None
-        for lcoe1, y, length, radius, fw in cands[:RE_PRICE_TOP_N]:
-            fwd = point_fwd(fwd0, y, length, radius, fw, branch)
+        for lcoe1, y, length, radius, fw, ceiling in cands[:RE_PRICE_TOP_N]:
+            fwd = point_fwd(fwd0, y, length, radius, fw, branch, ceiling)
             fwd["u_he3"] = u_he3
             fwd["net_electric_mw"] = net_electric_mw
             try:
@@ -100,8 +100,10 @@ def optimum_by_mix(model, u_he3, net_electric_mw=1000.0, tier="tier3",
                     tier=tier, u_he3=u_he3, plant_mwe=net_electric_mw,
                     dd_frac=branch["dhe3_dd_frac"], f_rad=branch["f_rad"],
                     yield_mj=y, length_m=length, radius_m=radius, fw_class=fw,
+                    max_f_rep=round(ceiling, 4),
                     lcoe=diag["lcoe"], n_mod=diag["n_mod"],
                     f_rep_hz=round(diag["f_rep_hz"], 3),
+                    duty=round(diag["tau_burn_implied_s"] * diag["f_rep_hz"], 3),
                     tritium_adder=diag["tritium_adder_musd"],
                     availability=round(diag["availability"], 3),
                 )
@@ -117,6 +119,10 @@ if __name__ == "__main__":
     apply_records(fwd0, "tier2.yaml")
     fwd0.update(DEVICES["extrap"]["overrides"])
 
+    # The price x mix table holds the extrapolation device's chamber and
+    # rate ceiling (its own duty-bound rate), so a mix whose burn is longer
+    # than the device's overruns the period there and is starred; the
+    # footer's re-run gives each mix its own rate.
     rows = []
     for u in U_HE3_USD_KG:
         for dd in DD_FRACS:
@@ -169,9 +175,11 @@ if __name__ == "__main__":
         w.writerows(mix_rows)
     print("\nfree He-3 (u_he3 = 0), best coherent design per burn mix:")
     print(f"{'tier':>6} {'MWe':>5} {'dd':>6} {'LCOE':>6} {'yield':>6} {'L':>4} "
-          f"{'r':>5} {'wall':>6} {'n_mod':>5} {'f_rep':>6} {'T-adder':>8} {'avail':>6}")
+          f"{'r':>5} {'wall':>6} {'ceil':>6} {'n_mod':>5} {'f_rep':>6} {'duty':>5} "
+          f"{'T-adder':>8} {'avail':>6}")
     for r in mix_rows:
         print(f"{r['tier']:>6} {r['plant_mwe']:>5.0f} {r['dd_frac']:>6.3f} "
               f"{r['lcoe']:>6.1f} {r['yield_mj']:>6.0f} {r['length_m']:>4.0f} "
-              f"{r['radius_m']:>5.2f} {r['fw_class']:>6} {r['n_mod']:>5} "
-              f"{r['f_rep_hz']:>6.2f} {r['tritium_adder']:>8.1f} {r['availability']:>6.3f}")
+              f"{r['radius_m']:>5.2f} {r['fw_class']:>6} {r['max_f_rep']:>6.2f} "
+              f"{r['n_mod']:>5} {r['f_rep_hz']:>6.2f} {r['duty']:>5.2f} "
+              f"{r['tritium_adder']:>8.1f} {r['availability']:>6.3f}")
