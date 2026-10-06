@@ -66,13 +66,14 @@ TAU_S = (1e-4, 3e-4, 1e-3, 3e-3)  # dwell at fusion conditions
 
 # The points where the store-and-decay cycle applies: Helion's own device,
 # the records, extrapolation and speculation devices, which store tritium
-# at dd_frac 0.85, 0.80 and 0.85, the extrapolation stack on Helion's
+# at dd_frac 0.85, 0.80 and 0.70, the extrapolation stack on Helion's
 # chamber at its 3 Hz ceiling (the tier-2 regression pin, which
-# constraint 8 flags), the deuterium-rich end's extrapolation design, and
-# the He-3-rich preset's best speculation design (the design search's
-# optimum at dd_frac 0.131: 50 T, the sourced 50 MJ bank, 500 MJ shots in
-# a 15 m x 1.5 m single module), which buys its He-3 and stores the least
-# tritium of any design here.
+# constraint 8 flags), the deuterium-rich end's extrapolation and
+# speculation designs, and the He-3-rich preset's best speculation design
+# (the design search's optimum at dd_frac 0.131: the basis field and the
+# sourced 50 MJ bank, 500 MJ shots in a 15 m x 1.5 m single module at
+# 2.67 Hz), which buys its He-3 and stores the least tritium of any
+# design here.
 POINTS = {
     "helion": dict(tier="tier2", tier_cfgs=(), overrides={}),
     "records": dict(
@@ -97,9 +98,14 @@ POINTS = {
         tier="tier3",
         tier_cfgs=DEVICES["spec"]["configs"],
         overrides=dict(dhe3_dd_frac=0.131, f_rad=f_rad_floor(0.131),
-                       b_center=50.0, e_driver_mj=50.0, yield_per_shot_mj=500.0,
+                       e_driver_mj=50.0, yield_per_shot_mj=500.0,
                        chamber_length=15.0, plasma_t=1.5, r_bore=1.6,
-                       fw_class="panel", max_f_rep=5.0),
+                       fw_class="panel", max_f_rep=2.815),
+    ),
+    "spec_d_rich": dict(
+        tier="tier3",
+        tier_cfgs=D_RICH_DEVICES["spec"]["configs"],
+        overrides=D_RICH_DEVICES["spec"]["overrides"],
     ),
     "spec": dict(
         tier="tier3",

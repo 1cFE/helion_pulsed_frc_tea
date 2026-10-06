@@ -15,21 +15,24 @@ grade's coil bound (constraint 9).
 The compression field and the driver bank are scanned, graded by the
 evidence ladder. The patent's 22 T burn point and Polaris's sourced 50 MJ
 bank are the design basis; no record exists above either. The records
-grade holds both. The extrapolation grade holds the field at the basis,
-bounded by the coil's own mechanics (the basis coil already cycles at or
-above the copper-alloy gigacycle band, constraint 9), and lets the bank
-double: a bank is a count of modular capacitor units, so a larger one is
-procurement rather than technology. Speculation scans the field to 50 T,
-past the coil's mechanical limit and labelled so on every row, and the
-bank to four times Polaris. The burn point moves with the field: at beta
-= 1 the density scales as B^2, so the breakeven time and the implied burn
-fall as B^-2, the per-pulse burnup rises as B^2, and the compressed flux
-volume that caps f_pdv shrinks as B^-2 and grows with the bank, so the
-two knobs are coupled through the chamber rather than scanned as if
-independent. The bank's shot keeps the gain: the records and
-extrapolation grades hold the design-basis gain (2.56), so the burn the
-shot implies is unchanged by the bank and the duty falls with the module
-power per shot; speculation frees the gain.
+grade holds both. The extrapolation grade holds the field at the basis
+and lets the bank double: a bank is a count of modular capacitor units,
+so a larger one is procurement rather than technology. Speculation scans
+the field to 50 T and the bank to four times Polaris, but the coil bound
+(constraint 9) is the same at every grade: the basis coil already cycles
+at or above the copper-alloy gigacycle band and no higher fatigue basis
+is sourced anywhere in this work, so every point above 22 T is excluded
+from the devices at every grade and reported as a sensitivity, what a
+higher field would be worth on a coil this work cannot price. The burn
+point moves with the field: at beta = 1 the density scales as B^2, so
+the breakeven time and the implied burn fall as B^-2, the per-pulse
+burnup rises as B^2, and the compressed flux volume that caps f_pdv
+shrinks as B^-2 and grows with the bank, so the two knobs are coupled
+through the chamber rather than scanned as if independent. The bank's
+shot keeps the gain: the records and extrapolation grades hold the
+design-basis gain (2.56), so the burn the shot implies is unchanged by
+the bank and the duty falls with the module power per shot; speculation
+frees the gain.
 
 The firing rate is a design choice, not a grant. costingfe sizes a plant by
 bisecting f_rep against the per-module net target and solving the integer
@@ -89,7 +92,9 @@ LENGTHS_M = (10.0, 15.0, 20.0, 30.0, 45.0, 60.0)
 RADII_M = (0.5, 0.75, 1.0, 1.5)
 # The compression field and the driver bank, graded (see the module
 # docstring): the basis at records; the basis field with a doubled bank at
-# extrapolations; the field to 50 T and the bank to 200 MJ at speculation.
+# extrapolations; the bank to 200 MJ at speculation, where the field is
+# scanned to 50 T as a priced sensitivity that the coil bound excludes
+# from the device at every grade.
 FIELDS_T = {"tier1": (B_COMPRESSION_T,), "tier2": (B_COMPRESSION_T,),
             "tier3": (B_COMPRESSION_T, 30.0, 40.0, 50.0)}
 BANKS_MJ = {"tier1": (E_DEL_BASIS_MJ,), "tier2": (E_DEL_BASIS_MJ, 100.0),
@@ -328,6 +333,13 @@ def duty_only(r):
     return all(v.startswith("duty") for v in r["violations"].split("; "))
 
 
+def coil_only(r):
+    """A design the coil bound (constraint 9) alone excludes: coherent in
+    every other respect, resting on a coil this work cannot price."""
+    return bool(r["violations"]) and all(
+        v.startswith("coil pressure") for v in r["violations"].split("; "))
+
+
 def report(tier, rows, model3):
     ok = [r for r in rows if r["coherent"]]
     ok.sort(key=lambda r: r["lcoe"])
@@ -335,21 +347,27 @@ def report(tier, rows, model3):
           f"(granted ceiling {rows[0]['granted_hz']:.0f} Hz; fields "
           f"{'/'.join(f'{b:.0f}' for b in FIELDS_T[tier])} T, banks "
           f"{'/'.join(f'{e:.0f}' for e in BANKS_MJ[tier])} MJ; * = coil past "
-          f"the {COIL_PRESSURE_BASIS_MPA:.0f} MPa basis) ==")
+          f"the {COIL_PRESSURE_BASIS_MPA:.0f} MPa basis, excluded by "
+          f"constraint 9 at every grade) ==")
     print(HEADER)
     for r in ok[:10]:
         print(line(r))
 
     # The field and the bank priced one at a time: the best coherent
-    # design at each field (all banks) and at each bank (all fields), so
+    # design at each bank (all fields), and at each field the best design
+    # the coil bound alone excludes (a sensitivity, not a device: what a
+    # higher field would be worth on a coil this work cannot price), so
     # the writeup can say what scaling each is worth at this grade.
+    sens = [r for r in rows if coil_only(r)]
     if len(FIELDS_T[tier]) > 1:
-        print("  best coherent design per compression field:")
+        print("  best design per compression field (above the basis: the "
+              "best the coil bound alone excludes, a sensitivity):")
         print("  " + HEADER)
         for b_t in FIELDS_T[tier]:
-            at = [r for r in ok if r["field_t"] == b_t]
+            pool = ok if b_t == B_COMPRESSION_T else sens
+            at = [r for r in pool if r["field_t"] == b_t]
             print("  " + (line(min(at, key=lambda r: r["lcoe"])) if at
-                          else f"{b_t:.0f} T: no coherent design"))
+                          else f"{b_t:.0f} T: no design"))
     if len(BANKS_MJ[tier]) > 1:
         print("  best coherent design per driver bank:")
         print("  " + HEADER)
@@ -358,10 +376,12 @@ def report(tier, rows, model3):
             print("  " + (line(min(at, key=lambda r: r["lcoe"])) if at
                           else f"{e:.0f} MJ: no coherent design"))
         if len(FIELDS_T[tier]) > 1:
-            print("  best coherent design per (field, bank):")
+            print("  best design per (field, bank), the fields above the "
+                  "basis coil-excluded:")
             print("  " + HEADER)
             for b_t, e in itertools.product(FIELDS_T[tier], BANKS_MJ[tier]):
-                at = [r for r in ok if r["field_t"] == b_t and r["bank_mj"] == e]
+                pool = ok if b_t == B_COMPRESSION_T else sens
+                at = [r for r in pool if r["field_t"] == b_t and r["bank_mj"] == e]
                 if at:
                     print("  " + line(min(at, key=lambda r: r["lcoe"])))
 
@@ -389,16 +409,6 @@ def report(tier, rows, model3):
             tail = (f"   {c['lcoe']:>10.1f} {c['n_mod']:>5} {c['f_rep_hz']:>6.2f} "
                     f"{c['duty']:>5.2f}" + ("" if c["coherent"] else " excluded"))
         print("  " + line(best) + tail)
-    if len(FIELDS_T[tier]) > 1:
-        # The same mix table at the basis field alone, so the mix the
-        # field chooses can be read against the mix the basis chooses.
-        print(f"  best coherent design per burn mix at the {B_COMPRESSION_T:.0f} T basis field:")
-        print("  " + HEADER)
-        for b in BURN_BRANCHES:
-            at = [r for r in ok if r["dd_frac"] == b["dhe3_dd_frac"]
-                  and r["field_t"] == B_COMPRESSION_T]
-            if at:
-                print("  " + line(min(at, key=lambda r: r["lcoe"])))
 
     if ok:
         # The module-count trade at the optimum's own shot, chamber and
@@ -420,9 +430,9 @@ def report(tier, rows, model3):
         # coherent at 1 GWe can trip the wall audit at 3; take the best
         # design that stays coherent at the larger plant, and report
         # the 1 GWe optimum's own 3 GWe reading beside it.
-        d3, v3 = at_plant_size(model3, tier, ok[0], 3000.0)
+        d3_opt, v3 = at_plant_size(model3, tier, ok[0], 3000.0)
         print("  the 1 GWe optimum at 3 GWe: "
-              + (f"LCOE {d3['lcoe']:.1f}, {sizing(d3)}" if d3 else "")
+              + (f"LCOE {d3_opt['lcoe']:.1f}, {sizing(d3_opt)}" if d3_opt else "")
               + (f"; NOT coherent: {'; '.join(v3)}" if v3 else ""))
         best3 = None
         for cand in ok[:30]:
@@ -435,20 +445,39 @@ def report(tier, rows, model3):
             cand, d3 = best3
             print(f"  best coherent at 3 GWe: LCOE {d3['lcoe']:.1f}, "
                   f"{design(cand)}, {sizing(d3)}")
-        if o["field_t"] > B_COMPRESSION_T or o["bank_mj"] > E_DEL_BASIS_MJ:
-            # What the two scanned knobs are worth at this grade: the best
-            # design with each held at the basis, and with both held.
-            for label, keep in (("field held at the basis", lambda r: r["field_t"] == B_COMPRESSION_T),
-                                ("bank held at the basis", lambda r: r["bank_mj"] == E_DEL_BASIS_MJ),
-                                ("both held at the basis", lambda r: r["field_t"] == B_COMPRESSION_T
-                                 and r["bank_mj"] == E_DEL_BASIS_MJ)):
-                held = [r for r in ok if keep(r)]
-                if held:
-                    h = min(held, key=lambda r: r["lcoe"])
-                    d3, v3 = at_plant_size(model3, tier, h, 3000.0)
-                    print(f"  {label}: LCOE {h['lcoe']:.1f} (+{h['lcoe'] - o['lcoe']:.1f}), "
-                          f"{design(h)}, {sizing(h)}"
-                          + (f"; at 3 GWe {d3['lcoe']:.1f}, {sizing(d3)}" if d3 and not v3 else ""))
+        if o["bank_mj"] > E_DEL_BASIS_MJ:
+            # What the scanned bank is worth at this grade: the best
+            # coherent design with it held at the sourced Polaris bank.
+            held = [r for r in ok if r["bank_mj"] == E_DEL_BASIS_MJ]
+            if held:
+                h = min(held, key=lambda r: r["lcoe"])
+                d3, v3 = at_plant_size(model3, tier, h, 3000.0)
+                print(f"  bank held at the basis: LCOE {h['lcoe']:.1f} (+{h['lcoe'] - o['lcoe']:.1f}), "
+                      f"{design(h)}, {sizing(h)}"
+                      + (f"; at 3 GWe {d3['lcoe']:.1f}, {sizing(d3)}" if d3 and not v3 else ""))
+        if len(FIELDS_T[tier]) > 1:
+            # What a field above the basis would be worth at this grade,
+            # on a coil this work cannot price: the best design at each
+            # scanned field that the coil bound alone excludes, against
+            # the coherent optimum, at both plant sizes. A sensitivity,
+            # not a device.
+            print("  the field above the basis, excluded from every device "
+                  "by the coil bound (constraint 9), as a sensitivity:")
+            for b_t in FIELDS_T[tier]:
+                if b_t == B_COMPRESSION_T:
+                    continue
+                at = [r for r in sens if r["field_t"] == b_t]
+                if not at:
+                    print(f"    {b_t:.0f} T: no design the coil bound alone excludes")
+                    continue
+                h = min(at, key=lambda r: r["lcoe"])
+                d3, v3 = at_plant_size(model3, tier, h, 3000.0)
+                worth3 = (f"; at 3 GWe {d3['lcoe']:.1f} ({d3['lcoe'] - d3_opt['lcoe']:+.1f}), {sizing(d3)}"
+                          if d3 and d3_opt and all(v.startswith("coil pressure") for v in v3)
+                          else "")
+                print(f"    {b_t:.0f} T: LCOE {h['lcoe']:.1f} ({h['lcoe'] - o['lcoe']:+.1f}), "
+                      f"{design(h)}, {sizing(h)}, coil {h['coil_pressure_mpa']:.0f} MPa"
+                      + worth3)
     # The deuterium-rich branch: its best design under all nine
     # constraints (rate included), and the design it would be at the
     # granted ceiling in the fewest modules, which constraint 8 alone

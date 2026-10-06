@@ -73,9 +73,12 @@ def test_run_reports_the_implied_burn_of_every_point(model):
     at its own burn mix and at its own compression field. Helion's device
     holds He3/D 0.22 with the recycled bred He-3 counted (the patent's
     0.16 is the purchased share), so its 128 MJ shot reads 0.32 s against
-    0.42 s at the patent mix; the speculation device's 600 MJ shot from
-    its 100 MJ bank at 50 T and dd_frac 0.85 reads 0.28 s, the gain of 6
-    at a breakeven time 5.2x shorter than the basis field's."""
+    0.42 s at the patent mix; the speculation device's 512 MJ shot from
+    its 200 MJ bank, the same gain at the basis field and dd_frac 0.70,
+    reads 0.51 s, between Helion's mix and the deuterium-rich end's 0.68
+    s. A higher field would shorten the burn as B^-2 at pinned burnup,
+    and by more at the point's own burnup, where the field lets more bred
+    He-3 burn in the loop and the plasma it accounts for is richer."""
     assert X_S_REFERENCE == 0.7
     assert chi_from_xs(X_S_REFERENCE) == pytest.approx(0.52, abs=0.01)
     _, fwd = device_fwd("helion", 1000.0)
@@ -84,46 +87,44 @@ def test_run_reports_the_implied_burn_of_every_point(model):
     assert implied_burn_s(128.1, 50.0, X_S_REFERENCE) == pytest.approx(0.42, abs=0.02)
     _, fwd = device_fwd("spec", 1000.0)
     _, diag = run(model, fwd)
-    assert diag["tau_burn_implied_s"] == pytest.approx(0.28, abs=0.02)
-    # the density scaling alone is B^2 (burnup pinned); at the point's own
-    # burnup the field also lets more bred He-3 burn in the loop, so the
-    # plasma it accounts for is richer and the ratio is larger still
+    assert diag["tau_burn_implied_s"] == pytest.approx(0.51, abs=0.02)
     from study import breakeven_time_at_point_s
     pinned = dict(fwd, burn_fraction=1.2e-4, burn_fraction_he3=4.1e-4)
-    assert breakeven_time_at_point_s(dict(pinned, b_center=22.0)) / breakeven_time_at_point_s(pinned) \
+    assert breakeven_time_at_point_s(pinned) / breakeven_time_at_point_s(dict(pinned, b_center=50.0)) \
         == pytest.approx((50.0 / 22.0) ** 2, rel=1e-6)
-    assert breakeven_time_at_point_s(dict(fwd, b_center=22.0)) / breakeven_time_at_point_s(fwd) \
+    assert breakeven_time_at_point_s(fwd) / breakeven_time_at_point_s(dict(fwd, b_center=50.0)) \
         > (50.0 / 22.0) ** 2
 
 
 def test_duty_table_reads_constraint_8_across_the_xs_span():
     """At the reference x_s every design fits its period: the records
-    and extrapolation designs at 93 to 100% of it, since the search fires
-    each in the fewest modules whose rate fits its burn, and the
-    speculation device at 83%, its single module firing at the rate 1
-    GWe needs with the wall binding first; at x_s 0.5 (chi 0.30) every
-    optimized design would overrun, and at 0.85 all pass. The duty is the
-    module's fusion power over the cap chi E_del / breakeven time, which
-    the speculation device's field and bank raise to 2.1 GW. The records
-    and speculation devices are the deuterium-rich end itself, so each is
-    listed once."""
+    and extrapolation designs and the deuterium-rich end's at 93 to 100%
+    of it, since the search fires each in the fewest modules whose rate
+    fits its burn, and the speculation device at 86%, its two modules
+    on a bank four times Polaris's; at x_s 0.5 (chi 0.30) every
+    optimized design would overrun, and at 0.85 all pass. The duty is
+    the module's fusion power over the cap chi E_del / breakeven time,
+    which the bank raises in proportion: 1.0 GW at the speculation
+    device's 0.70 mix on 200 MJ. The records device is the
+    deuterium-rich end itself, so it is listed once."""
     from yield_bound import duty_table
 
     rows = duty_table()
     designs = {r["design"] for r in rows}
-    assert designs == {"records", "helion", "extrap", "spec", "extrap (D-rich)"}
+    assert designs == {"records", "helion", "extrap", "spec", "extrap (D-rich)", "spec (D-rich)"}
     for r in rows:
         assert r["duty"] == pytest.approx(r["p_fus_module_mw"] / r["p_fus_cap_mw"], rel=1e-9)
         if r["x_s"] == 0.7:
             assert r["duty"] <= 1.0
     ref = {r["design"]: r["duty"] for r in rows if r["x_s"] == 0.7}
     assert ref["helion"] == pytest.approx(0.32, abs=0.01)
-    for d in ("records", "extrap", "extrap (D-rich)"):
+    for d in ("records", "extrap", "extrap (D-rich)", "spec (D-rich)"):
         assert 0.93 <= ref[d] <= 1.0, d
-    assert ref["spec"] == pytest.approx(0.83, abs=0.01)
+    assert ref["spec"] == pytest.approx(0.86, abs=0.01)
     cap = {r["design"]: r["p_fus_cap_mw"] for r in rows if r["x_s"] == 0.7}
-    assert cap["spec"] == pytest.approx(2140, rel=0.01)
+    assert cap["spec"] == pytest.approx(1000, rel=0.01)
     assert cap["extrap"] == pytest.approx(2 * cap["records"] * 206.3 / 126.1, rel=0.02)
+    assert cap["spec"] == pytest.approx(4 * cap["records"] * 206.3 / 104.2, rel=0.02)
     thin = {r["design"]: r["duty"] for r in rows if r["x_s"] == 0.5}
     fat = {r["design"]: r["duty"] for r in rows if r["x_s"] == 0.85}
     assert all(thin[d] > 1.0 for d in designs - {"helion"})
@@ -134,20 +135,21 @@ def test_duty_table_reads_constraint_8_across_the_xs_span():
 def test_bound_table_lists_both_shots_across_the_xs_span():
     from yield_bound import bound_table
     rows = bound_table()
-    shots = sorted({r["yield_mj"] for r in rows})
-    assert shots == [128.1, 600.0]
+    shots = sorted({round(r["yield_mj"], 1) for r in rows})
+    assert shots == [128.1, 512.4]
     assert sorted({r["x_s"] for r in rows}) == [0.5, 0.7, 0.85]
-    row = next(r for r in rows if r["yield_mj"] == 128.1 and r["x_s"] == 0.85)
+    row = next(r for r in rows if round(r["yield_mj"], 1) == 128.1 and r["x_s"] == 0.85)
     assert row["b_center_t"] == 22.0
     assert row["tau_burn_s"] == pytest.approx(0.31, abs=0.02)
     assert row["yield_at_vendor_pulse_mj"] == pytest.approx(0.41, abs=0.03)
-    # the speculation shot is read at its own point: 50 T, where the
-    # patent-mix breakeven time is 17 ms, and from its 100 MJ bank
-    row = next(r for r in rows if r["yield_mj"] == 600.0 and r["x_s"] == 0.7)
-    assert (row["b_center_t"], row["e_driver_mj"]) == (50.0, 100.0)
-    assert row["tau_f_s"] == pytest.approx(0.0166, abs=0.0005)
-    assert row["tau_burn_s"] == pytest.approx(0.19, abs=0.01)
-    assert row["yield_at_vendor_pulse_mj"] == pytest.approx(3.1, abs=0.1)
+    # the speculation shot is the same gain on a bank four times Polaris's
+    # at the basis field: the same burn, and four times the yield at the
+    # vendor's pulse
+    row = next(r for r in rows if round(r["yield_mj"], 1) == 512.4 and r["x_s"] == 0.7)
+    assert (row["b_center_t"], row["e_driver_mj"]) == (22.0, 200.0)
+    assert row["tau_f_s"] == pytest.approx(0.0858, abs=0.0005)
+    assert row["tau_burn_s"] == pytest.approx(0.42, abs=0.01)
+    assert row["yield_at_vendor_pulse_mj"] == pytest.approx(1.21, abs=0.05)
 
 
 def test_slough_cfr2_design_point_satisfies_the_bound():

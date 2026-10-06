@@ -116,11 +116,11 @@ def test_the_search_evaluates_sub_ceiling_rates_and_they_admit_the_rich_mixes(mo
 def test_the_field_and_the_bank_are_graded_by_the_evidence_ladder():
     """The patent's 22 T and Polaris's 50 MJ are the design basis and no
     record exists above either: the records grade holds both, the
-    extrapolation grade holds the field (the coil bound) and doubles the
-    bank, speculation scans the field to 50 T and the bank to 200 MJ. The
-    shot is a gain on the bank: the design-basis gain alone below
-    speculation, free there, with the sourced bank reproducing the 128 to
-    2000 MJ yield grid."""
+    extrapolation grade holds the field and doubles the bank, speculation
+    takes the bank to 200 MJ and scans the field to 50 T as a sensitivity
+    the coil bound excludes at every grade. The shot is a gain on the
+    bank: the design-basis gain alone below speculation, free there, with
+    the sourced bank reproducing the 128 to 2000 MJ yield grid."""
     from study import B_COMPRESSION_T, E_DEL_BASIS_MJ, GAIN_BASIS
 
     assert FIELDS_T["tier1"] == FIELDS_T["tier2"] == (B_COMPRESSION_T,)
@@ -136,24 +136,27 @@ def test_the_field_and_the_bank_are_graded_by_the_evidence_ladder():
     assert len(scan_grid("tier3")) == 4 * 3 * 9 * 6 * 4 * 2 * 7
 
 
-def test_a_point_above_the_basis_field_is_labelled_and_bounded(model):
-    """A 40 T point in the speculation device's chamber is admissible at
-    speculation and carries the coil pressure it rests on (637 MPa,
-    past the basis); the same point is excluded by constraint 9 at the
-    extrapolation grade. The flash prune ends a ladder whose shot the wall
-    cannot survive."""
+def test_a_point_above_the_basis_field_is_labelled_and_excluded_at_every_grade(model):
+    """A 40 T point in a 30 m x 1.5 m chamber carries the coil pressure
+    it would rest on (637 MPa, past the basis) and is excluded by
+    constraint 9 at speculation as at the extrapolation grade; the
+    two-module rung, which fits its period, is excluded by the coil
+    alone, which is what the scan reports as the field sensitivity. The
+    flash prune ends a ladder whose shot the wall cannot survive."""
+    from coherent_min import coil_only
     from study import E_FLASH_MELT_MJ_M2
 
     branch = BURN_BRANCHES[-1]
     point = (40.0, 100.0, 6.0, 30.0, 1.5, "panel", branch)
     rows = point_rows(model, "tier3", tier_fwd("tier3"), point)
     assert rows and all(r["field_t"] == 40.0 and r["bank_mj"] == 100.0 for r in rows)
-    assert all(r["coil_past_basis"] for r in rows)
+    assert all(r["coil_past_basis"] and not r["coherent"] for r in rows)
+    assert all("coil pressure" in r["violations"] for r in rows)
     assert rows[0]["coil_pressure_mpa"] == pytest.approx(636.6, abs=1)
-    # the single module at the 10 Hz grant overruns its period; the
-    # two-module rung fits, and carries the coil label all the same
-    assert not rows[0]["coherent"] and rows[0]["violations"].startswith("duty")
-    assert rows[1]["coherent"] and rows[1]["n_mod"] == 2
+    # the single module at the 10 Hz grant overruns its period as well;
+    # the two-module rung fits it and is excluded by the coil alone
+    assert "duty" in rows[0]["violations"] and not coil_only(rows[0])
+    assert rows[1]["n_mod"] == 2 and coil_only(rows[1])
     rows2 = point_rows(model, "tier2", tier_fwd("tier2"), point)
     assert all("coil" in r["violations"] for r in rows2)
     melt = (22.0, 50.0, 40.0, 10.0, 0.5, "panel", branch)
