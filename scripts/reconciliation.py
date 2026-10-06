@@ -37,12 +37,20 @@ and the store markup is sized for the physics-returned energy
 Anatomy: top capital accounts at each point, so the writeup can name what
 carries the floor instead of gesturing at it.
 """
+import warnings
+
 from study import (
-    chi_from_xs,
+    B_COMPRESSION_T,
+    COIL_FATIGUE_BAND_MPA,
     DEVICES,
     OUTPUT_DIR,
     apply_records,
     build_model,
+    chi_from_xs,
+    coil_pressure_mpa,
+    duty_bound_rate_hz,
+    e_del_mj,
+    field_t,
     load_config,
     run,
 )
@@ -118,6 +126,19 @@ def anatomy_items(result) -> list[tuple[str, float]]:
     ]
 
 
+def _model_fwd(fwd, b_t):
+    """The device's forward dict at another field, with the study-only keys
+    the model rejects removed and the burnup pair at that field, for a
+    costing-only probe (no availability derivation)."""
+    from study import STUDY_KEYS, burnup_at_field
+
+    f = {k: v for k, v in fwd.items() if k not in STUDY_KEYS and k != "he3_decay_return"}
+    f["b_center"] = b_t
+    f["burn_fraction"], f["burn_fraction_he3"] = burnup_at_field(f)
+    f.setdefault("availability", fwd["availability_steady_state"])
+    return f
+
+
 def analyze(label, spec):
     base_cfg = load_config("baseline.yaml")
     model = build_model(base_cfg)
@@ -135,8 +156,10 @@ def analyze(label, spec):
     avail = float(result.params["availability"])
     mwh_per_year = 1000.0 * 8760.0 * avail  # plant MWh/yr at 1 GWe net
 
-    print(f"\n=== {label}: LCOE {diag['lcoe']:.1f} $/MWh, n_mod {n_mod}, "
-          f"f_rep {diag['f_rep_hz']:.2f} Hz, {diag['capital_per_kw']} $/kW ===")
+    print(f"\n=== {label}: LCOE {diag['lcoe']:.1f} $/MWh, {field_t(fwd):.0f} T, "
+          f"{e_del_mj(fwd):.0f} MJ bank, {float(p['yield_per_shot_mj']):.0f} MJ shots, "
+          f"n_mod {n_mod}, f_rep {diag['f_rep_hz']:.2f} Hz, "
+          f"{diag['capital_per_kw']:.0f} $/kW ===")
 
     # --- anatomy: top CAS22 accounts (C2201xx per module, the rest
     # plant-wide) + plant accounts ---
@@ -233,21 +256,51 @@ def analyze(label, spec):
         print(f"  ADDER tritium-plant band vs 200 M$ point: "
               f"{tri_lo:+.2f} / {tri_hi:+.2f} $/MWh")
 
-    # --- field/density risk (the dominant open band) ---
-    # The per-pulse burnup basis is the patent triple at 22 T; if the
-    # reactor-point compression field is lower, density and burnup fall as
-    # B^2 and the recovery nines bind harder. Priced by scaling both
-    # species' per-pulse burn fractions.
+    # --- compression-field risk (the dominant open band) ---
+    # The device's field is a scanned design choice; every consequence of
+    # the burn point follows it (study.py). Priced here: the field below
+    # the device's own, with the rate ceiling re-solved at the duty bound of
+    # the longer burn (so the plant needs more modules) and the per-pulse
+    # burnup falling as B^2 (so the recovery nines bind harder); and, where
+    # the device sits above the 22 T basis, the same design held at the
+    # basis field, the counterfactual of a coil that cannot survive the
+    # device's magnetic pressure (constraint 9).
     lcoe_c, delta_c, f_pdv_c = f_pdv_ceiling_risk(model, fwd, diag)
     print(f"  RISK f_pdv at Slough's flux-conserver ceiling "
           f"(f_pdv {f_pdv_c:.2f} against {diag['f_pdv_eff']:.2f}): "
           f"LCOE {lcoe_c:.1f} ({delta_c:+.1f}) $/MWh")
-    for b_t in (10.0, 5.0):
-        scale = (b_t / 22.0) ** 2
-        _, d_b = run(model, dict(
-            fwd, burn_fraction=1.2e-4 * scale,
-            burn_fraction_he3=4.1e-4 * scale))
-        print(f"  RISK field/density: at a {b_t:.0f} T-consistent burn point "
+    b_dev = field_t(fwd)
+    # The coil account against the field at the device's own bank, shot and
+    # chamber: costingfe prices conductor along the expansion adiabat, whose
+    # compressed flux volume shrinks as B^-2, so the account falls as the
+    # field (and the pressure it must hold) rises.
+    coil_by_field = []
+    for b_t in (22.0, 30.0, 40.0, 50.0):
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            r_b = model.forward(size_from_power=True, **_model_fwd(fwd, b_t))
+        coil_by_field.append((b_t, float(r_b.cas22_detail["C220103"])))
+    print("  coil account (C220103, M$/module) against the field at this "
+          "device's bank, shot and chamber: "
+          + ", ".join(f"{b:.0f} T {c:.1f}" for b, c in coil_by_field)
+          + "; magnetic pressure "
+          + ", ".join(f"{coil_pressure_mpa(b):.0f}" for b, _ in coil_by_field) + " MPa")
+    print(f"  coil: {coil_pressure_mpa(b_dev):.0f} MPa magnetic pressure at "
+          f"{b_dev:.0f} T, cycled every shot, against the copper-alloy "
+          f"gigacycle band {COIL_FATIGUE_BAND_MPA[0]:.0f}-{COIL_FATIGUE_BAND_MPA[1]:.0f} MPa"
+          + (" (past the basis coil: the design rests on a coil the model does not price)"
+             if b_dev > B_COMPRESSION_T else ""))
+    fields = ([B_COMPRESSION_T] if b_dev > B_COMPRESSION_T else []) + [10.0, 5.0]
+    for b_t in fields:
+        f_b = dict(fwd, b_center=b_t)
+        f_b["max_f_rep"] = min(float(fwd.get("max_f_rep", model._eng_defaults["max_f_rep"])),
+                               duty_bound_rate_hz(f_b, e_del_mj(f_b)))
+        _, d_b = run(model, f_b)
+        label = ("held at the basis field" if b_t == B_COMPRESSION_T
+                 else "field/density")
+        print(f"  RISK {label}: the device at {b_t:.0f} T (burn "
+              f"{d_b['tau_burn_implied_s']:.2f} s, {d_b['n_mod']} modules at "
+              f"{d_b['f_rep_hz']:.2f} Hz, burnup {d_b['burn_fraction']:.1e}): "
               f"LCOE {d_b['lcoe']:.1f} ({d_b['lcoe'] - diag['lcoe']:+.1f}) $/MWh")
 
     # --- credit (rerun in-model) ---

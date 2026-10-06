@@ -24,6 +24,8 @@ from study import (
     DPA_PER_MWY_M2_14MEV,
     OUTPUT_DIR,
     build_model,
+    burnup_at_field,
+    field_t,
     load_config,
     run,
     wall_load_14mev_equivalent,
@@ -79,14 +81,20 @@ def wall_damage_adder(result, fwd, mwh):
 def scan_point(name, spec):
     cfg, fwd0 = point_fwd(spec)
     model = build_model(cfg)
+    # The axis carries the point's own per-pulse burnup (the basis pair
+    # scaled as B^2 to its compression field) beside the fixed grid, so a
+    # device above the basis field is read at its own basis as well.
+    bf_own, _ = burnup_at_field(fwd0)
+    axis = sorted(set(BURN_FRACTIONS) | {bf_own})
     rows = []
     for fr in FUEL_RECOVERY:
         print(f"\n== {name} at fuel_recovery {fr} "
-              f"(+dmg = wall replacement at 50/20 dpa) ==")
+              f"(+dmg = wall replacement at 50/20 dpa; own basis "
+              f"{bf_own:.2e} at {field_t(fwd0):.0f} T) ==")
         print(f"{'bf':>7} {'f_T':>5} "
               f"{'LCOE(th)':>8} {'+dmg':>10} {'Gn':>5} "
               f"{'LCOE(pr)':>8} {'+dmg':>10}")
-        for bf in BURN_FRACTIONS:
+        for bf in axis:
             f_t = f_t_from_burnup(bf, T_I_CALIB_KEV)
             f_he3 = bf / (1.0 - fr * (1.0 - bf))
             out = {}
@@ -110,6 +118,7 @@ def scan_point(name, spec):
                   f"{pr['lcoe']:>8.1f} +{pr['dmg'][50.0]:.1f}/{pr['dmg'][20.0]:.1f}")
             rows.append(dict(
                 point=name, fuel_recovery=fr, burn_fraction=bf,
+                own_basis=(abs(bf - bf_own) < 1e-12),
                 f_t_thermalized=round(f_t, 3), f_he3_eff=round(f_he3, 3),
                 lcoe_thermalized=round(th["lcoe"], 2),
                 lcoe_prompt_loss=round(pr["lcoe"], 2),

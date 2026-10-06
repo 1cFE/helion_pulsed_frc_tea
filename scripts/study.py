@@ -25,8 +25,18 @@ combine values the review ruled mutually inconsistent:
   the fuel-handling account is raised to a tritium-plant scope whenever
   the mix crosses into that regime.
 - yield bound and duty: every point carries the burn time its shot
-  implies at the point's own burn mix (constraint 7), and that burn must
-  fit inside the pulse period at the solved rep rate (constraint 8).
+  implies at the point's own burn mix and compression field (constraint
+  7), and that burn must fit inside the pulse period at the solved rep
+  rate (constraint 8).
+- coil mechanics: the magnetic pressure the compression coil cycles to
+  on every shot, bounded at the basis coil through the extrapolation
+  grade and labelled past it at speculation (constraint 9).
+
+The compression field (b_center) and the driver bank (e_driver_mj) are
+design-search dimensions, graded by the evidence ladder; everything the
+burn point sets (breakeven time, per-pulse burnup, compressed flux
+volume, coil pressure) is derived from the point's own values through
+field_t and e_del_mj, so a scaled field moves its consequences with it.
 """
 import os
 
@@ -91,15 +101,52 @@ TRITIUM_MUSD_PER_MW_NEUTRON = 0.657
 DD_FRAC_TRITIUM_THRESHOLD = 0.488
 
 # Chamber-coupled recovery bound (coherence constraint 6). The compressed
-# flux volume is estimated as all delivered driver energy stored at the
-# basis compression field (patent triple, B = 22 T): V_i = E_del/(B^2/2mu0),
-# about 0.26 m^3 at 50 MJ. Adiabatic expansion to the chamber volume V_f
-# caps the recoverable fraction at 1 - (V_i/V_f)^(2/3), so
-# f_pdv_eff = min(claim, cap). The whole volume stroke counts: the vendor's
-# burn-cycle framework (Kirtley, DPP24) defines its convergence and
-# expansion ratios on volume, radial and axial together.
+# flux volume is all delivered driver energy stored at the point's
+# compression field: V_i = E_del/(B^2/2mu0), about 0.26 m^3 at the basis
+# (50 MJ at 22 T). Adiabatic expansion to the chamber volume V_f caps the
+# recoverable fraction at 1 - (V_i/V_f)^(2/3), so f_pdv_eff = min(claim,
+# cap). The whole volume stroke counts: the vendor's burn-cycle framework
+# (Kirtley, DPP24) defines its convergence and expansion ratios on volume,
+# radial and axial together.
+#
+# The compression field and the driver bank are design-search dimensions
+# (scripts/coherent_min.py), carried on a point as b_center [T] and
+# e_driver_mj [MJ]; a point that carries neither sits at the basis. Both
+# are read at one place each (field_t, e_del_mj) so that everything
+# derived from the burn point follows them: at beta = 1 and the patent's
+# ion temperature the density scales as B^2, so the breakeven time falls
+# as B^-2 (constraints 7 and 8), the per-pulse burnup rises as B^2 at the
+# vendor's stated dwell (the fuel cycle, the recycle losses and the
+# tritium in-pulse burn), the compressed flux volume shrinks as B^-2 and
+# grows with the bank (constraint 6), the coil account is priced by
+# costingfe at the field (b_center) and the driver account per joule
+# (e_driver_mj), and the magnetic pressure the coil must cycle rises as
+# B^2 (constraint 9).
 B_COMPRESSION_T = 22.0
+E_DEL_BASIS_MJ = 50.0
 _MU0 = 4e-7 * 3.141592653589793
+# The design-basis gain: the solved 128.1 MJ shot on the sourced 50 MJ
+# bank (config/baseline.yaml). A scaled bank at the records and
+# extrapolation grades keeps this gain, so its shot scales with the bank
+# and the burn its shot implies (gain / chi x breakeven time) does not.
+GAIN_BASIS = 128.1 / E_DEL_BASIS_MJ
+
+# Constraint 9 (the coil against its own mechanics). Every shot cycles the
+# compression coil from zero to the magnetic pressure B^2/2mu0, 1e9 to
+# 1e10 times over the book life at the rep rate: about 193 MPa at the 22
+# T basis, at or above copper-alloy gigacycle fatigue strengths of 100 to
+# 150 MPa, which the ledger carries as an open item on the basis coil
+# itself. The records and extrapolation grades are bounded by that coil:
+# no field above the basis has a material with a gigacycle record behind
+# it, so the field holds at the patent point there. Speculation lifts the
+# bound and scans the field to 50 T (about 1 GPa), and every point above
+# the basis is labelled as resting on a coil the model does not price:
+# costingfe's coil account prices conductor mass along the expansion
+# adiabat, which shrinks with the compressed flux volume as the field
+# rises, and carries no structure term for the pressure.
+COIL_PRESSURE_BASIS_MPA = B_COMPRESSION_T**2 / (2.0 * _MU0) / 1e6
+COIL_FATIGUE_BAND_MPA = (100.0, 150.0)
+COIL_PRESSURE_CAP_MPA = {"tier2": COIL_PRESSURE_BASIS_MPA, "tier3": math.inf}
 
 # Constraint 7 (the shot against the plasma energy and the burn time):
 # gain <= chi x tau_burn / tau_f. The patent burn point (US 11,469,003 B2
@@ -114,9 +161,13 @@ N_D_PATENT_M3 = 0.75e22
 HE3_OVER_D_PATENT = 0.158
 VENDOR_PULSE_S = 1e-3
 X_S_REFERENCE = 0.7
-# Concept-YAML per-pulse D burnup: the default exposure behind the tritium
-# in-pulse burn floor when a point does not override burn_fraction.
+# Concept-YAML per-pulse burnup pair at the basis field (the patent density
+# over the vendor's stated sub-millisecond dwell): the D exposure behind
+# the tritium in-pulse burn floor and the He-3 pass behind the recycle
+# credit, when a point does not carry its own. Both scale as B^2 with the
+# density (burnup_at_field).
 _BF_DEFAULT = 1.2e-4
+_BF_HE3_DEFAULT = 4.1e-4
 _T_I_CALIB_KEV = 70.0
 # Constraint 8: a shot's implied burn must fit inside the pulse period. One
 # burn section holds one plasmoid, so the next shot cannot be fired while
@@ -182,6 +233,54 @@ def he3_purchase_fraction(dd_frac: float, interest_rate: float,
     return num / den
 
 
+def field_t(fwd: dict) -> float:
+    """The point's compression field [T]: b_center where it carries one,
+    the patent basis otherwise."""
+    return float(fwd.get("b_center", B_COMPRESSION_T))
+
+
+def e_del_mj(fwd: dict) -> float:
+    """The point's delivered driver energy [MJ]: e_driver_mj where it
+    carries one, the sourced Polaris bank otherwise."""
+    return float(fwd.get("e_driver_mj", E_DEL_BASIS_MJ))
+
+
+def density_scale(b_t: float) -> float:
+    """n / n_patent at beta = 1 and the patent's ion temperature: B^2."""
+    return (b_t / B_COMPRESSION_T) ** 2
+
+
+def n_d_at_field(b_t: float) -> float:
+    """The patent's deuterium density scaled to the field [m^-3]."""
+    return N_D_PATENT_M3 * density_scale(b_t)
+
+
+def burnup_at_field(fwd: dict) -> tuple[float, float]:
+    """(burn_fraction, burn_fraction_he3) the point burns per pulse: its
+    own where it carries them, else the basis pair scaled as B^2 with the
+    density at the vendor's stated dwell."""
+    from mix import _sv_ratio
+
+    s = density_scale(field_t(fwd))
+    bf = float(fwd.get("burn_fraction", _BF_DEFAULT * s))
+    if "burn_fraction_he3" in fwd:
+        bf_he3 = float(fwd["burn_fraction_he3"])
+    elif "burn_fraction" in fwd:
+        # Both species' per-pass burn fractions come from the same n tau,
+        # so a point that carries only the D burnup implies the He-3 one
+        # through the reactivity ratio at the calibration temperature.
+        bf_he3 = bf * _sv_ratio(_T_I_CALIB_KEV)
+    else:
+        bf_he3 = _BF_HE3_DEFAULT * s
+    return bf, bf_he3
+
+
+def coil_pressure_mpa(b_t: float) -> float:
+    """Magnetic pressure B^2/2mu0 [MPa], the stress the compression coil
+    cycles to on every shot."""
+    return b_t**2 / (2.0 * _MU0) / 1e6
+
+
 def chi_from_xs(x_s: float) -> float:
     """Plasma-thermal share of the in-tank driver energy at peak compression.
 
@@ -223,24 +322,23 @@ def breakeven_time_s(b_t: float = None, t_i_kev: float = None,
 def breakeven_time_at_point_s(fwd: dict) -> float:
     """The breakeven time of the plasma this point actually burns.
 
-    The compression basis stays the patent's (n_D, B, T_i); what changes
-    with the burn mix is the composition, and with it the fusion power
-    density. The composition counted is the one the model's own fuel
-    accounting implies: purchased He-3 plus the bred He-3 that recycles and
-    burns at f_He3_eff, which is why a D-rich point is less power-dense
-    than the knob's naive He3/D map alone would say.
+    The burn point is the patent's at the point's own field: the ion
+    temperature stays the patent's, the density scales as B^2 at beta = 1,
+    so the breakeven time falls as B^-2. What changes with the burn mix is
+    the composition, and with it the fusion power density. The composition
+    counted is the one the model's own fuel accounting implies: purchased
+    He-3 plus the bred He-3 that recycles and burns at f_He3_eff (at the
+    point's own per-pulse burnup), which is why a D-rich point is less
+    power-dense than the knob's naive He3/D map alone would say.
     """
-    from mix import _sv_ratio, f_he3_eff, he3_over_d_from_burn
+    from mix import f_he3_eff, he3_over_d_from_burn
 
     dd = float(fwd["dhe3_dd_frac"])
-    bf = float(fwd.get("burn_fraction", _BF_DEFAULT))
-    # Both species' per-pass burn fractions come from the same n tau, so
-    # the He-3 fraction is the D fraction times the reactivity ratio at the
-    # calibration temperature when a point does not carry its own.
-    bf_he3 = float(fwd.get("burn_fraction_he3",
-                           bf * _sv_ratio(_T_I_CALIB_KEV)))
+    b_t = field_t(fwd)
+    _, bf_he3 = burnup_at_field(fwd)
     f_he3 = f_he3_eff(bf_he3, float(fwd["fuel_recovery"]))
-    return breakeven_time_s(he3_over_d=he3_over_d_from_burn(dd, f_he3))
+    return breakeven_time_s(b_t=b_t, n_d_m3=n_d_at_field(b_t),
+                            he3_over_d=he3_over_d_from_burn(dd, f_he3))
 
 
 def breakeven_time_dt_s(b_t: float, t_i_kev: float) -> float:
@@ -348,10 +446,14 @@ def replacement_schedule(result, study: dict) -> dict:
     )
 
 
+def compressed_volume_m3(fwd: dict) -> float:
+    """V_i = E_del/(B^2/2mu0) at the point's own bank and field."""
+    return e_del_mj(fwd) * 1e6 / (field_t(fwd) ** 2 / (2 * _MU0))
+
+
 def f_pdv_cap(fwd: dict, model: CostModel) -> float:
     ed = model._eng_defaults
-    e_del_j = fwd.get("e_driver_mj", ed["e_driver_mj"]) * 1e6
-    v_i = e_del_j / (B_COMPRESSION_T**2 / (2 * _MU0))
+    v_i = compressed_volume_m3(fwd)
     r = fwd.get("plasma_t", ed["plasma_t"])
     length = fwd.get("chamber_length", ed["chamber_length"])
     v_f = 3.141592653589793 * r * r * length
@@ -395,79 +497,88 @@ def wall_area_m2(fwd: dict) -> float:
 # --- the four devices the writeup prices -----------------------------------
 # One machine per evidence grade. records, extrap and spec are the coherent
 # design-search optima (scripts/coherent_min.py); helion is the vendor
-# configuration on the design basis. The search chooses the burn mix, the
-# chamber and the firing rate together, each mix on its bremsstrahlung
-# floor, under constraint 8 (the burn must fit the pulse period, a cap on
-# one burn section's fusion power of chi E_del / tau_f). The rate enters as
+# configuration on the design basis. The search chooses the compression
+# field and the driver bank (graded: both at the basis at records, the
+# bank doubled at extrapolations, the field to 50 T and the bank to 200 MJ
+# at speculation), the shot gain (free at speculation only), the burn
+# mix, the chamber, the wall class and the firing rate together, each mix
+# on its bremsstrahlung floor, under constraint 8 (the burn must fit the
+# pulse period, a cap on one burn section's fusion power of chi E_del /
+# tau_f, which rises as B^2 with the field and with the bank) and
+# constraint 9 (the coil's magnetic pressure). The rate enters as
 # max_f_rep: a grade's granted ceiling (1 Hz at the design basis and
-# records, 3 Hz at extrapolations, 10 Hz at speculation) is permission, not
-# obligation, and each optimized device carries the ceiling the search
+# records, 3 Hz at extrapolations, 10 Hz at speculation) is permission,
+# not obligation, and each optimized device carries the ceiling the search
 # chose, the duty-bound rate of its own burn (1 / tau_burn, rounded down
 # to the thousandth) at or below the grant, never above, so costingfe
-# builds it in the fewest modules whose rate fits that burn. Within every
-# mix the scan finds cost rising with each added module, so the optimum
-# sits at that top rung, at 95 to 100% of the duty bound: dd_frac 0.85 in
-# 26 modules at 0.95 Hz at the records grade, 0.80 in 12 modules at 1.58
-# Hz at extrapolations (under the 3 Hz grant) and 0.70 in 7 modules at
-# 1.65 Hz at speculation (under the 10 Hz grant), each with its tritium
-# plant, each in a 10 m x 0.75 m panel-wall chamber. The design-basis
-# shot is the optimum at every grade: at speculation the 128.1 to 200 MJ
-# shots read within 0.02 $/MWh of each other and 150 MJ is carried. The
-# same module tripled makes the 3 GWe park, so no size_overrides remain;
-# the slot is kept for a park that needs a different shot or chamber.
-# Every script and test builds its forward dict from here, so a moved
-# optimum is a one-place change.
+# builds it in the fewest modules whose rate fits that burn:
+# - records: the basis field and bank, Helion's 128.1 MJ shot at dd_frac
+#   0.85 in 25 modules of 10 m x 0.75 m at 0.985 Hz (duty 0.999), under
+#   the 1 Hz grant;
+# - extrapolations: the basis field with the doubled bank (100 MJ, 256 MJ
+#   shots at the design-basis gain) at dd_frac 0.80 in 6 modules of 10 m
+#   x 1.5 m at 1.56 Hz, the fewest whose rate fits its 0.62 s burn, under
+#   the 3 Hz grant; the bank is worth 1.0 $/MWh against the 12 modules of
+#   10 m x 0.75 m the sourced bank needs;
+# - speculation: 50 T and a 100 MJ bank, 600 MJ shots (gain 6) at dd_frac
+#   0.85 in a single 30 m x 1.5 m module at 2.94 Hz, where the panel wall's
+#   steady flux binds (1.95 MW/m^2) before the duty does (0.83); the 1 GWe
+#   plant is one burn section carrying 1.77 GW of fusion power, on a coil
+#   cycled to 995 MPa, past any material with a gigacycle record
+#   (constraint 9 lifts its bound at this grade and labels the design).
+#   The field is worth 1.4 $/MWh (the best 22 T design, a 200 MJ bank,
+#   reads 11.6) and the bank 0.1 at 50 T; held at the basis together the
+#   design is the 150 MJ shot in 7 modules of 10 m x 0.75 m at 12.4. The
+#   0.80 mix and the gain-4 shot read within 0.01 $/MWh of the device.
+# Every device is a panel-wall machine. The same module tripled makes the
+# 3 GWe park, so no size_overrides remain; the slot is kept for a park that
+# needs a different shot or chamber. Every script and test builds its
+# forward dict from here, so a moved optimum is a one-place change.
 DEVICES = {
     "records": dict(
         configs=("best_case.yaml",),
         overrides=dict(dhe3_dd_frac=0.85, f_rad=f_rad_floor(0.85),
                        chamber_length=10.0, plasma_t=0.75, r_bore=0.85,
-                       fw_class="panel", max_f_rep=0.980),
+                       fw_class="panel", max_f_rep=0.986),
         size_overrides={},
     ),
     "helion": dict(configs=(), overrides={}, size_overrides={}),
     "extrap": dict(
         configs=("best_case.yaml", "tier2.yaml"),
         overrides=dict(dhe3_dd_frac=0.8, f_rad=f_rad_floor(0.8),
-                       chamber_length=10.0, plasma_t=0.75, r_bore=0.85,
-                       fw_class="panel", max_f_rep=1.608),
+                       e_driver_mj=100.0, yield_per_shot_mj=GAIN_BASIS * 100.0,
+                       chamber_length=10.0, plasma_t=1.5, r_bore=1.6,
+                       fw_class="panel", max_f_rep=1.613),
         size_overrides={},
     ),
     "spec": dict(
         configs=("best_case.yaml", "tier2.yaml", "tier3.yaml"),
-        overrides=dict(dhe3_dd_frac=0.7, f_rad=f_rad_floor(0.7),
-                       yield_per_shot_mj=150.0, chamber_length=10.0,
-                       plasma_t=0.75, r_bore=0.85, fw_class="panel",
-                       max_f_rep=1.663),
+        overrides=dict(dhe3_dd_frac=0.85, f_rad=f_rad_floor(0.85),
+                       b_center=50.0, e_driver_mj=100.0, yield_per_shot_mj=600.0,
+                       chamber_length=30.0, plasma_t=1.5, r_bore=1.6,
+                       fw_class="panel", max_f_rep=3.566),
         size_overrides={},
     ),
 }
 # The deuterium-rich end of the mix grid (dd_frac 0.85, the mix that
 # breeds more He-3 than it burns): its best design at each grade under all
-# eight constraints, the rate included. At the records grade it is the
-# device itself; at extrapolations and speculation it sits 0.6 $/MWh
-# behind the device's 0.80 and 0.70 mixes, in more modules at a lower
-# rate. These designs carry the largest tritium stores, so the
-# tritium-store analysis (scripts/tritium_burn.py, scripts/burnup_scan.py)
-# and the duty audit across x_s (scripts/yield_bound.py) price them beside
-# the devices.
+# nine constraints, the rate included. At the records and speculation
+# grades it is the device itself; at extrapolations it sits 0.5 $/MWh
+# behind the device's 0.80 mix, in one more module at a lower rate. These
+# designs carry the largest tritium stores, so the tritium-store analysis
+# (scripts/tritium_burn.py, scripts/burnup_scan.py) and the duty audit
+# across x_s (scripts/yield_bound.py) price them beside the devices.
 D_RICH_DEVICES = {
     "records": DEVICES["records"],
     "extrap": dict(
         configs=("best_case.yaml", "tier2.yaml"),
         overrides=dict(dhe3_dd_frac=0.85, f_rad=f_rad_floor(0.85),
-                       chamber_length=10.0, plasma_t=0.75, r_bore=0.85,
-                       fw_class="panel", max_f_rep=1.469),
+                       e_driver_mj=100.0, yield_per_shot_mj=GAIN_BASIS * 100.0,
+                       chamber_length=10.0, plasma_t=1.5, r_bore=1.6,
+                       fw_class="panel", max_f_rep=1.473),
         size_overrides={},
     ),
-    "spec": dict(
-        configs=("best_case.yaml", "tier2.yaml", "tier3.yaml"),
-        overrides=dict(dhe3_dd_frac=0.85, f_rad=f_rad_floor(0.85),
-                       yield_per_shot_mj=150.0, chamber_length=10.0,
-                       plasma_t=0.75, r_bore=0.85, fw_class="panel",
-                       max_f_rep=1.254),
-        size_overrides={},
-    ),
+    "spec": DEVICES["spec"],
 }
 DEVICE_ORDER = (
     ("records", "citable records"),
@@ -529,6 +640,10 @@ def run(model: CostModel, fwd: dict, tritium_adder: bool = True):
     cap = f_pdv_cap(fwd, model)
     f_pdv_claim = fwd.get("f_pdv", float(model.cc.f_pdv))
     fwd["f_pdv"] = min(f_pdv_claim, cap)
+    # The burn point follows the field: the per-pulse burnup pair the model
+    # prices (fuel recycle losses, the bred-He-3 credit, exhaust pumping)
+    # is the basis pair scaled as B^2 unless the point carries its own.
+    fwd["burn_fraction"], fwd["burn_fraction_he3"] = burnup_at_field(fwd)
 
     # The probe sizes the machine; availability does not enter the sizing,
     # so the probe runs at the steady-state value when deriving.
@@ -575,6 +690,12 @@ def run(model: CostModel, fwd: dict, tritium_adder: bool = True):
             float(result.params["yield_per_shot_mj"]),
             float(result.params["e_driver_mj"]), X_S_REFERENCE,
             breakeven_time_at_point_s(fwd)),
+        "b_center_t": field_t(fwd),
+        "e_driver_mj": e_del_mj(fwd),
+        "yield_per_shot_mj": float(result.params["yield_per_shot_mj"]),
+        "burn_fraction": fwd["burn_fraction"],
+        "coil_pressure_mpa": coil_pressure_mpa(field_t(fwd)),
+        "p_fus_module_mw": float(pt.p_fus),
         "tritium_adder_musd": tritium_musd,
         "availability": float(result.params["availability"]),
         "t_bank_yr": schedule.get("t_bank_yr", float("nan")),
@@ -610,13 +731,19 @@ def f_t_from_burnup(f_d: float, t_i_kev: float) -> float:
 def coherence_violations(fwd: dict, diag: dict, tier: str) -> list[str]:
     """Return the list of red-team constraints a run violates (empty = coherent)."""
     v = []
-    f_t_floor = f_t_from_burnup(fwd.get("burn_fraction", _BF_DEFAULT),
-                                _T_I_CALIB_KEV)
+    bf, _ = burnup_at_field(fwd)
+    f_t_floor = f_t_from_burnup(bf, _T_I_CALIB_KEV)
     if fwd.get("dhe3_f_T", 0.0) < f_t_floor - F_T_FLOOR_TOL:
         v.append(
             f"dhe3_f_T {fwd.get('dhe3_f_T', 0.0):.3f} sits below the "
             f"thermalized in-pulse burn floor {f_t_floor:.3f} at this "
             f"burnup: coherent only under prompt MeV-triton loss")
+    p_coil = coil_pressure_mpa(field_t(fwd))
+    if p_coil > COIL_PRESSURE_CAP_MPA[tier] * (1 + 1e-9):
+        v.append(
+            f"coil pressure {p_coil:.0f} MPa at {field_t(fwd):.0f} T exceeds "
+            f"the {tier} coil bound, the basis coil at "
+            f"{COIL_PRESSURE_BASIS_MPA:.0f} MPa ({B_COMPRESSION_T:.0f} T)")
     dd = fwd.get("dhe3_dd_frac", 0.131)
     floor = f_rad_floor(dd)
     if fwd.get("f_rad", 0.05) < floor - 1e-9:

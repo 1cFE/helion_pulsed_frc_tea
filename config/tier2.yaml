@@ -18,6 +18,11 @@
 # Held at baseline, harmonized with the Borealis ledger: om_cost_dhe3
 # (27.5, lowest documented CCGT fixed-O&M already), installation_frac
 # (0.14, no defensible record on this cost basis), inflation (tier 1).
+# The compression field holds at the patent's 22 T at this grade (the
+# basis coil already cycles at or above the copper-alloy gigacycle band,
+# study.py constraint 9) and the driver bank may double to 100 MJ (a
+# count of modular capacitor units): both are design-search dimensions
+# in scripts/coherent_min.py, graded in docs/ledger.md, not records here.
 
 records:
   cap_shot_lifetime:

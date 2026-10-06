@@ -27,7 +27,6 @@ from study import (  # noqa: I001  sets COSTINGFE_BACKEND before costingfe impor
     D_RICH_DEVICES,
     DEVICES,
     DUTY_MAX,
-    N_D_PATENT_M3,
     OUTPUT_DIR,
     VENDOR_PULSE_S,
     X_S_REFERENCE,
@@ -37,7 +36,9 @@ from study import (  # noqa: I001  sets COSTINGFE_BACKEND before costingfe impor
     build_model,
     chi_from_xs,
     device_fwd,
+    field_t,
     implied_burn_s,
+    n_d_at_field,
     run,
     yield_bound_mj,
 )
@@ -47,18 +48,23 @@ X_S_SPAN = (0.5, 0.7, 0.85)
 
 def bound_table() -> list[dict]:
     """One row per (shot, x_s): the design-basis shot of the vendor device
-    and the speculation shot, both from the sourced bank."""
+    and the speculation shot, each from its own bank at the patent mix and
+    its own compression field (the patent point's density scaled as B^2),
+    so the burn a shot implies is read at the point the device compresses
+    to."""
     rows = []
-    tau_f = breakeven_time_s()
     for name in ("helion", "spec"):
         cfg, fwd = device_fwd(name, 1000.0)
         result, _ = run(build_model(cfg), fwd)
         y = float(result.params["yield_per_shot_mj"])
         e = float(result.params["e_driver_mj"])
+        b_t = field_t(fwd)
+        tau_f = breakeven_time_s(b_t=b_t, n_d_m3=n_d_at_field(b_t))
         for x_s in X_S_SPAN:
             rows.append(dict(
-                device=name, yield_mj=y, e_driver_mj=e, x_s=x_s,
-                chi=chi_from_xs(x_s),
+                device=name, yield_mj=y, e_driver_mj=e, b_center_t=b_t,
+                n_d_m3=n_d_at_field(b_t), x_s=x_s,
+                chi=chi_from_xs(x_s), tau_f_s=tau_f,
                 yield_at_vendor_pulse_mj=yield_bound_mj(e, x_s, VENDOR_PULSE_S, tau_f),
                 tau_burn_s=implied_burn_s(y, e, x_s, tau_f),
             ))
@@ -84,6 +90,7 @@ def duty_table() -> list[dict]:
                 tau = implied_burn_s(y, e, x_s, tau_f)
                 rows.append(dict(
                     design=name + tag, dd_frac=fwd["dhe3_dd_frac"],
+                    b_center_t=field_t(fwd), e_driver_mj=e,
                     yield_mj=y, f_rep_hz=diag["f_rep_hz"], x_s=x_s,
                     tau_f_s=tau_f, tau_burn_s=tau,
                     duty=tau * diag["f_rep_hz"],
@@ -100,23 +107,28 @@ def main():
           f"{tau_f_cold*1e3:.0f} ms with electrons at a tenth of the ion "
           f"temperature (x{tau_f/tau_f_cold:.1f})")
     print(f"vendor pulse: {VENDOR_PULSE_S*1e3:.0f} ms")
-    print(f"{'device':8} {'yield MJ':>9} {'x_s':>5} {'chi':>5} "
-          f"{'yield at pulse MJ':>18} {'burn implied s':>15}")
+    print(f"{'device':8} {'yield MJ':>9} {'bank MJ':>8} {'B T':>5} {'tau_f ms':>9} "
+          f"{'x_s':>5} {'chi':>5} {'yield at pulse MJ':>18} {'burn implied s':>15}")
     rows = bound_table()
     for r in rows:
-        print(f"{r['device']:8} {r['yield_mj']:9.1f} {r['x_s']:5.2f} {r['chi']:5.2f} "
-              f"{r['yield_at_vendor_pulse_mj']:18.2f} {r['tau_burn_s']:15.2f}")
+        print(f"{r['device']:8} {r['yield_mj']:9.1f} {r['e_driver_mj']:8.0f} "
+              f"{r['b_center_t']:5.0f} {r['tau_f_s'] * 1e3:9.1f} {r['x_s']:5.2f} "
+              f"{r['chi']:5.2f} {r['yield_at_vendor_pulse_mj']:18.2f} "
+              f"{r['tau_burn_s']:15.3f}")
     # The burnup closure over each shot's burn span (writeup Section 5.2):
-    # the thermalized-limit in-pulse tritium burn at the patent point.
+    # the thermalized-limit in-pulse tritium burn at the device's own
+    # compression point (the patent density scaled as B^2).
     from tritium_burn import in_pulse_burn_vs_dwell
 
     for name in ("helion", "spec"):
         rr = [r for r in rows if r["device"] == name]
         lo, hi = min(r["tau_burn_s"] for r in rr), max(r["tau_burn_s"] for r in rr)
-        f_d, f_t = in_pulse_burn_vs_dwell([lo, hi], N_D_PATENT_M3, 70.0)
-        print(f"  {rr[0]['yield_mj']:.0f} MJ shot, burn {lo:.2f} to {hi:.2f} s at the "
-              f"patent point: D burnup {f_d[0]:.1%} to {f_d[1]:.1%}, thermalized "
-              f"in-pulse tritium burn {f_t[0]:.0%} to {f_t[1]:.0%}")
+        f_d, f_t = in_pulse_burn_vs_dwell([lo, hi], rr[0]["n_d_m3"], 70.0)
+        print(f"  {rr[0]['yield_mj']:.0f} MJ shot from a {rr[0]['e_driver_mj']:.0f} MJ "
+              f"bank, burn {lo:.3f} to {hi:.3f} s at {rr[0]['b_center_t']:.0f} T "
+              f"(n_D {rr[0]['n_d_m3']:.2e} m^-3): D burnup {f_d[0]:.1%} to "
+              f"{f_d[1]:.1%}, thermalized in-pulse tritium burn {f_t[0]:.0%} to "
+              f"{f_t[1]:.0%}")
     tau_dt = breakeven_time_dt_s(34.8, 15.0)
     print(f"cross-check, Slough 2025 CFR2 (D-T, 34.8 T, 15 keV): breakeven "
           f"{tau_dt*1e3:.2f} ms; gain 9.1 on the FRC energy is a "
@@ -129,8 +141,8 @@ def main():
 
     print(f"\nconstraint 8 across x_s (enforced at {X_S_REFERENCE}, "
           f"duty <= {DUTY_MAX}): burn at the design's own mix x solved rep rate")
-    print(f"{'design':18} {'dd':>5} {'yield MJ':>9} {'f_rep Hz':>9} "
-          f"{'tau_f ms':>9} {'P_fus MW':>9} {'cap@0.7':>8} "
+    print(f"{'design':18} {'dd':>5} {'B T':>4} {'bank':>5} {'yield MJ':>9} "
+          f"{'f_rep Hz':>9} {'tau_f ms':>9} {'P_fus MW':>9} {'cap@0.7':>8} "
           + " ".join(f"{'x_s ' + str(x):>14}" for x in X_S_SPAN))
     duty = duty_table()
     designs = []
@@ -141,10 +153,11 @@ def main():
         rr = [r for r in duty if r["design"] == d]
         r0 = rr[0]
         cap = next(r for r in rr if r["x_s"] == X_S_REFERENCE)["p_fus_cap_mw"]
-        print(f"{d:18} {r0['dd_frac']:>5.2f} {r0['yield_mj']:>9.1f} "
-              f"{r0['f_rep_hz']:>9.2f} {r0['tau_f_s'] * 1e3:>9.0f} "
+        print(f"{d:18} {r0['dd_frac']:>5.2f} {r0['b_center_t']:>4.0f} "
+              f"{r0['e_driver_mj']:>5.0f} {r0['yield_mj']:>9.1f} "
+              f"{r0['f_rep_hz']:>9.2f} {r0['tau_f_s'] * 1e3:>9.1f} "
               f"{r0['p_fus_module_mw']:>9.0f} {cap:>8.0f} "
-              + " ".join(f"{r['tau_burn_s']:>6.2f} s {r['duty']:>5.2f}"
+              + " ".join(f"{r['tau_burn_s']:>6.3f} s {r['duty']:>5.2f}"
                          for r in rr))
     with open(OUTPUT_DIR / "duty.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(duty[0].keys()))

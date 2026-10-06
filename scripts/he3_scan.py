@@ -27,20 +27,8 @@ He-3 is priced at the machine it would buy, not at the machine the ledger
 price chose.
 """
 import csv
-import itertools
 
-from costingfe.model import SizingInfeasible
-
-from coherent_min import (
-    BURN_BRANCHES,
-    FW_CLASSES,
-    LENGTHS_M,
-    RADII_M,
-    YIELDS_MJ,
-    point_fwd,
-    rate_designs,
-    tier_fwd,
-)
+from coherent_min import at_plant_size, scan
 from study import (
     DEVICE_ORDER,
     DEVICES,
@@ -60,47 +48,36 @@ RE_PRICE_TOP_N = 5
 
 
 def optimum_by_mix(model, u_he3, net_electric_mw=1000.0, tier="tier3",
-                   yields=YIELDS_MJ, lengths=LENGTHS_M, radii=RADII_M,
-                   walls=FW_CLASSES):
+                   rows=None, **grid):
     """Best coherent design per burn mix at one He-3 price: the
-    coherent_min grid, rate ladder included, re-run with u_he3 overridden,
-    so a price concession is priced at the mix, chamber and rate it would
-    choose rather than at the machine the ledger price chose. A tier-3
-    grid keeps the yield free; any other tier keeps the stack's
-    design-basis shot. The 1 GWe grid is scanned in full; a larger plant
+    coherent_min scan (field, bank, gain, chamber, wall and rate ladder
+    as the grade grants them, or the narrower `grid` given) re-run with
+    u_he3 overridden, so a price concession is priced at the mix, field,
+    bank, chamber and rate it would choose rather than at the machine the
+    ledger price chose. The 1 GWe grid is scanned in full; a larger plant
     re-prices the top designs per mix, since the integer module count can
-    trip the wall audit at size."""
-    fwd0 = tier_fwd(tier)
-    if tier != "tier3":
-        yields = (fwd0["yield_per_shot_mj"],)
+    trip the wall audit at size. `rows` short-cuts the scan with one
+    already run at this price and grade."""
+    overrides = {"u_he3": u_he3}
+    if rows is None:
+        rows = scan(tier, overrides, **grid)
+    rows = [r for r in rows if r["coherent"]]
     out = []
-    for branch in BURN_BRANCHES:
-        cands = []
-        for y, length, radius, fw in itertools.product(yields, lengths, radii, walls):
-            point = point_fwd(fwd0, y, length, radius, fw, branch)
-            point["u_he3"] = u_he3
-            for fwd, diag in rate_designs(model, point):
-                if coherence_violations(fwd, diag, tier):
-                    continue
-                cands.append((diag["lcoe"], y, length, radius, fw, fwd["max_f_rep"]))
-        cands.sort()
+    for dd in sorted({r["dd_frac"] for r in rows}):
+        cands = sorted((r for r in rows if r["dd_frac"] == dd), key=lambda r: r["lcoe"])
         best = None
-        for lcoe1, y, length, radius, fw, ceiling in cands[:RE_PRICE_TOP_N]:
-            fwd = point_fwd(fwd0, y, length, radius, fw, branch, ceiling)
-            fwd["u_he3"] = u_he3
-            fwd["net_electric_mw"] = net_electric_mw
-            try:
-                _, diag = run(model, fwd)
-            except SizingInfeasible:
-                continue
-            if coherence_violations(fwd, diag, tier):
+        for r in cands[:RE_PRICE_TOP_N]:
+            diag, v = at_plant_size(model, tier, r, net_electric_mw, overrides)
+            if diag is None or v:
                 continue
             if best is None or diag["lcoe"] < best["lcoe"]:
                 best = dict(
                     tier=tier, u_he3=u_he3, plant_mwe=net_electric_mw,
-                    dd_frac=branch["dhe3_dd_frac"], f_rad=branch["f_rad"],
-                    yield_mj=y, length_m=length, radius_m=radius, fw_class=fw,
-                    max_f_rep=round(ceiling, 4),
+                    dd_frac=dd, f_rad=f_rad_floor(dd),
+                    field_t=r["field_t"], bank_mj=r["bank_mj"],
+                    yield_mj=r["yield_mj"], length_m=r["length_m"],
+                    radius_m=r["radius_m"], fw_class=r["fw_class"],
+                    max_f_rep=r["max_f_rep"],
                     lcoe=diag["lcoe"], n_mod=diag["n_mod"],
                     f_rep_hz=round(diag["f_rep_hz"], 3),
                     duty=round(diag["tau_burn_implied_s"] * diag["f_rep_hz"], 3),
@@ -110,6 +87,7 @@ def optimum_by_mix(model, u_he3, net_electric_mw=1000.0, tier="tier3",
         if best is not None:
             out.append(best)
     return out
+
 
 if __name__ == "__main__":
     cfg = load_config("baseline.yaml")
@@ -167,19 +145,21 @@ if __name__ == "__main__":
     # speculation grades and both plant sizes.
     mix_rows = []
     for tier in ("tier2", "tier3"):
+        free_rows = scan(tier, {"u_he3": 0.0})
         for mwe in (1000.0, 3000.0):
-            mix_rows.extend(optimum_by_mix(model, 0.0, mwe, tier=tier))
+            mix_rows.extend(optimum_by_mix(model, 0.0, mwe, tier=tier, rows=free_rows))
     with open(OUTPUT_DIR / "he3_free_by_mix.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(mix_rows[0]))
         w.writeheader()
         w.writerows(mix_rows)
     print("\nfree He-3 (u_he3 = 0), best coherent design per burn mix:")
-    print(f"{'tier':>6} {'MWe':>5} {'dd':>6} {'LCOE':>6} {'yield':>6} {'L':>4} "
-          f"{'r':>5} {'wall':>6} {'ceil':>6} {'n_mod':>5} {'f_rep':>6} {'duty':>5} "
-          f"{'T-adder':>8} {'avail':>6}")
+    print(f"{'tier':>6} {'MWe':>5} {'dd':>6} {'LCOE':>6} {'B':>4} {'bank':>5} "
+          f"{'yield':>6} {'L':>4} {'r':>5} {'wall':>6} {'ceil':>6} {'n_mod':>5} "
+          f"{'f_rep':>6} {'duty':>5} {'T-adder':>8} {'avail':>6}")
     for r in mix_rows:
         print(f"{r['tier']:>6} {r['plant_mwe']:>5.0f} {r['dd_frac']:>6.3f} "
-              f"{r['lcoe']:>6.1f} {r['yield_mj']:>6.0f} {r['length_m']:>4.0f} "
+              f"{r['lcoe']:>6.1f} {r['field_t']:>4.0f} {r['bank_mj']:>5.0f} "
+              f"{r['yield_mj']:>6.0f} {r['length_m']:>4.0f} "
               f"{r['radius_m']:>5.2f} {r['fw_class']:>6} {r['max_f_rep']:>6.2f} "
               f"{r['n_mod']:>5} {r['f_rep_hz']:>6.2f} {r['duty']:>5.2f} "
               f"{r['tritium_adder']:>8.1f} {r['availability']:>6.3f}")

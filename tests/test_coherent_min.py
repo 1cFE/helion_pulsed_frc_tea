@@ -7,11 +7,16 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
 from coherent_min import (  # noqa: E402
+    BANKS_MJ,
     BURN_BRANCHES,
+    FIELDS_T,
+    GAINS,
     RATE_STEPS,
     point_fwd,
+    point_rows,
     rate_ceilings_hz,
     rate_designs,
+    scan_grid,
     tier_fwd,
 )
 from study import (  # noqa: E402
@@ -106,3 +111,68 @@ def test_the_search_evaluates_sub_ceiling_rates_and_they_admit_the_rich_mixes(mo
     assert lcoes == sorted(lcoes)
     assert designs[2][1]["availability"] > designs[1][1]["availability"]
     assert designs[2][1]["t_bank_yr"] > designs[1][1]["t_bank_yr"]
+
+
+def test_the_field_and_the_bank_are_graded_by_the_evidence_ladder():
+    """The patent's 22 T and Polaris's 50 MJ are the design basis and no
+    record exists above either: the records grade holds both, the
+    extrapolation grade holds the field (the coil bound) and doubles the
+    bank, speculation scans the field to 50 T and the bank to 200 MJ. The
+    shot is a gain on the bank: the design-basis gain alone below
+    speculation, free there, with the sourced bank reproducing the 128 to
+    2000 MJ yield grid."""
+    from study import B_COMPRESSION_T, E_DEL_BASIS_MJ, GAIN_BASIS
+
+    assert FIELDS_T["tier1"] == FIELDS_T["tier2"] == (B_COMPRESSION_T,)
+    assert FIELDS_T["tier3"] == (B_COMPRESSION_T, 30.0, 40.0, 50.0)
+    assert BANKS_MJ["tier1"] == (E_DEL_BASIS_MJ,)
+    assert BANKS_MJ["tier2"] == (E_DEL_BASIS_MJ, 100.0)
+    assert BANKS_MJ["tier3"] == (E_DEL_BASIS_MJ, 100.0, 200.0)
+    assert GAINS["tier1"] == GAINS["tier2"] == (GAIN_BASIS,)
+    assert [round(g * E_DEL_BASIS_MJ, 1) for g in GAINS["tier3"]] == \
+        [128.1, 150.0, 200.0, 300.0, 500.0, 750.0, 1000.0, 1500.0, 2000.0]
+    assert len(scan_grid("tier1")) == 6 * 4 * 2 * 7
+    assert len(scan_grid("tier2")) == 2 * len(scan_grid("tier1"))
+    assert len(scan_grid("tier3")) == 4 * 3 * 9 * 6 * 4 * 2 * 7
+
+
+def test_a_point_above_the_basis_field_is_labelled_and_bounded(model):
+    """A 40 T point in the speculation device's chamber is admissible at
+    speculation and carries the coil pressure it rests on (637 MPa,
+    past the basis); the same point is excluded by constraint 9 at the
+    extrapolation grade. The flash prune ends a ladder whose shot the wall
+    cannot survive."""
+    from study import E_FLASH_MELT_MJ_M2
+
+    branch = BURN_BRANCHES[-1]
+    point = (40.0, 100.0, 6.0, 30.0, 1.5, "panel", branch)
+    rows = point_rows(model, "tier3", tier_fwd("tier3"), point)
+    assert rows and all(r["field_t"] == 40.0 and r["bank_mj"] == 100.0 for r in rows)
+    assert all(r["coil_past_basis"] for r in rows)
+    assert rows[0]["coil_pressure_mpa"] == pytest.approx(636.6, abs=1)
+    # the single module at the 10 Hz grant overruns its period; the
+    # two-module rung fits, and carries the coil label all the same
+    assert not rows[0]["coherent"] and rows[0]["violations"].startswith("duty")
+    assert rows[1]["coherent"] and rows[1]["n_mod"] == 2
+    rows2 = point_rows(model, "tier2", tier_fwd("tier2"), point)
+    assert all("coil" in r["violations"] for r in rows2)
+    melt = (22.0, 50.0, 40.0, 10.0, 0.5, "panel", branch)
+    rows3 = point_rows(model, "tier3", tier_fwd("tier3"), melt)
+    assert len(rows3) == 1 and rows3[0]["e_flash_mj_m2"] > E_FLASH_MELT_MJ_M2
+
+
+def test_a_design_carries_the_tightest_ceiling_it_fits(model):
+    """When the grant rung's design already clears the next rung's
+    ceiling, the design is carried under that lower ceiling, so a re-size
+    to another plant power keeps it under the duty bound rather than
+    snapping a hair over it: the records design at 1 GWe."""
+    from study import duty_bound_rate_hz
+
+    fwd0 = tier_fwd("tier1")
+    rich = point_fwd(fwd0, 128.1, 10.0, 0.75, "panel", BURN_BRANCHES[-1])
+    designs = rate_designs(model, rich)
+    bound = duty_bound_rate_hz(rich, 50.0)
+    assert bound < 1.0
+    f, d = designs[0]
+    assert f["max_f_rep"] == pytest.approx(bound)
+    assert d["f_rep_hz"] <= bound and d["n_mod"] == 25

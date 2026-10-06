@@ -88,6 +88,12 @@ def devices():
             _, d7 = run(model, dict(fwd, interest_rate=0.07))
             rows.append(dict(
                 device=label, plant_mwe=p, lcoe=round(d["lcoe"], 1),
+                b_center_t=d["b_center_t"], e_driver_mj=d["e_driver_mj"],
+                yield_mj=round(d["yield_per_shot_mj"], 1),
+                coil_pressure_mpa=round(d["coil_pressure_mpa"]),
+                p_fus_module_mw=round(d["p_fus_module_mw"]),
+                chamber_length_m=fwd.get("chamber_length", 10.0),
+                plasma_t_m=fwd.get("plasma_t", 0.5),
                 lcoe_at_7pct=round(d7["lcoe"], 1),
                 financing_part=round(d["lcoe"] - d7["lcoe"], 1),
                 interest_rate=fwd["interest_rate"], lifetime_yr=fwd["lifetime_yr"],
@@ -112,7 +118,7 @@ def devices():
 
 def d_rich_end():
     """The deuterium-rich end of the mix grid (dd_frac 0.85): its best
-    design at each grade under all eight constraints, the rate included,
+    design at each grade under all nine constraints, the rate included,
     priced at both plant sizes beside the device it is compared against
     (at the records grade it is the device), so the writeup can quote what
     He-3 self-sufficiency costs at each grade."""
@@ -129,6 +135,8 @@ def d_rich_end():
             rows.append(dict(
                 device=f"{labels[name]} (D-rich end)", plant_mwe=p,
                 lcoe=round(d["lcoe"], 1), device_lcoe=round(dev["lcoe"], 1),
+                b_center_t=d["b_center_t"], e_driver_mj=d["e_driver_mj"],
+                yield_mj=round(d["yield_per_shot_mj"], 1),
                 n_mod=d["n_mod"], f_rep_hz=round(d["f_rep_hz"], 2),
                 max_f_rep=fwd["max_f_rep"],
                 tau_burn_implied_s=round(d["tau_burn_implied_s"], 2),
@@ -165,12 +173,14 @@ if __name__ == "__main__":
         w = csv.DictWriter(f, fieldnames=list(dev[0]))
         w.writeheader()
         w.writerows(dev)
-    print(f"\n{'device':<22} {'MWe':>5} {'LCOE':>6} {'at 7%':>6} {'fin.':>5} "
+    print(f"\n{'device':<22} {'MWe':>5} {'LCOE':>6} {'B T':>4} {'E MJ':>5} {'yield':>6} {'coil':>5} {'at 7%':>6} {'fin.':>5} "
           f"{'rate':>5} {'life':>5} {'avail':>6} {'rout.':>6} {'bank':>6} {'wall':>6} "
           f"{'t_bank':>6} {'t_wall':>6} {'n_mod':>5} {'ceil':>6} {'f_rep':>5} {'A=.85':>6} {'A=.95':>6} {'30 yr':>6} {'burn s':>6} "
           f"{'duty':>5} {'pdv cap':>7} {'T M$':>5}")
     for r in dev:
         print(f"{r['device']:<22} {r['plant_mwe']:>5.0f} {r['lcoe']:>6.1f} "
+              f"{r['b_center_t']:>4.0f} {r['e_driver_mj']:>5.0f} {r['yield_mj']:>6.0f} "
+              f"{r['coil_pressure_mpa']:>5.0f} "
               f"{r['lcoe_at_7pct']:>6.1f} {r['financing_part']:>+5.1f} "
               f"{r['interest_rate']:>5.2f} {r['lifetime_yr']:>5.0f} "
               f"{r['availability']:>6.3f} {r['outage_routine']:>6.4f} {r['outage_bank']:>6.4f} "
@@ -184,11 +194,12 @@ if __name__ == "__main__":
         w = csv.DictWriter(f, fieldnames=list(cf[0]))
         w.writeheader()
         w.writerows(cf)
-    print(f"\nthe deuterium-rich end (dd_frac 0.85), best design under all eight constraints:")
-    print(f"{'design':<36} {'MWe':>5} {'LCOE':>6} {'device':>6} {'n_mod':>5} {'ceil':>6} "
+    print(f"\nthe deuterium-rich end (dd_frac 0.85), best design under all nine constraints:")
+    print(f"{'design':<36} {'MWe':>5} {'LCOE':>6} {'device':>6} {'B T':>4} {'E MJ':>5} {'yield':>6} {'n_mod':>5} {'ceil':>6} "
           f"{'f_rep':>6} {'burn s':>6} {'duty':>5} {'T M$':>5}  violations")
     for r in cf:
         print(f"{r['device']:<36} {r['plant_mwe']:>5.0f} {r['lcoe']:>6.1f} "
-              f"{r['device_lcoe']:>6.1f} {r['n_mod']:>5} {r['max_f_rep']:>6.3f} "
+              f"{r['device_lcoe']:>6.1f} {r['b_center_t']:>4.0f} {r['e_driver_mj']:>5.0f} "
+              f"{r['yield_mj']:>6.0f} {r['n_mod']:>5} {r['max_f_rep']:>6.3f} "
               f"{r['f_rep_hz']:>6.2f} {r['tau_burn_implied_s']:>6.2f} "
               f"{r['duty']:>5.2f} {r['tritium_adder_musd']:>5.0f}  {r['violations'] or 'coherent'}")

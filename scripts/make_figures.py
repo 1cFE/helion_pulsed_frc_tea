@@ -13,12 +13,16 @@ from pathlib import Path  # noqa: E402
 from study import (  # noqa: E402
     DEVICES,
     DEVICE_ORDER,
+    E_DEL_BASIS_MJ,
+    GAIN_BASIS,
     N_D_PATENT_M3,
     PLANT_SIZES_MWE,
     VENDOR_PULSE_S,
     apply_records,
     build_model,
+    burnup_at_field,
     device_fwd,
+    e_del_mj,
     lcoe_segments,
     load_config,
     run,
@@ -130,6 +134,12 @@ def fig2_tornado(model, cfg):
             reverted["f_rad"] = tier1["f_rad"]
         _, dd = run(model, reverted)
         rows.append((knob, dd["lcoe"] - d0["lcoe"]))
+    if e_del_mj(fwd) > E_DEL_BASIS_MJ:
+        # the bank, a design-search dimension, reverted to the sourced
+        # Polaris 50 MJ at the design-basis gain (scripts/tornado.py)
+        _, dd = run(model, dict(fwd, e_driver_mj=E_DEL_BASIS_MJ,
+                                yield_per_shot_mj=GAIN_BASIS * E_DEL_BASIS_MJ))
+        rows.append(("e_driver_mj", dd["lcoe"] - d0["lcoe"]))
     rows.sort(key=lambda r: abs(r[1]))
     labels = [f"{k} (financing)" if k == "interest_rate" else k for k, _ in rows]
     deltas = [v for _, v in rows]
@@ -154,21 +164,25 @@ def fig2_tornado(model, cfg):
 
 
 def fig_tritium_burn(model, cfg):
-    """The burnup closure against burn time at the patent point: what the
-    store-and-decay basis assumes (Helion's stated pulse) against what the
-    granted shot needs (constraint 7)."""
+    """The burnup closure against burn time: what the store-and-decay
+    basis assumes (Helion's stated pulse) against what the granted shot
+    needs (constraint 7), at the patent point for the design-basis shot
+    and, where the speculation device compresses to a higher field, at
+    its own density as well (the closure curves scale with the density,
+    the burn the shot needs falls with it)."""
     taus = np.logspace(-4, np.log10(3.0), 240)
     f_d, f_t = in_pulse_burn_vs_dwell(taus, N_D_PATENT_M3, 70.0)
     rows = bound_table()
     def span(device):
         r = [x for x in rows if x["device"] == device]
         return (min(x["tau_burn_s"] for x in r), max(x["tau_burn_s"] for x in r),
-                r[0]["yield_mj"])
+                r[0]["yield_mj"], r[0]["b_center_t"], r[0]["n_d_m3"])
     helion, spec = span("helion"), span("spec")
     fig, ax = plt.subplots(figsize=(7.2, 3.6))
     bands = [((1e-4, VENDOR_PULSE_S), "Helion's stated pulse", GREY),
              (PATENT_CONFINEMENT_S, "patent confinement", GREY)]
-    if spec[0] <= helion[1] and helion[0] <= spec[1]:
+    same_point = abs(spec[3] - helion[3]) < 1e-9
+    if same_point and spec[0] <= helion[1] and helion[0] <= spec[1]:
         # the two shots' burns overlap: one band, both yields named
         lo, hi = min(helion[0], spec[0]), max(helion[1], spec[1])
         yields = sorted({round(helion[2]), round(spec[2])})
@@ -177,22 +191,29 @@ def fig_tritium_burn(model, cfg):
         bands.append(((lo, hi), label, ORANGE))
     else:
         bands += [(helion[:2], f"{helion[2]:.0f} MJ shot", ORANGE),
-                  (spec[:2], f"{spec[2]:.0f} MJ shot", ORANGE)]
+                  (spec[:2], f"{spec[2]:.0f} MJ shot"
+                   + ("" if same_point else f" at {spec[3]:.0f} T"), AQUA)]
     for (lo, hi), label, color in bands:
         ax.axvspan(lo, hi, color=color, alpha=0.18, linewidth=0)
         ax.text(np.sqrt(lo * hi), 2.2e-5, label, rotation=90, fontsize=7.5,
                 color=INK2, ha="center", va="bottom")
     ax.plot(taus, f_t, color=BLUE, linewidth=2,
-            label="bred tritium, thermalized limit")
+            label=f"bred tritium, thermalized limit, {helion[3]:.0f} T")
     ax.plot(taus, f_d, color=ORANGE, linewidth=2, linestyle="--",
-            label="deuterium")
+            label=f"deuterium, {helion[3]:.0f} T")
+    if not same_point:
+        f_d_s, f_t_s = in_pulse_burn_vs_dwell(taus, spec[4], 70.0)
+        ax.plot(taus, f_t_s, color=BLUE, linewidth=1.4, linestyle=":",
+                label=f"bred tritium, thermalized limit, {spec[3]:.0f} T")
+        ax.plot(taus, f_d_s, color=ORANGE, linewidth=1.4, linestyle=":",
+                label=f"deuterium, {spec[3]:.0f} T")
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.set_xlim(1e-4, 3.0)
     ax.set_ylim(1e-5, 1.0)
     ax.set_yticks([1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0],
                   ["0.001%", "0.01%", "0.1%", "1%", "10%", "100%"])
-    ax.set_xlabel("burn time at the patent point (s)")
+    ax.set_xlabel("burn time (s)")
     ax.set_ylabel("fraction burned in the pulse")
     ax.set_axisbelow(True)
     ax.grid(color=GRID, linewidth=0.8)
@@ -202,9 +223,10 @@ def fig_tritium_burn(model, cfg):
 
 
 def fig3_burnup(model, cfg):
-    bfs = np.array([1.2e-4, 3e-4, 1e-3, 3e-3, 1e-2, 3e-2, 0.15, 0.3])
     frs = [(0.99, "recovery 0.99"), (0.999, "0.999"), (0.9999, "0.9999")]
     fwd0 = stack(cfg, *TIERS[2], **TIER3_MIN)
+    bf_dev, _ = burnup_at_field(fwd0)
+    bfs = np.array(sorted({1.2e-4, 3e-4, 1e-3, 3e-3, 1e-2, 3e-2, 0.15, 0.3, bf_dev}))
     fig, axes = plt.subplots(1, 2, figsize=(7.6, 3.2), sharey=True)
     for ax, (branch, title) in zip(
             axes, (("pr", "prompt triton loss"), ("th", "thermalized tritons"))):
@@ -222,6 +244,11 @@ def fig3_burnup(model, cfg):
         ax.axvline(1.2e-4, color=INK2, linewidth=1, linestyle=":")
         ax.text(0.045, 0.97, "patent basis", fontsize=8, color=INK2,
                 transform=ax.transAxes, va="top")
+        if abs(bf_dev - 1.2e-4) > 1e-9:
+            # the device's own per-pulse burnup at its compression field
+            ax.axvline(bf_dev, color=AQUA, linewidth=1, linestyle=":")
+            ax.text(0.30, 0.97, "device's field", fontsize=8, color=AQUA,
+                    transform=ax.transAxes, va="top")
         ax.set_xscale("log")
         ax.set_ylim(0, 30)
         ax.set_yticks([0, 5, 10, 15, 20, 25, 30])

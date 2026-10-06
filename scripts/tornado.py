@@ -7,11 +7,14 @@ carry the number, so the ledger can say which weaknesses are load-bearing.
 import csv
 
 from study import (
+    E_DEL_BASIS_MJ,
+    GAIN_BASIS,
     OUTPUT_DIR,
     apply_records,
     build_model,
     coherence_violations,
     device_fwd,
+    e_del_mj,
     load_config,
     run,
 )
@@ -59,6 +62,20 @@ if __name__ == "__main__":
                          coherent=(not violations),
                          violations="; ".join(violations)))
 
+    # The driver bank is a design-search dimension rather than a tier
+    # record; where the device carries a bank above the sourced Polaris
+    # 50 MJ, reverting it (the shot with it, at the design-basis gain, in
+    # the device's own chamber at its own ceiling) is the bank's worth as
+    # a one-at-a-time row.
+    if e_del_mj(fwd) > E_DEL_BASIS_MJ:
+        reverted = dict(fwd, e_driver_mj=E_DEL_BASIS_MJ,
+                        yield_per_shot_mj=GAIN_BASIS * E_DEL_BASIS_MJ)
+        _, diag = run(model, reverted)
+        violations = coherence_violations(reverted, diag, "tier2")
+        rows.append(dict(knob="e_driver_mj", lcoe=diag["lcoe"],
+                         delta=diag["lcoe"] - diag0["lcoe"], kind="engineering",
+                         coherent=(not violations),
+                         violations="; ".join(violations)))
     rows.sort(key=lambda r: -abs(r["delta"]))
     OUTPUT_DIR.mkdir(exist_ok=True)
     with open(OUTPUT_DIR / "tornado.csv", "w", newline="") as f:

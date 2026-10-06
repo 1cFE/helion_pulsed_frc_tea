@@ -98,3 +98,17 @@ if __name__ == "__main__":
               f"{dd_frac_from_he3_over_d(0.158, t_i):.3f}; burn map at fr 0.9999: "
               f"{dd_frac_from_he3_over_d_burn(0.158, F_FOUR_NINES, t_i):.3f}")
     print(f"\nf_He3_eff: {F_FOUR_NINES:.3f} at four nines, {F_THREE_NINES:.3f} at three")
+    # The recycle race at the basis field and at the speculation device's
+    # (the per-pulse pair scales as B^2 with the density): the share of
+    # each species that eventually burns, and the unburned-fuel repurchase
+    # multiplier 1 + (1 - bf)(1 - fr)/bf the fuel account carries.
+    from study import DEVICES, burnup_at_field, field_t
+
+    for label, fwd in (("basis field", {}), ("speculation device", DEVICES["spec"]["overrides"])):
+        bf_d, bf_he3 = burnup_at_field(fwd)
+        print(f"\nrecycle race at the {label} ({field_t(fwd):.0f} T; per-pass burn "
+              f"D {bf_d:.1e}, He-3 {bf_he3:.1e}):")
+        print(f"  {'fuel_recovery':>14} {'D burns':>8} {'He-3 burns':>11} {'repurchase x':>13}")
+        for fr in (0.99, 0.999, 0.9999):
+            mult = 1.0 + (1.0 - bf_d) * (1.0 - fr) / bf_d
+            print(f"  {fr:>14} {f_he3_eff(bf_d, fr):>8.1%} {f_he3_eff(bf_he3, fr):>11.1%} {mult:>13.2f}")
