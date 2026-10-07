@@ -9,30 +9,33 @@ consistent f_rad, composite recovery cap, steady wall flux within the
 bought wall class, per-shot flash energy under tungsten melt, tritium
 plant charged whenever the mix is D-rich, the shot's implied burn (at the
 point's own mix and field) fitting inside the pulse period at the solved
-rep rate (constraint 8), and the coil's magnetic pressure within the
-grade's coil bound (constraint 9).
+rep rate (constraint 8); the coil's magnetic pressure is reported on
+every point (constraint 9, an audit that binds nowhere).
 
 The compression field and the driver bank are scanned, graded by the
 evidence ladder. The patent's 22 T burn point and Polaris's sourced 50 MJ
-bank are the design basis; no record exists above either. The records
-grade holds both. The extrapolation grade holds the field at the basis
-and lets the bank double: a bank is a count of modular capacitor units,
-so a larger one is procurement rather than technology. Speculation scans
-the field to 50 T and the bank to four times Polaris, but the coil bound
-(constraint 9) is the same at every grade: the basis coil already cycles
-at or above the copper-alloy gigacycle band and no higher fatigue basis
-is sourced anywhere in this work, so every point above 22 T is excluded
-from the devices at every grade and reported as a sensitivity, what a
-higher field would be worth on a coil this work cannot price. The burn
-point moves with the field: at beta = 1 the density scales as B^2, so
-the breakeven time and the implied burn fall as B^-2, the per-pulse
-burnup rises as B^2, and the compressed flux volume that caps f_pdv
-shrinks as B^-2 and grows with the bank, so the two knobs are coupled
-through the chamber rather than scanned as if independent. The bank's
-shot keeps the gain: the records and extrapolation grades hold the
-design-basis gain (2.56), so the burn the shot implies is unchanged by
-the bank and the duty falls with the module power per shot; speculation
-frees the gain.
+bank are the design basis; no record exists above either. The field is
+a stepped entry carried in the tier configs like the rate ceiling: 22 T
+at the design basis and records, 30 T granted at extrapolations (a
+grant with no public roadmap behind it), 40 T at speculation (an
+explicit leap), and each grade may use any scanned field at or below
+its grant. The scan also prices one step above each grade's grant and
+reports those designs as a labelled sensitivity, what the next grade's
+field would be worth, excluded from the grade's devices. The bank:
+the records grade holds it, the extrapolation grade lets it double (a
+bank is a count of modular capacitor units, so a larger one is
+procurement rather than technology), speculation takes it to four
+times Polaris. The burn point moves with the field: at beta = 1 the
+density scales as B^2, so the breakeven time and the implied burn fall
+as B^-2, the per-pulse burnup rises as B^2, and the compressed flux
+volume that caps f_pdv shrinks as B^-2 and grows with the bank, so the
+two knobs are coupled through the chamber rather than scanned as if
+independent. The bank's shot keeps the gain: the records and
+extrapolation grades hold the design-basis gain (2.56), so the burn the
+shot implies is unchanged by the bank and the duty falls with the
+module power per shot; speculation frees the gain. The coil that would
+deliver a granted field is neither designed nor priced: the pressure it
+cycles to every shot is a column of the scan, not a filter on it.
 
 The firing rate is a design choice, not a grant. costingfe sizes a plant by
 bisecting f_rep against the per-module net target and solving the integer
@@ -55,13 +58,13 @@ repriced by the model at the scanned size.
 """
 import csv
 import itertools
+import math
 import multiprocessing
 
 from costingfe.model import SizingInfeasible
 
 from study import (
     B_COMPRESSION_T,
-    COIL_PRESSURE_BASIS_MPA,
     E_DEL_BASIS_MJ,
     E_FLASH_MELT_MJ_M2,
     GAIN_BASIS,
@@ -71,8 +74,10 @@ from study import (
     coherence_violations,
     duty_bound_rate_hz,
     f_rad_floor,
+    field_t,
     load_config,
     run,
+    wall_bound_rate_hz,
 )
 
 # Each burn mix sits exactly on its bremsstrahlung floor (constraint 1):
@@ -91,11 +96,14 @@ FW_CLASSES = ("panel", "hhf")
 LENGTHS_M = (10.0, 15.0, 20.0, 30.0, 45.0, 60.0)
 RADII_M = (0.5, 0.75, 1.0, 1.5)
 # The compression field and the driver bank, graded (see the module
-# docstring): the basis at records; the basis field with a doubled bank at
-# extrapolations; the bank to 200 MJ at speculation, where the field is
-# scanned to 50 T as a priced sensitivity that the coil bound excludes
-# from the device at every grade.
-FIELDS_T = {"tier1": (B_COMPRESSION_T,), "tier2": (B_COMPRESSION_T,),
+# docstring). The field grid at each grade runs from the basis to one
+# step above the grade's grant (22 T at records, 30 T at extrapolations,
+# 40 T at speculation, read from the tier configs through tier_fwd): the
+# fields at or below the grant are the search space, the one above it is
+# priced as the sensitivity. The bank: the basis at records, doubled at
+# extrapolations, to 200 MJ at speculation.
+FIELDS_T = {"tier1": (B_COMPRESSION_T, 30.0),
+            "tier2": (B_COMPRESSION_T, 30.0, 40.0),
             "tier3": (B_COMPRESSION_T, 30.0, 40.0, 50.0)}
 BANKS_MJ = {"tier1": (E_DEL_BASIS_MJ,), "tier2": (E_DEL_BASIS_MJ, 100.0),
             "tier3": (E_DEL_BASIS_MJ, 100.0, 200.0)}
@@ -149,6 +157,13 @@ def granted_ceiling_hz(fwd: dict, model) -> float:
     """The rate ceiling the point's stack grants (the concept default when
     no tier record raises it)."""
     return float(fwd.get("max_f_rep", model._eng_defaults["max_f_rep"]))
+
+
+def granted_field_t(fwd0: dict) -> float:
+    """The compression field the grade's stack grants: the b_center its
+    tier configs carry (config/baseline.yaml at the design basis and
+    records, tier2.yaml and tier3.yaml above), the basis when none does."""
+    return field_t(fwd0)
 
 
 def rate_ceilings_hz(fwd: dict, model) -> list[float]:
@@ -216,12 +231,15 @@ def point_rows(model, tier, fwd0, point, overrides=None):
     # tier-1 coherence uses the tier-2 cap set (no tier-1-specific caps exist)
     check_tier = "tier2" if tier == "tier1" else tier
     granted = granted_ceiling_hz(fwd0, model)
+    granted_t = granted_field_t(fwd0)
     rows = []
     for f, diag in rate_designs(model, fwd):
         violations = coherence_violations(f, diag, check_tier)
         rows.append(dict(
             tier=tier,
             field_t=b_t,
+            granted_t=granted_t,
+            field_above_grant=b_t > granted_t * (1 + 1e-9),
             bank_mj=e_del,
             gain=round(gain, 3),
             yield_mj=round(y, 1),
@@ -242,7 +260,6 @@ def point_rows(model, tier, fwd0, point, overrides=None):
             e_flash_mj_m2=round(diag["e_flash_mj_m2"], 3),
             f_pdv_cap=round(diag["f_pdv_cap"], 3),
             coil_pressure_mpa=round(diag["coil_pressure_mpa"], 1),
-            coil_past_basis=diag["coil_pressure_mpa"] > COIL_PRESSURE_BASIS_MPA * (1 + 1e-9),
             capital_per_kw=round(diag["capital_per_kw"]),
             coherent=(not violations),
             violations="; ".join(violations),
@@ -291,9 +308,14 @@ def row_fwd(tier, r, net_electric_mw=1000.0, overrides=None):
 
 def at_plant_size(model, tier, r, net_electric_mw, overrides=None):
     """A scan row's design re-sized to another plant power, same shot,
-    chamber, mix and ceiling (the integer module count re-snaps)."""
+    chamber and mix, under the lower of its ceiling and the wall bound of
+    its own module (the integer module count re-snaps, and a count whose
+    rate would overrun the wall is skipped for the next one, as the
+    device definitions are built)."""
     fwd = row_fwd(tier, r, net_electric_mw, overrides)
     try:
+        wall = wall_bound_rate_hz(model, fwd)
+        fwd["max_f_rep"] = min(fwd["max_f_rep"], math.floor(wall * 1000.0) / 1000.0)
         _, d = run(model, fwd)
     except SizingInfeasible:
         return None, ["sizing infeasible"]
@@ -326,81 +348,100 @@ def line(r):
             f"{r['max_f_rep']:>6.2f} {r['n_mod']:>5} {r['f_rep_hz']:>6.2f} "
             f"{r['duty']:>5.2f} {r['availability']:>6.3f} "
             f"{r['q_wall_mw_m2']:>6.2f} {r['e_flash_mj_m2']:>6.2f} "
-            f"{r['coil_pressure_mpa']:>6.0f}" + ("*" if r["coil_past_basis"] else " "))
+            f"{r['coil_pressure_mpa']:>6.0f}" + ("*" if r["field_above_grant"] else " "))
 
 
 def duty_only(r):
     return all(v.startswith("duty") for v in r["violations"].split("; "))
 
 
-def coil_only(r):
-    """A design the coil bound (constraint 9) alone excludes: coherent in
-    every other respect, resting on a coil this work cannot price."""
-    return bool(r["violations"]) and all(
-        v.startswith("coil pressure") for v in r["violations"].split("; "))
+def admissible(r):
+    """A design the grade may build: coherent under every enforced
+    constraint and at or below the grade's granted field."""
+    return r["coherent"] and not r["field_above_grant"]
+
+
+def sensitivity(r):
+    """A coherent design above the grade's granted field: what the next
+    grade's field would be worth here, excluded from the grade's devices."""
+    return r["coherent"] and r["field_above_grant"]
 
 
 def report(tier, rows, model3):
-    ok = [r for r in rows if r["coherent"]]
+    granted_t = rows[0]["granted_t"]
+    ok = [r for r in rows if admissible(r)]
     ok.sort(key=lambda r: r["lcoe"])
-    print(f"\n== {tier}: {len(ok)} coherent of {len(rows)} scanned "
-          f"(granted ceiling {rows[0]['granted_hz']:.0f} Hz; fields "
+    sens = [r for r in rows if sensitivity(r)]
+    print(f"\n== {tier}: {len(ok)} admissible of {len(rows)} scanned "
+          f"(granted ceiling {rows[0]['granted_hz']:.0f} Hz, granted field "
+          f"{granted_t:.0f} T; fields "
           f"{'/'.join(f'{b:.0f}' for b in FIELDS_T[tier])} T, banks "
-          f"{'/'.join(f'{e:.0f}' for e in BANKS_MJ[tier])} MJ; * = coil past "
-          f"the {COIL_PRESSURE_BASIS_MPA:.0f} MPa basis, excluded by "
-          f"constraint 9 at every grade) ==")
+          f"{'/'.join(f'{e:.0f}' for e in BANKS_MJ[tier])} MJ; coil = the "
+          f"magnetic pressure cycled every shot, MPa, an audit; * = field "
+          f"above the grant, a sensitivity) ==")
     print(HEADER)
     for r in ok[:10]:
         print(line(r))
 
-    # The field and the bank priced one at a time: the best coherent
-    # design at each bank (all fields), and at each field the best design
-    # the coil bound alone excludes (a sensitivity, not a device: what a
-    # higher field would be worth on a coil this work cannot price), so
-    # the writeup can say what scaling each is worth at this grade.
-    sens = [r for r in rows if coil_only(r)]
+    # The field and the bank priced one at a time: the best admissible
+    # design at each field at or below the grant and at each bank, and at
+    # each field above the grant the best coherent design (a sensitivity,
+    # not a device: what the next grade's field would be worth here), so
+    # the writeup can say what each step of the field is worth at this
+    # grade.
     if len(FIELDS_T[tier]) > 1:
-        print("  best design per compression field (above the basis: the "
-              "best the coil bound alone excludes, a sensitivity):")
+        print("  best design per compression field (above the grant: the "
+              "best coherent design, a sensitivity):")
         print("  " + HEADER)
         for b_t in FIELDS_T[tier]:
-            pool = ok if b_t == B_COMPRESSION_T else sens
+            pool = sens if b_t > granted_t else ok
             at = [r for r in pool if r["field_t"] == b_t]
             print("  " + (line(min(at, key=lambda r: r["lcoe"])) if at
                           else f"{b_t:.0f} T: no design"))
     if len(BANKS_MJ[tier]) > 1:
-        print("  best coherent design per driver bank:")
+        print("  best admissible design per driver bank:")
         print("  " + HEADER)
         for e in BANKS_MJ[tier]:
             at = [r for r in ok if r["bank_mj"] == e]
             print("  " + (line(min(at, key=lambda r: r["lcoe"])) if at
-                          else f"{e:.0f} MJ: no coherent design"))
+                          else f"{e:.0f} MJ: no admissible design"))
         if len(FIELDS_T[tier]) > 1:
-            print("  best design per (field, bank), the fields above the "
-                  "basis coil-excluded:")
+            print("  best design per (field, bank), the field above the "
+                  "grant a sensitivity:")
             print("  " + HEADER)
             for b_t, e in itertools.product(FIELDS_T[tier], BANKS_MJ[tier]):
-                pool = ok if b_t == B_COMPRESSION_T else sens
+                pool = sens if b_t > granted_t else ok
                 at = [r for r in pool if r["field_t"] == b_t and r["bank_mj"] == e]
                 if at:
                     print("  " + line(min(at, key=lambda r: r["lcoe"])))
+    # The wall class at each field: the best admissible design per
+    # (field, wall), so the writeup can say where the panel wall stops
+    # carrying the module and the divertor-class wall is bought.
+    print("  best design per (field, wall class):")
+    print("  " + HEADER)
+    for b_t, fw in itertools.product(FIELDS_T[tier], FW_CLASSES):
+        pool = sens if b_t > granted_t else ok
+        at = [r for r in pool if r["field_t"] == b_t and r["fw_class"] == fw]
+        if at:
+            print("  " + line(min(at, key=lambda r: r["lcoe"])))
 
-    # The mix trade with the rate priced: the best coherent design per
+    # The mix trade with the rate priced: the best admissible design per
     # burn mix, and beside it the design the search would build at the
-    # granted ceiling without the rate as a lever (the best coherent
+    # granted ceiling without the rate as a lever (the best admissible
     # at-grant design, or where none fits, the best that constraint 8
     # alone excludes), with the duty that excludes it.
-    print("  best coherent design per burn mix, and the same mix at the "
+    print("  best admissible design per burn mix, and the same mix at the "
           "granted ceiling:")
     print("  " + HEADER + f"   {'at grant':>10} {'n_mod':>5} {'f_rep':>6} {'duty':>5}")
     for b in BURN_BRANCHES:
         dd = b["dhe3_dd_frac"]
         mix_ok = [r for r in ok if r["dd_frac"] == dd]
         if not mix_ok:
-            print(f"  dd {dd:.2f}: no coherent design")
+            print(f"  dd {dd:.2f}: no admissible design")
             continue
         best = min(mix_ok, key=lambda r: r["lcoe"])
         at_grant = [r for r in rows if r["dd_frac"] == dd
+                    and not r["field_above_grant"]
                     and r["max_f_rep"] == round(r["granted_hz"], 4)
                     and (r["coherent"] or duty_only(r))]
         tail = ""
@@ -447,7 +488,7 @@ def report(tier, rows, model3):
                   f"{design(cand)}, {sizing(d3)}")
         if o["bank_mj"] > E_DEL_BASIS_MJ:
             # What the scanned bank is worth at this grade: the best
-            # coherent design with it held at the sourced Polaris bank.
+            # admissible design with it held at the sourced Polaris bank.
             held = [r for r in ok if r["bank_mj"] == E_DEL_BASIS_MJ]
             if held:
                 h = min(held, key=lambda r: r["lcoe"])
@@ -455,43 +496,56 @@ def report(tier, rows, model3):
                 print(f"  bank held at the basis: LCOE {h['lcoe']:.1f} (+{h['lcoe'] - o['lcoe']:.1f}), "
                       f"{design(h)}, {sizing(h)}"
                       + (f"; at 3 GWe {d3['lcoe']:.1f}, {sizing(d3)}" if d3 and not v3 else ""))
-        if len(FIELDS_T[tier]) > 1:
-            # What a field above the basis would be worth at this grade,
-            # on a coil this work cannot price: the best design at each
-            # scanned field that the coil bound alone excludes, against
-            # the coherent optimum, at both plant sizes. A sensitivity,
-            # not a device.
-            print("  the field above the basis, excluded from every device "
-                  "by the coil bound (constraint 9), as a sensitivity:")
+        if o["field_t"] > B_COMPRESSION_T:
+            # What the granted field is worth at this grade: the best
+            # admissible design at each lower scanned field, the basis
+            # first, against the optimum at both plant sizes.
             for b_t in FIELDS_T[tier]:
-                if b_t == B_COMPRESSION_T:
+                if b_t >= o["field_t"]:
                     continue
+                held = [r for r in ok if r["field_t"] == b_t]
+                if not held:
+                    continue
+                h = min(held, key=lambda r: r["lcoe"])
+                d3, v3 = at_plant_size(model3, tier, h, 3000.0)
+                label = "basis" if b_t == B_COMPRESSION_T else f"{b_t:.0f} T"
+                print(f"  field held at the {label}: LCOE {h['lcoe']:.1f} (+{h['lcoe'] - o['lcoe']:.1f}), "
+                      f"{design(h)}, {sizing(h)}"
+                      + (f"; at 3 GWe {d3['lcoe']:.1f} (+{d3['lcoe'] - d3_opt['lcoe']:.1f}), {sizing(d3)}"
+                         if d3 and d3_opt and not v3 else ""))
+        if sens:
+            # What a field above the grant would be worth at this grade:
+            # the best coherent design at each scanned field above it,
+            # against the admissible optimum, at both plant sizes. A
+            # sensitivity, not a device.
+            print("  the field above the grant, excluded from the grade's "
+                  "devices, as a sensitivity:")
+            for b_t in FIELDS_T[tier]:
                 at = [r for r in sens if r["field_t"] == b_t]
                 if not at:
-                    print(f"    {b_t:.0f} T: no design the coil bound alone excludes")
                     continue
                 h = min(at, key=lambda r: r["lcoe"])
                 d3, v3 = at_plant_size(model3, tier, h, 3000.0)
                 worth3 = (f"; at 3 GWe {d3['lcoe']:.1f} ({d3['lcoe'] - d3_opt['lcoe']:+.1f}), {sizing(d3)}"
-                          if d3 and d3_opt and all(v.startswith("coil pressure") for v in v3)
-                          else "")
+                          if d3 and d3_opt and not v3 else "")
                 print(f"    {b_t:.0f} T: LCOE {h['lcoe']:.1f} ({h['lcoe'] - o['lcoe']:+.1f}), "
                       f"{design(h)}, {sizing(h)}, coil {h['coil_pressure_mpa']:.0f} MPa"
                       + worth3)
-    # The deuterium-rich branch: its best design under all nine
-    # constraints (rate included), and the design it would be at the
-    # granted ceiling in the fewest modules, which constraint 8 alone
-    # excludes wherever the burn overruns that period.
+    # The deuterium-rich branch: its best admissible design (rate
+    # included), and the design it would be at the granted ceiling in the
+    # fewest modules, which constraint 8 alone excludes wherever the burn
+    # overruns that period.
     d_rich_ok = [r for r in ok if r["dd_frac"] == 0.85]
     if d_rich_ok:
         r = min(d_rich_ok, key=lambda r: r["lcoe"])
-        print(f"  best deuterium-rich design under all nine constraints: "
+        print(f"  best deuterium-rich admissible design: "
               f"LCOE {r['lcoe']:.1f}, {design(r)}, {sizing(r)}")
         d3, v3 = at_plant_size(model3, tier, r, 3000.0)
         if d3 is not None:
             print(f"    the same design at 3 GWe: LCOE {d3['lcoe']:.1f}, "
                   f"{sizing(d3)}" + (f" ({'; '.join(v3)})" if v3 else ""))
     d_rich_ceiling = [r for r in rows if r["dd_frac"] == 0.85 and not r["coherent"]
+                      and not r["field_above_grant"]
                       and r["max_f_rep"] == round(r["granted_hz"], 4)
                       and duty_only(r)]
     if d_rich_ceiling:

@@ -37,67 +37,71 @@ granted: citable records, Helion's own requirements taken at face
 value, labelled extrapolations, and labelled speculation
 (`config/baseline.yaml` carries the common basis and Helion's
 configuration; the stacks are `config/best_case.yaml`,
-`config/tier2.yaml`, `config/tier3.yaml`). The compression field and
-the driver bank are design-search dimensions graded by the same ladder
-(`scripts/coherent_min.py`): the patent's 22 T burn point and Polaris's
-50 MJ bank are the basis and no record exists above either, so the
-records grade holds both, the extrapolation grade holds the field and
-doubles the bank, and speculation takes the bank to 200 MJ and scans
-the field to 50 T, bounded at the basis at every grade by the coil
-(the 22 T coil already cycles at or above the copper-alloy gigacycle
-band and no higher fatigue basis is sourced anywhere in this work),
-so the higher fields are a priced sensitivity excluded from every
-device, with the
-burn point following the field (density as B^2 at beta = 1, breakeven
-time as B^-2, per-pulse burnup as B^2, compressed flux volume as B^-2
-and with the bank). Nine physics-coherence constraints are enforced on
-every quoted point: the radiated fraction is coupled to the burn mix
-through the bremsstrahlung floor, recovery efficiency is capped as a
-composite (eta_dec x f_pdv), the wall must survive its steady flux and
-per-shot flash energy in the wall class it is costed at, a D-rich burn
-mix carries its tritium-plant consequences, the in-plasma tritium burn
-is floored by the burnup closure, f_pdv is capped per point by the
+`config/tier2.yaml`, `config/tier3.yaml`). The compression field is a
+stepped entry of the same ladder, carried in the tier configs like the
+repetition-rate ceiling: the patent's 22 T burn point at the design
+basis and records (corroborated in class by Helion's stated compression
+field of more than 15 T), 30 T granted at extrapolations (a grant with
+no public roadmap behind it), 40 T at speculation (an explicit leap),
+each grade's design search free to use any field at or below its grant
+and the scan pricing the field one grade ahead as a labelled
+sensitivity. The driver bank is a design-search dimension graded the
+same way (`scripts/coherent_min.py`): Polaris's sourced 50 MJ at
+records, doubled at extrapolations, to 200 MJ at speculation. The burn
+point follows the field (density as B^2 at beta = 1, breakeven time as
+B^-2, per-pulse burnup as B^2, compressed flux volume as B^-2 and with
+the bank). Nine physics-coherence constraints are carried on every
+quoted point: the radiated fraction is coupled to the burn mix through
+the bremsstrahlung floor, recovery efficiency is capped as a composite
+(eta_dec x f_pdv), the wall must survive its steady flux and per-shot
+flash energy in the wall class it is costed at, a D-rich burn mix
+carries its tritium-plant consequences, the in-plasma tritium burn is
+floored by the burnup closure, f_pdv is capped per point by the
 chamber's adiabatic expansion bound at the point's own field and bank,
 the shot yield is bounded by the plasma energy and the burn time, so
 every point carries the burn time its shot implies at its own burn mix
 and field, that burn must fit inside the pulse period, which caps one
-burn section's fusion power and sets the burn mix and the firing rate
-together (a grade's granted rate ceiling is permission, not obligation,
-and the search fires each device at or below the lower of its grant
-and the duty bound of its own burn, in the fewest modules whose rate
-fits), and the compression coil's magnetic pressure is bounded at the
-basis coil at every grade, speculation included. Every device except
-Helion's configuration is a constrained design-space scan optimum
-(field, bank, gain, chamber size, wall class, burn mix, firing rate),
-not an asserted operating point.
+burn section's fusion power and, with the wall's steady flux, sets the
+burn mix and the firing rate together (a grade's granted rate ceiling
+is permission, not obligation, and the search fires each device at or
+below the lowest of its grant, the duty bound of its own burn and the
+wall bound of its own module, in the fewest modules whose rate fits),
+and the compression coil's magnetic pressure is audited on every point
+and binds nowhere, because the coil that would deliver a granted field
+is neither designed nor priced here. Every device except Helion's
+configuration is a constrained design-space scan optimum (field, bank,
+gain, chamber size, wall class, burn mix, firing rate), not an asserted
+operating point.
 
 Headline ladder at 1 GWe: records 112.1, Helion's requirements 105.9,
-extrapolations 29.1 (37.2 at 7% real cost of capital), speculation 11.6
-(19.5 at 7%) $/MWh; at 3 GWe the speculation park reads 9.4 $/MWh (16.2
+extrapolations 25.7 (32.6 at 7% real cost of capital), speculation 10.5
+(17.6 at 7%) $/MWh; at 3 GWe the speculation park reads 8.2 $/MWh (14.3
 at 7%), so one stack reaches the $10 target, as a park, on a 3% real
-cost of capital worth 6.8 $/MWh and on a driver bank four times
-Polaris's worth 0.7, at the patent's 22 T on the coil that point
-already needs; with the bank at Polaris's value it sits at the target
-(12.4 and 10.1). A higher field is priced as a sensitivity and excluded
-from every device: the best design the coil bound alone excludes reads
-10.9, 10.5 and 10.2 $/MWh at 30, 40 and 50 T (8.6, 8.2 and 7.9 at the
-park), worth up to 1.4 $/MWh, on a coil cycled to 358 to 995 MPa that
-the cost model prices below the 22 T coil (its coil account integrates
-conductor along an expansion adiabat that shrinks with the field and
-carries no structure for the pressure), which is why the bound lives
-in this study's constraint set. Every optimized device runs
-deuterium-rich and slow, in more modules than its granted ceiling
-would need: 25 modules at 0.985 Hz at records; 6 modules of 10 m x 1.5
-m at 1.56 Hz on the doubled bank (worth 1.0 $/MWh) at extrapolations,
-both at 96 to 100% of the duty bound; and at speculation 2 modules of
-15 m x 1.5 m firing 512 MJ shots at the design-basis gain at 1.67 Hz on
-the 200 MJ bank, at 86% of the bound with the panel wall at 91% of its
-steady-flux limit. Every one of them stores a tonne-class tritium
-inventory. Every number grants Helion's gain, 128 MJ from a 50 MJ bank,
-which no record supports and which implies a 0.3 to 0.7 s burn at the
-patent point against Helion's stated pulse of hundreds of microseconds
-to milliseconds (the speculation device's 512 MJ shot from its 200 MJ
-bank is the same gain and the same burn). The records device sits 6.2 $/MWh above Helion's
+cost of capital worth 6.1 $/MWh, on a 40 T compression field worth 1.2
+against the patent's 22 T (at which the park reads 9.4 and still
+crosses), and on a driver bank four times Polaris's worth 0.1. The
+field is worth 3.4 $/MWh at the extrapolation grade (25.7 at 30 T
+against 29.1 at the basis) and the bank 0.3 there. The coil that would
+deliver a granted field is the open item the ladder names: every shot
+cycles it from zero to 193, 358 or 637 MPa at the three fields, 1.7 to
+5.5 billion times over a book life, no conductor or case has a
+gigacycle basis at any of those stresses, and the cost model's coil
+account prices it below the 22 T coil (it integrates conductor along an
+expansion adiabat that shrinks with the field and carries no
+containment term), so the field is graded in the ladder rather than
+bounded by the model. Every optimized device runs at the deuterium-rich
+end of the mix grid: the records device duty-bound in 25 modules of 10
+m x 0.75 m at 0.985 Hz, at 100% of the bound; the extrapolation and
+speculation devices wall-bound at their granted fields, 4 modules of 15
+m x 1.5 m at 2.37 Hz on the doubled bank and a single 30 m x 1.5 m
+module firing 800 MJ shots at 2.23 Hz on the 200 MJ bank, with the
+panel wall at 97 and 99.7% of its steady-flux limit. Every one of them
+stores a tonne-class tritium inventory. Every number grants Helion's
+gain, 128 MJ from a 50 MJ bank, which no record supports and which
+implies a 0.3 to 0.7 s burn at the patent point against Helion's stated
+pulse of hundreds of microseconds to milliseconds (the speculation
+device's 800 MJ shot from its 200 MJ bank at 40 T, a gain of 4.0, needs
+0.15 to 0.34 s). The records device sits 6.2 $/MWh above Helion's
 requirements: reverting Helion's fourth nine of per-pulse fuel recovery
 is worth about 47 $/MWh at Helion's own mix, most of which the records
 device recovers by running at the deuterium-rich end of the mix grid,
@@ -138,7 +142,7 @@ study's solver paths.
 cd scripts
 python3 run_baseline.py    # design-basis point (Helion's implied point)
 python3 tiers.py           # the evidence ladder at 1 and 3 GWe
-python3 coherent_min.py    # constrained minimum hunt over field, bank, gain, chamber, wall, mix and firing rate (the headline numbers; multi-process, a few minutes)
+python3 coherent_min.py    # constrained minimum hunt over field (at or below each grade's grant), bank, gain, chamber, wall, mix and firing rate (the headline numbers; multi-process, a few minutes)
 python3 tornado.py         # one-at-a-time reversion from the extrapolation device
 python3 he3_scan.py        # He-3 price x burn-mix sweep, and the free-He-3 optimum re-chosen per mix
 python3 breeder_loop.py    # dedicated pure-D breeders in the loop: park LCOE, endogenous He-3 cost

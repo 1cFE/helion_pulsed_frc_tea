@@ -29,15 +29,19 @@ combine values the review ruled mutually inconsistent:
   7), and that burn must fit inside the pulse period at the solved rep
   rate (constraint 8).
 - coil mechanics: the magnetic pressure the compression coil cycles to
-  on every shot, bounded at the basis coil at every grade, speculation
-  included (constraint 9); a higher field is priced as a sensitivity
-  only, never as a device.
+  on every shot, reported on every point as an audit (constraint 9); it
+  binds nowhere, because the coil that delivers a granted field is
+  neither designed nor priced here.
 
 The compression field (b_center) and the driver bank (e_driver_mj) are
-design-search dimensions, graded by the evidence ladder; everything the
-burn point sets (breakeven time, per-pulse burnup, compressed flux
-volume, coil pressure) is derived from the point's own values through
-field_t and e_del_mj, so a scaled field moves its consequences with it.
+design-search dimensions, graded by the evidence ladder: the field is a
+stepped entry carried in the tier configs like the rate ceiling (22 T at
+the design basis and records, 30 T granted at extrapolations, 40 T at
+speculation), and the search may use any field at or below a grade's
+grant. Everything the burn point sets (breakeven time, per-pulse
+burnup, compressed flux volume, coil pressure) is derived from the
+point's own values through field_t and e_del_mj, so a scaled field
+moves its consequences with it.
 """
 import os
 
@@ -121,8 +125,13 @@ DD_FRAC_TRITIUM_THRESHOLD = 0.488
 # tritium in-pulse burn), the compressed flux volume shrinks as B^-2 and
 # grows with the bank (constraint 6), the coil account is priced by
 # costingfe at the field (b_center) and the driver account per joule
-# (e_driver_mj), and the magnetic pressure the coil must cycle rises as
-# B^2 (constraint 9).
+# (e_driver_mj), and the magnetic pressure the coil cycles to rises as
+# B^2 (constraint 9, an audit). The field is graded like the rate
+# ceiling: the patent's 22 T (config/baseline.yaml) at the design basis
+# and records, 30 T granted in config/tier2.yaml, 40 T in
+# config/tier3.yaml, and the search may use any field at or below a
+# grade's grant; the basis field below is the reference the scalings are
+# taken from, not a bound.
 B_COMPRESSION_T = 22.0
 E_DEL_BASIS_MJ = 50.0
 _MU0 = 4e-7 * 3.141592653589793
@@ -132,26 +141,22 @@ _MU0 = 4e-7 * 3.141592653589793
 # and the burn its shot implies (gain / chi x breakeven time) does not.
 GAIN_BASIS = 128.1 / E_DEL_BASIS_MJ
 
-# Constraint 9 (the coil against its own mechanics). Every shot cycles the
-# compression coil from zero to the magnetic pressure B^2/2mu0, 1e9 to
-# 1e10 times over the book life at the rep rate: about 193 MPa at the 22
-# T basis, at or above copper-alloy gigacycle fatigue strengths of 100 to
-# 150 MPa, which the ledger carries as an open item on the basis coil
-# itself. The bound is evidential, and it is the same at every grade,
-# speculation included: the patent's 22 T is the only field with a
-# source, its coil already cycles at or above the gigacycle band, and no
-# higher fatigue basis is sourced anywhere in this work, so no grade may
-# buy a field above the basis. The speculation scan still prices 30, 40
-# and 50 T designs (about 1 GPa at 50 T) as a reported sensitivity, each
-# labelled as resting on a coil this work cannot price and excluded from
-# every device: costingfe's coil account prices conductor mass along the
-# expansion adiabat, which shrinks with the compressed flux volume as the
-# field rises, and carries no structure term for the pressure, so the
-# cost model offers no resistance of its own to the field.
-COIL_PRESSURE_BASIS_MPA = B_COMPRESSION_T**2 / (2.0 * _MU0) / 1e6
-COIL_FATIGUE_BAND_MPA = (100.0, 150.0)
-COIL_PRESSURE_CAP_MPA = {"tier2": COIL_PRESSURE_BASIS_MPA,
-                         "tier3": COIL_PRESSURE_BASIS_MPA}
+# Constraint 9 (the coil against its own mechanics) is an audit, not a
+# bound. Every shot cycles the compression coil from zero to the magnetic
+# pressure B^2/2mu0 (coil_pressure_mpa: 193 MPa at 22 T, 358 at 30 T,
+# 637 at 40 T), 1e9 to 1e10 times over a book life at the rep rate. No
+# conductor or case has a gigacycle basis at any of these stresses, the
+# basis field's included, and the high-field pulsed-magnet art that
+# reaches such fields operates at thousands to tens of thousands of
+# shots, five or six orders below what a power plant needs. The coil to
+# deliver a granted field is neither designed nor priced here: costingfe's
+# coil account prices conductor mass along the expansion adiabat, which
+# shrinks with the compressed flux volume as the field rises, and carries
+# no containment term, so it offers no resistance of its own to the
+# field. The path from a stress allowable to a field (winding geometry,
+# load sharing, pre-stress, heat treatment) is a design question this
+# work does not undertake, so the pressure is reported on every point and
+# bounds nothing; the field itself is the graded entry.
 
 # Constraint 7 (the shot against the plasma energy and the burn time):
 # gain <= chi x tau_burn / tau_f. The patent burn point (US 11,469,003 B2
@@ -282,8 +287,15 @@ def burnup_at_field(fwd: dict) -> tuple[float, float]:
 
 def coil_pressure_mpa(b_t: float) -> float:
     """Magnetic pressure B^2/2mu0 [MPa], the stress the compression coil
-    cycles to on every shot."""
+    cycles to on every shot (constraint 9, reported, never binding)."""
     return b_t**2 / (2.0 * _MU0) / 1e6
+
+
+def coil_cycles_over_life(f_rep_hz: float, availability: float,
+                          lifetime_yr: float) -> float:
+    """Shots, and so coil stress cycles from zero to B^2/2mu0, over the
+    book life at the solved rate and the derived availability."""
+    return f_rep_hz * SECONDS_PER_YEAR * availability * lifetime_yr
 
 
 def chi_from_xs(x_s: float) -> float:
@@ -385,6 +397,29 @@ def duty_bound_rate_hz(fwd: dict, e_del_mj: float) -> float:
     tau = implied_burn_s(float(fwd["yield_per_shot_mj"]), e_del_mj,
                          X_S_REFERENCE, breakeven_time_at_point_s(fwd))
     return DUTY_MAX / tau
+
+
+def wall_bound_rate_hz(model: CostModel, fwd: dict) -> float:
+    """The highest firing rate at which one module's steady wall flux
+    stays within its wall class (constraint 3). Every term of the pulsed
+    chamber load (undirected ash, radiation, circuit waste) scales with
+    the fusion power and so with the rate at a fixed shot and chamber, so
+    one probe at any ceiling gives the bound: f_rep x q_lim / q_wall. With
+    the duty bound (duty_bound_rate_hz) and the grant, it is the third
+    term of the ceiling the design search sets a device at."""
+    _, d = run(model, fwd)
+    return d["f_rep_hz"] * Q_LIM[fwd.get("fw_class", "panel")] / d["q_wall_mw_m2"]
+
+
+def search_ceiling_hz(model: CostModel, fwd: dict, grant_hz: float) -> float:
+    """The rate ceiling the design search sets an optimized device at: the
+    lowest of the grade's grant, the duty bound of the device's own burn
+    (constraint 8) and the wall bound of its own module (constraint 3),
+    rounded down to the thousandth, so that costingfe builds the device in
+    the fewest modules whose rate fits all three at either plant size."""
+    bound = min(grant_hz, duty_bound_rate_hz(fwd, e_del_mj(fwd)),
+                wall_bound_rate_hz(model, fwd))
+    return math.floor(bound * 1000.0) / 1000.0
 
 
 def wall_load_14mev_equivalent(result) -> float:
@@ -503,50 +538,60 @@ def wall_area_m2(fwd: dict) -> float:
 # One machine per evidence grade. records, extrap and spec are the coherent
 # design-search optima (scripts/coherent_min.py); helion is the vendor
 # configuration on the design basis. The search chooses the compression
-# field and the driver bank (graded: both at the basis at records, the
-# bank doubled at extrapolations, the bank to 200 MJ at speculation; the
-# field is scanned to 50 T at speculation and bounded at the basis by
-# the coil at every grade, so every device sits at 22 T), the shot gain
-# (free at speculation only), the burn mix, the chamber, the wall class
-# and the firing rate together, each mix on its bremsstrahlung floor,
-# under constraint 8 (the burn must fit the pulse period, a cap on one
-# burn section's fusion power of chi E_del / tau_f, which rises with the
-# bank) and constraint 9 (the coil's magnetic pressure at the basis). The
-# rate enters as max_f_rep: a grade's granted ceiling (1 Hz at the design
-# basis and records, 3 Hz at extrapolations, 10 Hz at speculation) is
-# permission, not obligation, and each optimized device carries the
-# ceiling the search chose, the duty-bound rate of its own burn (1 /
-# tau_burn, rounded down to the thousandth) at or below the grant, never
-# above, so costingfe builds it in the fewest modules whose rate fits
-# that burn:
+# field (graded like the rate ceiling: the patent's 22 T at records, 30 T
+# granted at extrapolations, 40 T at speculation, each grade free to use
+# any scanned field at or below its grant; every optimized device takes
+# its grant), the driver bank (the basis at records, doubled at
+# extrapolations, to 200 MJ at speculation), the shot gain (free at
+# speculation only), the burn mix, the chamber, the wall class and the
+# firing rate together, each mix on its bremsstrahlung floor, under
+# constraint 8 (the burn must fit the pulse period, a cap on one burn
+# section's fusion power of chi E_del / tau_f, which rises with the bank
+# and as the field squared) and constraint 3 (the wall's steady flux
+# within its class). The rate enters as max_f_rep: a grade's granted
+# ceiling (1 Hz at the design basis and records, 3 Hz at extrapolations,
+# 10 Hz at speculation) is permission, not obligation, and each optimized
+# device carries the ceiling the search set (search_ceiling_hz: the
+# lowest of the grant, the duty bound of its own burn and the wall bound
+# of its own module, rounded down to the thousandth), never above the
+# grant, so costingfe builds it in the fewest modules whose rate fits at
+# either plant size:
 # - records: the basis field and bank, Helion's 128.1 MJ shot at dd_frac
 #   0.85 in 25 modules of 10 m x 0.75 m at 0.985 Hz (duty 0.999), under
-#   the 1 Hz grant;
-# - extrapolations: the basis field with the doubled bank (100 MJ, 256 MJ
-#   shots at the design-basis gain) at dd_frac 0.80 in 6 modules of 10 m
-#   x 1.5 m at 1.56 Hz, the fewest whose rate fits its 0.62 s burn, under
-#   the 3 Hz grant; the bank is worth 1.0 $/MWh against the 12 modules of
-#   10 m x 0.75 m the sourced bank needs;
-# - speculation: the basis field with a 200 MJ bank (four times Polaris),
-#   512 MJ shots at the design-basis gain (the freed gain buys nothing:
-#   the gain-3 shot in the same chamber reads within 0.01 $/MWh) at
-#   dd_frac 0.70 in 2 modules of 15 m x 1.5 m at 1.67 Hz, the fewest
-#   whose rate fits its 0.51 s burn (duty 0.85), under the 10 Hz grant,
-#   the panel wall at 91% of its steady-flux limit; the bank is worth 0.7
-#   $/MWh against the 7 modules of 10 m x 0.75 m the sourced bank needs
-#   (12.4). A field above the basis is a sensitivity the coil bound
-#   excludes from every device: the best design the coil alone excludes
-#   reads 10.9 at 30 T, 10.5 at 40 T and 10.2 at 50 T (8.6, 8.2 and 7.9
-#   at the park), a single 30 m x 1.5 m module on a coil cycled to 358 to
-#   995 MPa that this work cannot price.
-# Every device is a panel-wall machine. The same module tripled makes the
-# 3 GWe park, so no size_overrides remain; the slot is kept for a park that
-# needs a different shot or chamber. Every script and test builds its
-# forward dict from here, so a moved optimum is a one-place change.
+#   the 1 Hz grant; the duty bound is the ceiling;
+# - extrapolations: the granted 30 T with the doubled bank (100 MJ, 256
+#   MJ shots at the design-basis gain) at dd_frac 0.85 in 4 modules of
+#   15 m x 1.5 m at 2.37 Hz (duty 0.82, the panel wall at 97% of its
+#   limit); the wall bound (2.445 Hz) is the ceiling, under the 2.88 Hz
+#   duty bound and the 3 Hz grant, and it is what keeps the park at 12
+#   modules rather than 11 (whose wall overruns). The field is worth 3.4
+#   $/MWh against the best design at the basis (29.1: 100 MJ, 256 MJ
+#   shots at dd_frac 0.80 in 6 modules of 10 m x 1.5 m at 1.56 Hz); the
+#   bank 0.3 at 1 GWe against the 7 modules of 10 m x 1.5 m the sourced
+#   bank needs (26.0) and nothing at the park (22.9 against 22.8);
+# - speculation: the granted 40 T with a 200 MJ bank (four times
+#   Polaris), 800 MJ shots at a gain of 4.0 (the freed gain is worth 0.02
+#   $/MWh: the design-basis-gain shot at dd_frac 0.80 in the same chamber
+#   reads 10.5 as well) at dd_frac 0.85, a single module of 30 m x 1.5 m
+#   at 2.23 Hz (duty 0.66, the panel wall at 99.7% of its limit); the
+#   wall bound (2.238 Hz) is the ceiling, under the 3.38 Hz duty bound
+#   and the 10 Hz grant. The field is worth 1.2 $/MWh against the best
+#   design at the basis (11.6: 200 MJ, 512 MJ shots at dd_frac 0.70 in 2
+#   modules of 15 m x 1.5 m at 1.67 Hz) and 0.4 against the best at 30 T
+#   (10.9, a single 30 m x 1.5 m module at 2.82 Hz); the bank 0.1 against
+#   the 3 modules of 10 m x 1.5 m the sourced bank needs (10.6). The 50 T
+#   sensitivity above the grant reads 10.2 (7.9 at the park).
+# Every device is a panel-wall machine: at the granted fields the
+# divertor-class wall reads 32.0 at extrapolations and 10.9 at
+# speculation. The same module tripled makes the 3 GWe park, so no
+# size_overrides remain; the slot is kept for a park that needs a
+# different shot or chamber. Every script and test builds its forward
+# dict from here, so a moved optimum is a one-place change.
 DEVICES = {
     "records": dict(
         configs=("best_case.yaml",),
         overrides=dict(dhe3_dd_frac=0.85, f_rad=f_rad_floor(0.85),
+                       b_center=B_COMPRESSION_T,
                        chamber_length=10.0, plasma_t=0.75, r_bore=0.85,
                        fw_class="panel", max_f_rep=0.986),
         size_overrides={},
@@ -554,49 +599,37 @@ DEVICES = {
     "helion": dict(configs=(), overrides={}, size_overrides={}),
     "extrap": dict(
         configs=("best_case.yaml", "tier2.yaml"),
-        overrides=dict(dhe3_dd_frac=0.8, f_rad=f_rad_floor(0.8),
+        overrides=dict(dhe3_dd_frac=0.85, f_rad=f_rad_floor(0.85),
+                       b_center=30.0,
                        e_driver_mj=100.0, yield_per_shot_mj=GAIN_BASIS * 100.0,
-                       chamber_length=10.0, plasma_t=1.5, r_bore=1.6,
-                       fw_class="panel", max_f_rep=1.613),
+                       chamber_length=15.0, plasma_t=1.5, r_bore=1.6,
+                       fw_class="panel", max_f_rep=2.445),
         size_overrides={},
     ),
     "spec": dict(
         configs=("best_case.yaml", "tier2.yaml", "tier3.yaml"),
-        overrides=dict(dhe3_dd_frac=0.7, f_rad=f_rad_floor(0.7),
-                       e_driver_mj=200.0, yield_per_shot_mj=GAIN_BASIS * 200.0,
-                       chamber_length=15.0, plasma_t=1.5, r_bore=1.6,
-                       fw_class="panel", max_f_rep=1.952),
+        overrides=dict(dhe3_dd_frac=0.85, f_rad=f_rad_floor(0.85),
+                       b_center=40.0,
+                       e_driver_mj=200.0, yield_per_shot_mj=800.0,
+                       chamber_length=30.0, plasma_t=1.5, r_bore=1.6,
+                       fw_class="panel", max_f_rep=2.238),
         size_overrides={},
     ),
 }
 # The deuterium-rich end of the mix grid (dd_frac 0.85, the mix that
-# breeds more He-3 than it burns): its best design at each grade under all
-# nine constraints, the rate included. At the records grade it is the
-# device itself; at extrapolations it sits 0.5 $/MWh behind the device's
-# 0.80 mix, in one more module at a lower rate; at speculation it sits
-# 0.4 behind the device's 0.70 mix, on the doubled bank in 5 modules of
-# 10 m x 1.0 m at 1.46 Hz, 99% of the duty bound. These designs carry the
-# largest tritium stores, so the tritium-store analysis
+# breeds more He-3 than it burns): its best design at each grade under
+# every enforced constraint, the rate included. At every grade it is the
+# device itself: at the granted fields the burn shortens as B^-2, the duty
+# bound relaxes with it, and the richest mix, which carries the largest
+# tritium store, is the cheapest. The tritium-store analysis
 # (scripts/tritium_burn.py, scripts/burnup_scan.py) and the duty audit
-# across x_s (scripts/yield_bound.py) price them beside the devices.
+# across x_s (scripts/yield_bound.py) therefore price the devices
+# themselves; the table is kept so that a grade whose optimum moves off
+# the deuterium-rich end can carry that end beside its device again.
 D_RICH_DEVICES = {
     "records": DEVICES["records"],
-    "extrap": dict(
-        configs=("best_case.yaml", "tier2.yaml"),
-        overrides=dict(dhe3_dd_frac=0.85, f_rad=f_rad_floor(0.85),
-                       e_driver_mj=100.0, yield_per_shot_mj=GAIN_BASIS * 100.0,
-                       chamber_length=10.0, plasma_t=1.5, r_bore=1.6,
-                       fw_class="panel", max_f_rep=1.473),
-        size_overrides={},
-    ),
-    "spec": dict(
-        configs=("best_case.yaml", "tier2.yaml", "tier3.yaml"),
-        overrides=dict(dhe3_dd_frac=0.85, f_rad=f_rad_floor(0.85),
-                       e_driver_mj=100.0, yield_per_shot_mj=GAIN_BASIS * 100.0,
-                       chamber_length=10.0, plasma_t=1.0, r_bore=1.1,
-                       fw_class="panel", max_f_rep=1.473),
-        size_overrides={},
-    ),
+    "extrap": DEVICES["extrap"],
+    "spec": DEVICES["spec"],
 }
 DEVICE_ORDER = (
     ("records", "citable records"),
@@ -713,6 +746,9 @@ def run(model: CostModel, fwd: dict, tritium_adder: bool = True):
         "yield_per_shot_mj": float(result.params["yield_per_shot_mj"]),
         "burn_fraction": fwd["burn_fraction"],
         "coil_pressure_mpa": coil_pressure_mpa(field_t(fwd)),
+        "coil_cycles_life": coil_cycles_over_life(
+            f_rep, float(result.params["availability"]),
+            float(result.params["lifetime_yr"])),
         "p_fus_module_mw": float(pt.p_fus),
         "tritium_adder_musd": tritium_musd,
         "availability": float(result.params["availability"]),
@@ -747,7 +783,11 @@ def f_t_from_burnup(f_d: float, t_i_kev: float) -> float:
 
 
 def coherence_violations(fwd: dict, diag: dict, tier: str) -> list[str]:
-    """Return the list of red-team constraints a run violates (empty = coherent)."""
+    """Return the list of red-team constraints a run violates (empty =
+    coherent). The field grant of a grade is not checked here: it is an
+    evidence-ladder entry like the rate ceiling, and the design search
+    (scripts/coherent_min.py) keeps every device at or below it while
+    reporting the fields above it as a labelled sensitivity."""
     v = []
     bf, _ = burnup_at_field(fwd)
     f_t_floor = f_t_from_burnup(bf, _T_I_CALIB_KEV)
@@ -756,12 +796,6 @@ def coherence_violations(fwd: dict, diag: dict, tier: str) -> list[str]:
             f"dhe3_f_T {fwd.get('dhe3_f_T', 0.0):.3f} sits below the "
             f"thermalized in-pulse burn floor {f_t_floor:.3f} at this "
             f"burnup: coherent only under prompt MeV-triton loss")
-    p_coil = coil_pressure_mpa(field_t(fwd))
-    if p_coil > COIL_PRESSURE_CAP_MPA[tier] * (1 + 1e-9):
-        v.append(
-            f"coil pressure {p_coil:.0f} MPa at {field_t(fwd):.0f} T exceeds "
-            f"the {tier} coil bound, the basis coil at "
-            f"{COIL_PRESSURE_BASIS_MPA:.0f} MPa ({B_COMPRESSION_T:.0f} T)")
     dd = fwd.get("dhe3_dd_frac", 0.131)
     floor = f_rad_floor(dd)
     if fwd.get("f_rad", 0.05) < floor - 1e-9:

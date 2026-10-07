@@ -28,7 +28,7 @@ price chose.
 """
 import csv
 
-from coherent_min import at_plant_size, scan
+from coherent_min import admissible, at_plant_size, scan
 from study import (
     DEVICE_ORDER,
     DEVICES,
@@ -61,7 +61,7 @@ def optimum_by_mix(model, u_he3, net_electric_mw=1000.0, tier="tier3",
     overrides = {"u_he3": u_he3}
     if rows is None:
         rows = scan(tier, overrides, **grid)
-    rows = [r for r in rows if r["coherent"]]
+    rows = [r for r in rows if admissible(r)]
     out = []
     for dd in sorted({r["dd_frac"] for r in rows}):
         cands = sorted((r for r in rows if r["dd_frac"] == dd), key=lambda r: r["lcoe"])

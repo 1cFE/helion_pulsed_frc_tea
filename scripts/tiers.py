@@ -91,9 +91,13 @@ def devices():
                 b_center_t=d["b_center_t"], e_driver_mj=d["e_driver_mj"],
                 yield_mj=round(d["yield_per_shot_mj"], 1),
                 coil_pressure_mpa=round(d["coil_pressure_mpa"]),
+                coil_cycles_life=float(f"{d['coil_cycles_life']:.2e}"),
                 p_fus_module_mw=round(d["p_fus_module_mw"]),
                 chamber_length_m=fwd.get("chamber_length", 10.0),
                 plasma_t_m=fwd.get("plasma_t", 0.5),
+                fw_class=fwd.get("fw_class", "panel"),
+                q_wall_mw_m2=round(d["q_wall_mw_m2"], 2),
+                e_flash_mj_m2=round(d["e_flash_mj_m2"], 2),
                 lcoe_at_7pct=round(d7["lcoe"], 1),
                 financing_part=round(d["lcoe"] - d7["lcoe"], 1),
                 interest_rate=fwd["interest_rate"], lifetime_yr=fwd["lifetime_yr"],
@@ -173,14 +177,16 @@ if __name__ == "__main__":
         w = csv.DictWriter(f, fieldnames=list(dev[0]))
         w.writeheader()
         w.writerows(dev)
-    print(f"\n{'device':<22} {'MWe':>5} {'LCOE':>6} {'B T':>4} {'E MJ':>5} {'yield':>6} {'coil':>5} {'at 7%':>6} {'fin.':>5} "
+    print(f"\n{'device':<22} {'MWe':>5} {'LCOE':>6} {'B T':>4} {'E MJ':>5} {'yield':>6} {'coil':>5} {'cycles':>7} "
+          f"{'wall':>6} {'q_wall':>6} {'flash':>5} {'at 7%':>6} {'fin.':>5} "
           f"{'rate':>5} {'life':>5} {'avail':>6} {'rout.':>6} {'bank':>6} {'wall':>6} "
           f"{'t_bank':>6} {'t_wall':>6} {'n_mod':>5} {'ceil':>6} {'f_rep':>5} {'A=.85':>6} {'A=.95':>6} {'30 yr':>6} {'burn s':>6} "
           f"{'duty':>5} {'pdv cap':>7} {'T M$':>5}")
     for r in dev:
         print(f"{r['device']:<22} {r['plant_mwe']:>5.0f} {r['lcoe']:>6.1f} "
               f"{r['b_center_t']:>4.0f} {r['e_driver_mj']:>5.0f} {r['yield_mj']:>6.0f} "
-              f"{r['coil_pressure_mpa']:>5.0f} "
+              f"{r['coil_pressure_mpa']:>5.0f} {r['coil_cycles_life']:>7.1e} "
+              f"{r['fw_class']:>6} {r['q_wall_mw_m2']:>6.2f} {r['e_flash_mj_m2']:>5.2f} "
               f"{r['lcoe_at_7pct']:>6.1f} {r['financing_part']:>+5.1f} "
               f"{r['interest_rate']:>5.2f} {r['lifetime_yr']:>5.0f} "
               f"{r['availability']:>6.3f} {r['outage_routine']:>6.4f} {r['outage_bank']:>6.4f} "

@@ -37,7 +37,6 @@ import math
 import numpy as np
 
 from study import (  # noqa: I001  sets COSTINGFE_BACKEND before costingfe imports
-    D_RICH_DEVICES,
     DEVICES,
     N_D_PATENT_M3,
     OUTPUT_DIR,
@@ -65,15 +64,16 @@ N_D_M3 = (1e22, 3e22, 1e23)  # compression-peak D density
 TAU_S = (1e-4, 3e-4, 1e-3, 3e-3)  # dwell at fusion conditions
 
 # The points where the store-and-decay cycle applies: Helion's own device,
-# the records, extrapolation and speculation devices, which store tritium
-# at dd_frac 0.85, 0.80 and 0.70, the extrapolation stack on Helion's
-# chamber at its 3 Hz ceiling (the tier-2 regression pin, which
-# constraint 8 flags), the deuterium-rich end's extrapolation and
-# speculation designs, and the He-3-rich preset's best speculation design
-# (the design search's optimum at dd_frac 0.131: the basis field and the
-# sourced 50 MJ bank, 500 MJ shots in a 15 m x 1.5 m single module at
-# 2.67 Hz), which buys its He-3 and stores the least tritium of any
-# design here.
+# the records, extrapolation and speculation devices, which all store
+# tritium at the deuterium-rich dd_frac 0.85 (the deuterium-rich end of
+# the mix grid is the device at every grade, study.D_RICH_DEVICES), the
+# extrapolation stack on Helion's chamber at its 3 Hz ceiling and 30 T
+# grant (the tier-2 regression pin, which constraint 8 flags), and the
+# He-3-rich preset's best speculation design (the design search's optimum
+# at dd_frac 0.131: the granted 40 T on the sourced 50 MJ bank, 500 MJ
+# shots in a 15 m x 1.5 m single module at 2.67 Hz under its wall-bound
+# 2.816 Hz ceiling), which buys its He-3 and stores the least tritium of
+# any design here.
 POINTS = {
     "helion": dict(tier="tier2", tier_cfgs=(), overrides={}),
     "records": dict(
@@ -89,23 +89,13 @@ POINTS = {
     "tier2_rung": dict(
         tier="tier2", tier_cfgs=("best_case.yaml", "tier2.yaml"), overrides={},
     ),
-    "extrap_d_rich": dict(
-        tier="tier2",
-        tier_cfgs=D_RICH_DEVICES["extrap"]["configs"],
-        overrides=D_RICH_DEVICES["extrap"]["overrides"],
-    ),
     "spec_he3_rich": dict(
         tier="tier3",
         tier_cfgs=DEVICES["spec"]["configs"],
         overrides=dict(dhe3_dd_frac=0.131, f_rad=f_rad_floor(0.131),
-                       e_driver_mj=50.0, yield_per_shot_mj=500.0,
+                       b_center=40.0, e_driver_mj=50.0, yield_per_shot_mj=500.0,
                        chamber_length=15.0, plasma_t=1.5, r_bore=1.6,
-                       fw_class="panel", max_f_rep=2.815),
-    ),
-    "spec_d_rich": dict(
-        tier="tier3",
-        tier_cfgs=D_RICH_DEVICES["spec"]["configs"],
-        overrides=D_RICH_DEVICES["spec"]["overrides"],
+                       fw_class="panel", max_f_rep=2.816),
     ),
     "spec": dict(
         tier="tier3",
@@ -251,9 +241,9 @@ if __name__ == "__main__":
                   f"{he3_over_d(dhe3_total / rr['dd'], t_i):.3f}")
 
         fb = float(r0.params["burn_fraction"])
-        print(f"  burnup closure at the model's own burn_fraction {fb}: "
+        print(f"  burnup closure at the model's own burn_fraction {fb:.2e}: "
               + ", ".join(
-                  f"f_T({t_i:.0f} keV) = {f_t_from_burnup(fb, t_i):.0%}"
+                  f"f_T({t_i:.0f} keV) = {f_t_from_burnup(fb, t_i):.2%}"
                   for t_i in T_I_KEV))
         for t_i in (70.0,):
             ratio_half = 0.5 * float(sigv_dt(t_i)) / float(

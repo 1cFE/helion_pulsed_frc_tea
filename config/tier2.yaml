@@ -18,13 +18,16 @@
 # Held at baseline, harmonized with the Borealis ledger: om_cost_dhe3
 # (27.5, lowest documented CCGT fixed-O&M already), installation_frac
 # (0.14, no defensible record on this cost basis), inflation (tier 1).
-# The compression field holds at the patent's 22 T at this grade (the
-# basis coil already cycles at or above the copper-alloy gigacycle band,
-# study.py constraint 9) and the driver bank may double to 100 MJ (a
-# count of modular capacitor units): both are design-search dimensions
-# in scripts/coherent_min.py, graded in docs/ledger.md, not records here.
+# The compression field is a stepped entry like max_f_rep: 30 T is
+# granted here (b_center below, a ceiling the design search may use up
+# to, never above) and the driver bank may double to 100 MJ (a count of
+# modular capacitor units, a design-search dimension graded in
+# docs/ledger.md rather than a record here).
 
 records:
+  b_center:
+    value: 30.0
+    source: "UNSOURCED-ROADMAP: a compression field above the patent's 22 T burn point, with no public roadmap behind it. Helion states compression fields of more than 15 T and the patent's operating table sits at 22 T; nothing public names a higher reactor-point field. A grant, the generous reading, not a record: the burn point follows it (density as B^2 at beta = 1, breakeven time and implied burn as B^-2, per-pulse burnup as B^2, compressed flux volume as B^-2; scripts/study.py), and the coil that would deliver it is neither designed nor priced here (constraint 9 reports the 358 MPa it would cycle to every shot and binds nowhere)."
   cap_shot_lifetime:
     value: 1.0e+9
     source: "Pacific Fusion AMPS (arXiv:2504.10680 sec 4.1): 100->35 kV derating projected to reach ~1e9 shots at ~9x lower energy density. A published NOAK TARGET resting on a vendor catalog extrapolation - tier 2, not the record grade an earlier draft gave it. At about 3 Hz over the 80 yr book life the bank fires about 7e9 shots and is replaced about 7x, charged to CAS72 by the model at the derived availability."

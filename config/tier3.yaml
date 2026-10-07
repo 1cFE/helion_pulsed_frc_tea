@@ -7,13 +7,17 @@
 # tungsten bound), so scripts/coherent_min.py solves the chamber size and
 # yield jointly under the wall constraints instead of asserting Q = 40 in a
 # chamber that cannot survive it. yield_per_shot_mj therefore has no entry
-# in this file; the coherent scan owns it, together with the compression
-# field (b_center, scanned 22 to 50 T at this grade, past the coil's
-# mechanical basis and labelled so) and the driver bank (e_driver_mj,
-# scanned 50 to 200 MJ): both are design-search dimensions graded in
-# scripts/coherent_min.py and docs/ledger.md, not records here.
+# in this file; the coherent scan owns it, together with the driver bank
+# (e_driver_mj, scanned 50 to 200 MJ, a design-search dimension graded
+# in scripts/coherent_min.py and docs/ledger.md rather than a record
+# here). The compression field is a stepped entry like max_f_rep: 40 T
+# is granted here (b_center below, a ceiling the search may use up to,
+# never above; the scan prices 50 T beside it as a labelled sensitivity).
 
 records:
+  b_center:
+    value: 40.0
+    source: "SPECULATION: an explicit leap, nearly twice the patent's 22 T burn point and ten tesla past the extrapolation grant, with no source at any grade. The burn point follows it (density 3.3x the patent's, breakeven time and implied burn 3.3x shorter, per-pulse burnup 3.3x higher; scripts/study.py); the coil that would deliver it is neither designed nor priced here (constraint 9 reports the 637 MPa it would cycle to every shot and binds nowhere), and the cost model's coil account, which prices conductor along the expansion adiabat with no containment term, falls with the field rather than rising."
   max_f_rep:
     value: 10.0
     source: "SPECULATION: top of the third-party 1-10 Hz roadmap band. No duty-cycle analysis (thermal, switch, vacuum recovery at 100 ms period) supports it; largest rep-rated MJ-class precedent is orders of magnitude away."

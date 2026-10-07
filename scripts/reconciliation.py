@@ -41,7 +41,6 @@ import warnings
 
 from study import (
     B_COMPRESSION_T,
-    COIL_FATIGUE_BAND_MPA,
     DEVICES,
     OUTPUT_DIR,
     apply_records,
@@ -257,14 +256,15 @@ def analyze(label, spec):
               f"{tri_lo:+.2f} / {tri_hi:+.2f} $/MWh")
 
     # --- compression-field risk (the dominant open band) ---
-    # The device's field is a scanned design choice; every consequence of
+    # The device's field is a graded design choice; every consequence of
     # the burn point follows it (study.py). Priced here: the field below
     # the device's own, with the rate ceiling re-solved at the duty bound of
     # the longer burn (so the plant needs more modules) and the per-pulse
     # burnup falling as B^2 (so the recovery nines bind harder); and, where
-    # the device sits above the 22 T basis, the same design held at the
-    # basis field, the counterfactual of a coil that cannot survive the
-    # device's magnetic pressure (constraint 9).
+    # the device sits above the 22 T basis, the same design reverted to the
+    # basis field, the grade's field entry withdrawn (the coil that would
+    # deliver the granted field is neither designed nor priced, so the
+    # basis-field reading is the device without that grant).
     lcoe_c, delta_c, f_pdv_c = f_pdv_ceiling_risk(model, fwd, diag)
     print(f"  RISK f_pdv at Slough's flux-conserver ceiling "
           f"(f_pdv {f_pdv_c:.2f} against {diag['f_pdv_eff']:.2f}): "
@@ -285,18 +285,19 @@ def analyze(label, spec):
           + ", ".join(f"{b:.0f} T {c:.1f}" for b, c in coil_by_field)
           + "; magnetic pressure "
           + ", ".join(f"{coil_pressure_mpa(b):.0f}" for b, _ in coil_by_field) + " MPa")
-    print(f"  coil: {coil_pressure_mpa(b_dev):.0f} MPa magnetic pressure at "
-          f"{b_dev:.0f} T, cycled every shot, against the copper-alloy "
-          f"gigacycle band {COIL_FATIGUE_BAND_MPA[0]:.0f}-{COIL_FATIGUE_BAND_MPA[1]:.0f} MPa"
-          + (" (past the basis coil: the design rests on a coil the model does not price)"
-             if b_dev > B_COMPRESSION_T else ""))
+    print(f"  AUDIT coil (constraint 9): {coil_pressure_mpa(b_dev):.0f} MPa "
+          f"magnetic pressure at {b_dev:.0f} T, cycled from zero every shot, "
+          f"{diag['coil_cycles_life']:.1e} times over the {fwd['lifetime_yr']:.0f} yr "
+          f"book life at {diag['f_rep_hz']:.2f} Hz; no conductor or case has a "
+          f"gigacycle basis at this stress, and the coil that delivers the "
+          f"field is neither designed nor priced here")
     fields = ([B_COMPRESSION_T] if b_dev > B_COMPRESSION_T else []) + [10.0, 5.0]
     for b_t in fields:
         f_b = dict(fwd, b_center=b_t)
         f_b["max_f_rep"] = min(float(fwd.get("max_f_rep", model._eng_defaults["max_f_rep"])),
                                duty_bound_rate_hz(f_b, e_del_mj(f_b)))
         _, d_b = run(model, f_b)
-        label = ("held at the basis field" if b_t == B_COMPRESSION_T
+        label = ("field reverted to the basis" if b_t == B_COMPRESSION_T
                  else "field/density")
         print(f"  RISK {label}: the device at {b_t:.0f} T (burn "
               f"{d_b['tau_burn_implied_s']:.2f} s, {d_b['n_mod']} modules at "

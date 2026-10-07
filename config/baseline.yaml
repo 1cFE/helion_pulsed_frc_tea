@@ -112,3 +112,12 @@ forward:
   fuel_recovery: 0.9999
   dhe3_dd_frac: 0.488
   f_rad: 0.23
+  # The compression field is the pressure-balance companion of the same
+  # table (n_tot 1.95e22 m^-3 at 70 keV is 22 T at beta = 1), corroborated
+  # in class by Helion's stated compression field of more than 15 T. It
+  # is the design-basis and records value of a stepped entry: tier2.yaml
+  # grants 30 T, tier3.yaml 40 T, and the design search
+  # (scripts/coherent_min.py) may use any field at or below a grade's
+  # grant, with the burn point following the field (density as B^2 at
+  # beta = 1, breakeven time and burnup with it; scripts/study.py).
+  b_center: 22.0

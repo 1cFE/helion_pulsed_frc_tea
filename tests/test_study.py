@@ -3,10 +3,11 @@
 Regression values are pinned at costingfe 44434d9 with the plant
 environment of docs/ledger.md: cost of capital 7/7/5/3% real and book
 life 60/60/80/80 yr stepping with the tiers, availability derived from the
-replacement schedule, the compression field and the driver bank scanned
-by grade (the basis at records, the bank doubled at extrapolations, the
-bank to 200 MJ at speculation; the field is scanned to 50 T at
-speculation and bounded at the basis by the coil at every grade). If
+replacement schedule, the compression field graded with the tiers (22 T
+at the design basis and records, 30 T granted at extrapolations, 40 T at
+speculation, each grade's design search free to use any field at or
+below its grant) and the driver bank scanned by grade (the basis at
+records, doubled at extrapolations, to 200 MJ at speculation). If
 costingfe moves and a number shifts, the ladder in docs/ledger.md must be
 re-based in the same change that updates the pin here - the red-team
 review's reproducibility finding is the reason this file exists.
@@ -174,106 +175,145 @@ def test_tier1_rung(model, base_cfg):
 
 
 def test_tier2_rung(model, base_cfg):
+    """The tier-2 stack on Helion's chamber at its 3 Hz grant and 30 T
+    grant: 7 modules at 2.73 Hz, the 0.35 s burn at the granted field
+    fitting the period."""
     diag = _ladder_lcoe(model, base_cfg, "best_case.yaml", "tier2.yaml")
-    assert diag["lcoe"] == pytest.approx(32.4, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(31.6, abs=0.2)
+    assert diag["b_center_t"] == 30.0
     # D-rich mix carries its plant; the adder is unit-priced
     # (50 M$ + 0.657 M$/MW of plant neutron power), so the rung's value is a
     # consequence of its throughput, not an identity
-    assert diag["tritium_adder_musd"] == pytest.approx(188.7, abs=1.0)
+    assert diag["tritium_adder_musd"] == pytest.approx(181.4, abs=1.0)
 
 
 def test_tritium_adder_scales_with_throughput(model, base_cfg):
-    """A 3 GWe D-rich plant pays about 3x the reference tritium plant; the
-    facility does not amortize away with scale."""
-    fwd = dict(base_cfg["forward"], net_electric_mw=3000.0)
+    """A 3 GWe D-rich plant pays about 3x the throughput-scaled part of
+    the reference tritium plant on top of the fixed core; the facility
+    does not amortize away with scale."""
+    from study import TRITIUM_FIXED_MUSD
+
+    fwd = dict(base_cfg["forward"])
     apply_records(fwd, "best_case.yaml")
     apply_records(fwd, "tier2.yaml")
-    _, diag = run(model, fwd)
-    assert diag["tritium_adder_musd"] == pytest.approx(500.0, rel=0.1)
+    _, diag1 = run(model, fwd)
+    _, diag3 = run(model, dict(fwd, net_electric_mw=3000.0))
+    scaled = TRITIUM_FIXED_MUSD + 3.0 * (diag1["tritium_adder_musd"] - TRITIUM_FIXED_MUSD)
+    assert diag3["tritium_adder_musd"] == pytest.approx(scaled, rel=0.1)
+    assert diag3["tritium_adder_musd"] > 2.2 * diag1["tritium_adder_musd"]
 
 
 def test_tier3_rung(model, base_cfg):
     diag = _ladder_lcoe(model, base_cfg, *TIER_CONFIGS)
-    assert diag["lcoe"] == pytest.approx(12.0, abs=0.2)
+    assert diag["lcoe"] == pytest.approx(11.4, abs=0.2)
+    assert diag["b_center_t"] == 40.0
 
 
 def test_tier2_coherent_minimum(model, base_cfg):
-    """The extrapolation device holds the basis field (the coil bound,
-    constraint 9) and takes the doubled bank, 256 MJ shots at the
-    design-basis gain, at dd_frac 0.80 with its tritium plant in 6
-    modules of 10 m x 1.5 m at 1.56 Hz, the fewest modules whose rate
-    fits its 0.62 s burn, under the 3 Hz grant; the 3 GWe park is the
-    same module tripled. Fired at the grant instead, the same machine
-    overruns its period (and the panel wall's steady flux) in 4 modules;
-    on the sourced 50 MJ bank it needs 12 modules of 10 m x 0.75 m and
-    reads 1.0 $/MWh more."""
-    from study import GAIN_BASIS
+    """The extrapolation device takes its 30 T grant and the doubled
+    bank, 256 MJ shots at the design-basis gain, at the deuterium-rich
+    dd_frac 0.85 with its tritium plant in 4 modules of 15 m x 1.5 m at
+    2.37 Hz, its 0.35 s burn at 82% of the duty bound and the panel wall
+    at 97% of its limit; the wall bound (2.445 Hz), not the duty bound
+    (2.88) or the 3 Hz grant, is its ceiling, and it is what keeps the 3
+    GWe park at 12 modules (the same module tripled) rather than the 10
+    the grant would build, whose wall overruns. On the sourced 50 MJ bank
+    the stack needs 7 modules of 10 m x 1.5 m and reads 0.3 $/MWh more at
+    1 GWe and nothing more at the park; at the basis field its best
+    design is 256 MJ shots at dd_frac 0.80 in 6 modules of 10 m x 1.5 m
+    at 1.56 Hz, 3.4 $/MWh more."""
+    from study import GAIN_BASIS, Q_LIM
 
     _, fwd = device_fwd("extrap", 1000.0)
     _, diag = run(model, fwd)
-    assert fwd["dhe3_dd_frac"] == pytest.approx(0.8)
-    assert (diag["b_center_t"], diag["e_driver_mj"]) == (22.0, 100.0)
+    assert fwd["dhe3_dd_frac"] == pytest.approx(0.85)
+    assert (diag["b_center_t"], diag["e_driver_mj"]) == (30.0, 100.0)
     assert diag["yield_per_shot_mj"] == pytest.approx(GAIN_BASIS * 100.0)
-    assert diag["lcoe"] == pytest.approx(29.1, abs=0.2)
-    assert (diag["n_mod"], round(diag["f_rep_hz"], 2)) == (6, 1.56)
-    assert diag["tau_burn_implied_s"] == pytest.approx(0.62, abs=0.01)
+    assert diag["lcoe"] == pytest.approx(25.7, abs=0.2)
+    assert (diag["n_mod"], round(diag["f_rep_hz"], 2)) == (4, 2.37)
+    assert diag["tau_burn_implied_s"] == pytest.approx(0.35, abs=0.01)
+    assert 0.81 < diag["tau_burn_implied_s"] * diag["f_rep_hz"] < 0.83
+    assert 0.96 < diag["q_wall_mw_m2"] / Q_LIM["panel"] < 0.98
     assert not coherence_violations(fwd, diag, "tier2")
     assert diag["tritium_adder_musd"] > 0
     _, fwd3 = device_fwd("extrap", 3000.0)
     _, diag3 = run(model, fwd3)
-    assert diag3["lcoe"] == pytest.approx(26.2, abs=0.2)
-    assert diag3["n_mod"] == 18
+    assert diag3["lcoe"] == pytest.approx(22.9, abs=0.2)
+    assert diag3["n_mod"] == 12
     assert not coherence_violations(fwd3, diag3, "tier2")
-    at_grant = dict(fwd, max_f_rep=3.0)
-    _, dg = run(model, at_grant)
-    v = "; ".join(coherence_violations(at_grant, dg, "tier2"))
-    assert dg["n_mod"] == 4 and "duty" in v and "wall flux" in v
+    at_grant3 = dict(fwd3, max_f_rep=3.0)
+    _, dg3 = run(model, at_grant3)
+    assert dg3["n_mod"] < 12
+    assert any("wall flux" in v for v in coherence_violations(at_grant3, dg3, "tier2"))
     polaris = dict(fwd, e_driver_mj=50.0, yield_per_shot_mj=128.1,
-                   plasma_t=0.75, r_bore=0.85)
+                   chamber_length=10.0, max_f_rep=2.881)
     _, dp = run(model, polaris)
-    assert dp["lcoe"] == pytest.approx(30.1, abs=0.2)
-    assert dp["n_mod"] == 12
+    assert dp["lcoe"] == pytest.approx(26.0, abs=0.2)
+    assert dp["n_mod"] == 7
     assert dp["tau_burn_implied_s"] == pytest.approx(diag["tau_burn_implied_s"], rel=1e-6)
+    _, dp3 = run(model, dict(polaris, net_electric_mw=3000.0))
+    assert dp3["lcoe"] == pytest.approx(22.8, abs=0.2) and dp3["n_mod"] == 20
+    basis = dict(fwd, b_center=22.0, dhe3_dd_frac=0.8, f_rad=f_rad_floor(0.8),
+                 chamber_length=10.0, max_f_rep=1.613)
+    _, db = run(model, basis)
+    assert db["lcoe"] == pytest.approx(29.1, abs=0.2) and db["n_mod"] == 6
+    assert not coherence_violations(basis, db, "tier2")
 
 
 def test_tier3_coherent_minimum(model, base_cfg):
-    """The speculation device: the basis field (the coil bound holds at
-    every grade) with a 200 MJ bank, 512 MJ shots at the design-basis
-    gain at dd_frac 0.70 with a tritium plant, 2 panel-wall modules of
-    15 m x 1.5 m at 1.67 Hz, the fewest whose rate fits its 0.51 s burn,
-    at 86% of the duty bound with the wall at 91% of the panel limit;
-    the 3 GWe park is the same module tripled. The coil cycles to the
-    basis 193 MPa. The 15 m chamber's adiabatic bound (0.954) sits above
-    the tier's f_pdv claim (0.947), so the claim stands and the composite
-    sits at the speculation cap. The freed gain buys nothing: the gain-3
-    shot in the same chamber reads within 0.01 $/MWh of the device."""
-    from study import COIL_PRESSURE_BASIS_MPA, GAIN_BASIS, Q_LIM
+    """The speculation device: its 40 T grant with a 200 MJ bank, 800 MJ
+    shots at a gain of 4.0 at the deuterium-rich dd_frac 0.85 with a
+    tritium plant, a single panel-wall module of 30 m x 1.5 m at 2.23
+    Hz, its 0.30 s burn at 66% of the duty bound with the wall at 99.7%
+    of the panel limit, so the wall bound (2.238 Hz) is its ceiling; the
+    3 GWe park is the same module tripled. The coil cycles to 637 MPa.
+    The 30 m chamber's adiabatic bound (0.987) sits above the tier's
+    f_pdv claim (0.947), so the claim stands and the composite sits at
+    the speculation cap. The freed gain is worth 0.02 $/MWh: the
+    design-basis-gain shot at dd_frac 0.80 in the same chamber reads
+    within 0.05 of the device. The field is worth 1.2 against the best
+    design at the basis (two 15 m x 1.5 m modules firing 512 MJ shots at
+    dd_frac 0.70) and 0.4 against the best at 30 T (one 30 m module
+    firing 600 MJ shots at dd_frac 0.70)."""
+    from study import GAIN_BASIS, Q_LIM, coil_pressure_mpa
 
     _, fwd = device_fwd("spec", 1000.0)
     _, diag = run(model, fwd)
-    assert fwd["dhe3_dd_frac"] == pytest.approx(0.7)
-    assert (diag["b_center_t"], diag["e_driver_mj"]) == (22.0, 200.0)
-    assert diag["yield_per_shot_mj"] == pytest.approx(GAIN_BASIS * 200.0)
-    assert diag["lcoe"] == pytest.approx(11.6, abs=0.2)
-    assert (diag["n_mod"], round(diag["f_rep_hz"], 2)) == (2, 1.67)
-    assert diag["p_fus_module_mw"] == pytest.approx(855, rel=0.01)
-    assert diag["tau_burn_implied_s"] == pytest.approx(0.51, abs=0.01)
-    assert 0.85 < diag["tau_burn_implied_s"] * diag["f_rep_hz"] < 0.87
-    assert 0.89 < diag["q_wall_mw_m2"] / Q_LIM["panel"] < 0.93
+    assert fwd["dhe3_dd_frac"] == pytest.approx(0.85)
+    assert (diag["b_center_t"], diag["e_driver_mj"]) == (40.0, 200.0)
+    assert diag["yield_per_shot_mj"] == pytest.approx(800.0)
+    assert diag["lcoe"] == pytest.approx(10.5, abs=0.2)
+    assert (diag["n_mod"], round(diag["f_rep_hz"], 2)) == (1, 2.23)
+    assert diag["p_fus_module_mw"] == pytest.approx(1786, rel=0.01)
+    assert diag["tau_burn_implied_s"] == pytest.approx(0.30, abs=0.01)
+    assert 0.65 < diag["tau_burn_implied_s"] * diag["f_rep_hz"] < 0.67
+    assert 0.99 < diag["q_wall_mw_m2"] / Q_LIM["panel"] < 1.0
     assert not coherence_violations(fwd, diag, "tier3")
-    assert diag["coil_pressure_mpa"] == pytest.approx(COIL_PRESSURE_BASIS_MPA)
+    assert diag["coil_pressure_mpa"] == pytest.approx(coil_pressure_mpa(40.0))
     assert diag["e_flash_mj_m2"] < E_FLASH_MELT_MJ_M2
     assert diag["tritium_adder_musd"] > 0
-    assert diag["f_pdv_eff"] == pytest.approx(0.947) and diag["f_pdv_cap"] > 0.947
+    assert diag["f_pdv_eff"] == pytest.approx(0.947) and diag["f_pdv_cap"] > 0.98
     _, fwd3 = device_fwd("spec", 3000.0)
     _, diag3 = run(model, fwd3)
-    assert diag3["lcoe"] == pytest.approx(9.4, abs=0.2)
-    assert diag3["n_mod"] == 6
+    assert diag3["lcoe"] == pytest.approx(8.2, abs=0.2)
+    assert diag3["n_mod"] == 3
     assert not coherence_violations(fwd3, diag3, "tier3")
-    gain3 = dict(fwd, yield_per_shot_mj=600.0, max_f_rep=1.5)
-    _, dg3 = run(model, gain3)
-    assert dg3["n_mod"] == 2 and abs(dg3["lcoe"] - diag["lcoe"]) < 0.01
-    assert not coherence_violations(gain3, dg3, "tier3")
+    basis_gain = dict(fwd, yield_per_shot_mj=GAIN_BASIS * 200.0, dhe3_dd_frac=0.8,
+                      f_rad=f_rad_floor(0.8), max_f_rep=3.493)
+    _, dbg = run(model, basis_gain)
+    assert dbg["n_mod"] == 1 and 0.0 < dbg["lcoe"] - diag["lcoe"] < 0.05
+    assert not coherence_violations(basis_gain, dbg, "tier3")
+    at_basis = dict(fwd, b_center=22.0, yield_per_shot_mj=GAIN_BASIS * 200.0,
+                    dhe3_dd_frac=0.7, f_rad=f_rad_floor(0.7),
+                    chamber_length=15.0, max_f_rep=1.831)
+    _, db = run(model, at_basis)
+    assert db["lcoe"] == pytest.approx(11.6, abs=0.2) and db["n_mod"] == 2
+    assert not coherence_violations(at_basis, db, "tier3")
+    at_30 = dict(fwd, b_center=30.0, yield_per_shot_mj=600.0,
+                 dhe3_dd_frac=0.7, f_rad=f_rad_floor(0.7), max_f_rep=3.148)
+    _, d30 = run(model, at_30)
+    assert d30["lcoe"] == pytest.approx(10.9, abs=0.2) and d30["n_mod"] == 1
+    assert not coherence_violations(at_30, d30, "tier3")
 
 
 def test_the_field_moves_the_burn_point_with_it(model):
@@ -283,12 +323,12 @@ def test_the_field_moves_the_burn_point_with_it(model):
     shrinks as B^-2 (so the same chamber caps f_pdv higher), the coil
     pressure rises as B^2, and the model's own coil account, which prices
     conductor along the shrinking adiabat, falls with the field rather
-    than rising: the structure the pressure needs is not in it."""
+    than rising: the containment the pressure needs is not in it."""
     from study import (breakeven_time_at_point_s, burnup_at_field,
                        coil_pressure_mpa, compressed_volume_m3)
 
     _, fwd = device_fwd("extrap", 1000.0)
-    base = dict(fwd)
+    base = dict(fwd, b_center=22.0)
     high = dict(fwd, b_center=44.0)
     assert breakeven_time_at_point_s(high) < breakeven_time_at_point_s(base) / 3.5
     assert burnup_at_field(high)[0] == pytest.approx(4 * burnup_at_field(base)[0])
@@ -327,78 +367,72 @@ def test_the_bank_scales_the_driver_accounts_and_the_flux_volume(model):
     assert d2["n_mod"] == d1["n_mod"] // 2
 
 
-def test_the_deuterium_rich_end_fits_its_period_in_more_modules(model):
+def test_the_deuterium_rich_end_is_the_device_at_every_grade(model):
     """The deuterium-rich end of the mix grid (dd_frac 0.85) breeds more
-    He-3 than it burns. At the records grade it is the device itself; at
-    extrapolations, fired at the 3 Hz grant its power-sparse burn
-    overruns the period, and fired slower in one more module it is
-    coherent and 0.5 $/MWh behind the device's 0.80 mix; at speculation
-    it sits 0.4 behind the device's 0.70 mix, on the doubled bank in 5
-    modules at 99% of the duty bound against the device's 2 on the 200
-    MJ bank."""
-    from study import D_RICH_DEVICES, DEVICES
+    He-3 than it burns, and at every grade it is the device itself: at
+    the granted fields the burn shortens as B^-2 and the duty bound
+    relaxes with it, so the richest mix wins. At the basis field the
+    same stack needs the longer burn's modules: the extrapolation device
+    reverted to 22 T, its ceiling re-solved at the duty bound of its
+    0.68 s burn, is coherent in 7 modules at 1.37 Hz and 5.4 $/MWh
+    dearer, and fired at the 3 Hz grant there it overruns its period."""
+    from study import D_RICH_DEVICES, DEVICES, search_ceiling_hz
 
-    assert D_RICH_DEVICES["records"] is DEVICES["records"]
-    assert D_RICH_DEVICES["spec"] is not DEVICES["spec"]
-    _, cs = device_fwd("spec", 1000.0, D_RICH_DEVICES)
-    _, dcs = run(model, cs)
-    assert not coherence_violations(cs, dcs, "tier3")
-    assert (cs["dhe3_dd_frac"], dcs["e_driver_mj"]) == (0.85, 100.0)
-    assert dcs["lcoe"] == pytest.approx(12.0, abs=0.2)
-    assert dcs["n_mod"] == 5 and 0.98 < dcs["tau_burn_implied_s"] * dcs["f_rep_hz"] <= 1.0
-    _, dspec = run(model, device_fwd("spec", 1000.0)[1])
-    assert dspec["lcoe"] < dcs["lcoe"] < dspec["lcoe"] + 0.6
-    _, cs3 = device_fwd("spec", 3000.0, D_RICH_DEVICES)
-    _, dcs3 = run(model, cs3)
-    assert dcs3["lcoe"] == pytest.approx(9.7, abs=0.2)
-    assert not coherence_violations(cs3, dcs3, "tier3")
-    _, cf = device_fwd("extrap", 1000.0, D_RICH_DEVICES)
-    _, dcf = run(model, cf)
-    assert not coherence_violations(cf, dcf, "tier2")
-    assert dcf["tau_burn_implied_s"] * dcf["f_rep_hz"] <= 1.0
-    assert dcf["lcoe"] == pytest.approx(29.6, abs=0.2)
-    assert dcf["n_mod"] == 7
+    for name in ("records", "extrap", "spec"):
+        assert D_RICH_DEVICES[name] is DEVICES[name]
+        _, f = device_fwd(name, 1000.0, D_RICH_DEVICES)
+        assert f["dhe3_dd_frac"] == pytest.approx(0.85)
     _, dev = device_fwd("extrap", 1000.0)
     _, ddev = run(model, dev)
-    assert ddev["lcoe"] <= dcf["lcoe"] < ddev["lcoe"] + 0.8
-    at_grant = dict(cf, max_f_rep=3.0)
+    basis = dict(dev, b_center=22.0)
+    basis["max_f_rep"] = search_ceiling_hz(model, basis, 3.0)
+    _, db = run(model, basis)
+    assert not coherence_violations(basis, db, "tier2")
+    assert db["n_mod"] == 7 and db["f_rep_hz"] == pytest.approx(1.37, abs=0.01)
+    assert db["tau_burn_implied_s"] == pytest.approx(0.68, abs=0.01)
+    assert db["lcoe"] - ddev["lcoe"] == pytest.approx(5.4, abs=0.2)
+    at_grant = dict(dev, b_center=22.0, max_f_rep=3.0)
     _, dg = run(model, at_grant)
     assert any(x.startswith("duty") for x in coherence_violations(at_grant, dg, "tier2"))
-    assert dg["n_mod"] < dcf["n_mod"] and dg["lcoe"] < dcf["lcoe"]
-    _, cf3 = device_fwd("extrap", 3000.0, D_RICH_DEVICES)
-    _, dcf3 = run(model, cf3)
-    assert dcf3["lcoe"] == pytest.approx(26.3, abs=0.2)
-    assert not coherence_violations(cf3, dcf3, "tier2")
+    assert dg["n_mod"] < db["n_mod"]
 
 
-def test_every_optimized_device_fires_at_or_below_its_grant_and_its_duty_bound(model):
-    """The rate the search chose: each optimized device's ceiling is the
-    lower of its grade's grant and the duty-bound rate of its own burn
-    (rounded down to the thousandth), its solved rate sits under the
-    ceiling, its burn fits the period, and it is built in the fewest
-    modules whose rate fits: one module fewer would have to fire above
-    the ceiling. The records and extrapolation devices fire at 96 to
-    100% of the duty bound; the speculation device's two modules at 86%,
-    since one module would have to fire at twice their rate, over the
-    bound. Where the grant sits above the ceiling, raising the ceiling
-    to the grant overruns the period."""
-    from study import DEVICES, duty_bound_rate_hz, e_del_mj
+def test_every_optimized_device_fires_at_or_below_its_grant_and_its_bounds(model):
+    """The rate the search set: each optimized device's ceiling is the
+    lowest of its grade's grant, the duty bound of its own burn and the
+    wall bound of its own module (rounded down to the thousandth), its
+    solved rate sits under the ceiling, its burn fits the period, its
+    wall stays within its class, and it is built in the fewest modules
+    whose rate fits: one module fewer would have to fire above the
+    ceiling. The records device is duty-bound (25 modules at 100% of the
+    bound); the extrapolation and speculation devices are wall-bound (4
+    modules with the panel wall at 97% and one module at 99.7% of its
+    limit, at 82% and 66% of the duty bound). Where the grant sits above
+    the ceiling, raising the ceiling to the grant at 1 GWe builds the
+    same design or overruns the period."""
+    from study import DEVICES, Q_LIM, duty_bound_rate_hz, e_del_mj, search_ceiling_hz, wall_bound_rate_hz
 
     grants = {"records": 1.0, "extrap": 3.0, "spec": 10.0}
     for name, grant in grants.items():
         _, fwd = device_fwd(name, 1000.0)
-        bound = duty_bound_rate_hz(fwd, e_del_mj(fwd))
         ceiling = DEVICES[name]["overrides"]["max_f_rep"]
-        assert ceiling == pytest.approx(min(grant, bound), abs=0.001), name
+        assert ceiling == pytest.approx(search_ceiling_hz(model, fwd, grant), abs=0.001), name
+        duty_bound = duty_bound_rate_hz(fwd, e_del_mj(fwd))
+        wall_bound = wall_bound_rate_hz(model, fwd)
         _, d = run(model, fwd)
         assert d["f_rep_hz"] <= ceiling * (1 + 1e-9), name
         duty = d["tau_burn_implied_s"] * d["f_rep_hz"]
         assert duty <= 1.0, (name, duty)
-        if name == "spec":
-            assert d["n_mod"] == 2 and 0.85 < duty < 0.87
+        wall = d["q_wall_mw_m2"] / Q_LIM[fwd["fw_class"]]
+        assert wall <= 1.0, (name, wall)
+        if name == "records":
+            assert duty_bound < wall_bound and 0.99 < duty and d["n_mod"] == 25
+        elif name == "extrap":
+            assert wall_bound < duty_bound and 0.96 < wall < 0.98 and d["n_mod"] == 4
         else:
-            assert 0.95 <= duty, (name, duty)
-        assert d["f_rep_hz"] * d["n_mod"] / (d["n_mod"] - 1) > ceiling, name
+            assert wall_bound < duty_bound and 0.99 < wall and d["n_mod"] == 1
+        if d["n_mod"] > 1:
+            assert d["f_rep_hz"] * d["n_mod"] / (d["n_mod"] - 1) > ceiling, name
         if ceiling < grant:
             _, dg = run(model, dict(fwd, max_f_rep=grant))
             if dg["n_mod"] == d["n_mod"]:
@@ -410,11 +444,13 @@ def test_every_optimized_device_fires_at_or_below_its_grant_and_its_duty_bound(m
 def test_tier_stacks_are_coherent(model, base_cfg):
     """The records stack evaluated on the vendor's own 0.61 m chamber (a
     controlled comparison, not a published device) passes its tier's
-    coherence check; the tier-2 and tier-3 stacks on that chamber carry
-    the D-rich mix of tier2.yaml, whose 0.68 s burn overruns the period at
-    their rep rates, so constraint 8 flags them and nothing else does."""
+    coherence check, and so does the tier-2 stack, whose D-rich mix burns
+    for 0.35 s at its 30 T grant and fits the period at 2.73 Hz; the
+    tier-3 stack on that chamber fires at 7.1 Hz under its 10 Hz grant,
+    where its 0.19 s burn at 40 T overruns the period, so constraint 8
+    flags it and nothing else does."""
     for cfgs, tier, duty_only in ((("best_case.yaml",), "tier2", False),
-                                  (("best_case.yaml", "tier2.yaml"), "tier2", True),
+                                  (("best_case.yaml", "tier2.yaml"), "tier2", False),
                                   (TIER_CONFIGS, "tier3", True)):
         f = dict(base_cfg["forward"])
         for c in cfgs:
@@ -480,19 +516,27 @@ def test_chi_from_xs_equilibrium_anchors():
 
 def test_tritium_burn_floor_constraint(model, base_cfg):
     """dhe3_f_T = 0 at high per-pulse burnup must be flagged (coherent only
-    under prompt triton loss); at the patent basis, where every device
-    sits, it passes with two orders of margin; at 50 T, the top of the
-    field sensitivity, where the burnup is 5.2x the basis, the floor
-    (0.008) sits just inside the 1% tolerance, and at 55 T the zero is
-    flagged."""
+    under prompt triton loss). The floor rises as B^2 with the burnup:
+    0.16% at the patent basis (the records and Helion devices), 0.31% at
+    the extrapolation device's 30 T, 0.54% at the speculation device's
+    40 T, all inside the 1% tolerance, so every device's zero passes;
+    at 50 T, the sensitivity above speculation, the floor (0.8%) sits
+    just inside the tolerance, and at 55 T the zero is flagged."""
     from study import burnup_at_field, f_t_from_burnup
 
     _, fwd = device_fwd("spec", 1000.0)
     _, diag = run(model, fwd)
     assert not coherence_violations(fwd, diag, "tier3")
     bf, _ = burnup_at_field(fwd)
-    assert bf == pytest.approx(1.2e-4)
-    assert f_t_from_burnup(bf, 70.0) < 0.003
+    assert bf == pytest.approx(1.2e-4 * (40.0 / 22.0) ** 2)
+    assert f_t_from_burnup(bf, 70.0) == pytest.approx(0.0054, abs=0.0003)
+    bf22, _ = burnup_at_field(dict(fwd, b_center=22.0))
+    assert bf22 == pytest.approx(1.2e-4)
+    assert f_t_from_burnup(bf22, 70.0) == pytest.approx(0.0016, abs=0.0002)
+    _, fx = device_fwd("extrap", 1000.0)
+    bf30, _ = burnup_at_field(fx)
+    assert bf30 == pytest.approx(1.2e-4 * (30.0 / 22.0) ** 2)
+    assert f_t_from_burnup(bf30, 70.0) == pytest.approx(0.0031, abs=0.0002)
     bf50, _ = burnup_at_field(dict(fwd, b_center=50.0))
     assert bf50 == pytest.approx(1.2e-4 * (50.0 / 22.0) ** 2)
     assert 0.005 < f_t_from_burnup(bf50, 70.0) < 0.01
@@ -505,74 +549,102 @@ def test_tritium_burn_floor_constraint(model, base_cfg):
     assert any("in-pulse burn floor" in x for x in v)
 
 
-def test_coil_bound_holds_the_field_at_the_basis_at_every_grade(model):
-    """Constraint 9: a point above the 22 T basis is excluded at every
-    grade, speculation included, by the coil's magnetic pressure (the
-    basis coil already sits at or above the copper-alloy gigacycle band
-    and no higher fatigue basis is sourced anywhere in this work), and
-    every such point reports the pressure it would rest on."""
-    from study import COIL_PRESSURE_BASIS_MPA, COIL_PRESSURE_CAP_MPA, coil_pressure_mpa
+def test_the_coil_is_audited_on_every_point_and_bounds_nothing(model):
+    """Constraint 9 is an audit: every point reports the magnetic pressure
+    its coil cycles to on every shot (193 MPa at 22 T, 358 at 30 T, 637
+    at 40 T, 995 at 50 T) and the cycles over its book life, and no
+    field trips a coil violation at any grade, the basis field's own
+    included, because the coil that delivers a field is neither designed
+    nor priced here. The field is graded instead: each device sits at
+    its grade's grant (config/baseline.yaml, tier2.yaml, tier3.yaml), and
+    the model's coil account falls with the field at a fixed bank, so the
+    grading has to live in the ladder rather than in the cost model."""
+    from study import coil_cycles_over_life, coil_pressure_mpa, field_t
 
-    assert COIL_PRESSURE_BASIS_MPA == pytest.approx(192.6, abs=0.5)
-    assert COIL_PRESSURE_CAP_MPA["tier2"] == COIL_PRESSURE_BASIS_MPA
-    assert COIL_PRESSURE_CAP_MPA["tier3"] == COIL_PRESSURE_BASIS_MPA
+    assert coil_pressure_mpa(22.0) == pytest.approx(192.6, abs=0.5)
+    assert coil_pressure_mpa(30.0) == pytest.approx(358.1, abs=0.5)
+    assert coil_pressure_mpa(40.0) == pytest.approx(636.6, abs=0.5)
     assert coil_pressure_mpa(50.0) == pytest.approx(994.7, abs=1)
-    for name, tier in (("extrap", "tier2"), ("spec", "tier3")):
+    grants = {"records": 22.0, "helion": 22.0, "extrap": 30.0, "spec": 40.0}
+    for name, grant in grants.items():
         _, fwd = device_fwd(name, 1000.0)
-        _, diag = run(model, fwd)
+        assert field_t(fwd) == grant, name
+        res, diag = run(model, fwd)
+        tier = "tier3" if name == "spec" else "tier2"
         assert not [v for v in coherence_violations(fwd, diag, tier) if "coil" in v], name
-        high = dict(fwd, b_center=30.0)
-        _, dh = run(model, high)
-        assert [v for v in coherence_violations(high, dh, tier) if "coil" in v], name
-        assert dh["coil_pressure_mpa"] == pytest.approx(coil_pressure_mpa(30.0))
+        assert diag["coil_pressure_mpa"] == pytest.approx(coil_pressure_mpa(grant))
+        assert diag["coil_cycles_life"] == pytest.approx(coil_cycles_over_life(
+            diag["f_rep_hz"], diag["availability"], fwd["lifetime_yr"]))
+        assert 1.5e9 < diag["coil_cycles_life"] < 6e9, name
+        for b_t in (30.0, 50.0):
+            high = dict(fwd, b_center=b_t)
+            _, dh = run(model, high)
+            assert not [v for v in coherence_violations(high, dh, tier) if "coil" in v], (name, b_t)
+            assert dh["coil_pressure_mpa"] == pytest.approx(coil_pressure_mpa(b_t))
+    # the stacks carry the grant: the tier-2 stack at 30 T, the tier-3 at 40 T
+    stack = dict(load_config("baseline.yaml")["forward"])
+    assert field_t(stack) == 22.0
+    apply_records(stack, "best_case.yaml")
+    assert field_t(stack) == 22.0
+    apply_records(stack, "tier2.yaml")
+    assert field_t(stack) == 30.0
+    apply_records(stack, "tier3.yaml")
+    assert field_t(stack) == 40.0
+    # the coil account against the field at a fixed bank, shot and chamber
+    _, fwd = device_fwd("spec", 1000.0)
+    coil = {}
+    for b_t in (22.0, 40.0):
+        r, _ = run(model, dict(fwd, b_center=b_t))
+        coil[b_t] = float(r.cas22_detail["C220103"])
+    assert coil[40.0] < coil[22.0]
 
 
 # --- device definitions ------------------------------------------------------
 
 def test_device_fwd_matches_the_pinned_definitions(base_cfg):
     """study.DEVICES is the single source of the four devices; each
-    optimized device carries its burn mix on the bremsstrahlung floor and
-    the rate ceiling the search chose; the 3 GWe parks are the same
-    module tripled, so only the plant power changes."""
-    from study import DEVICES, DEVICE_ORDER, device_fwd
+    optimized device carries its burn mix on the bremsstrahlung floor,
+    its grade's granted field and the rate ceiling the search set; the 3
+    GWe parks are the same module tripled, so only the plant power
+    changes."""
+    from study import DEVICES, DEVICE_ORDER, D_RICH_DEVICES, device_fwd
 
     from study import GAIN_BASIS, field_t, e_del_mj
 
     assert [name for name, _ in DEVICE_ORDER] == ["records", "helion", "extrap", "spec"]
-    geometry = {"records": (10.0, 0.75), "extrap": (10.0, 1.5), "spec": (15.0, 1.5)}
-    for name, dd in (("records", 0.85), ("extrap", 0.8), ("spec", 0.7)):
+    geometry = {"records": (10.0, 0.75), "extrap": (15.0, 1.5), "spec": (30.0, 1.5)}
+    for name in ("records", "extrap", "spec"):
         _, f = device_fwd(name, 1000.0)
-        assert f["dhe3_dd_frac"] == pytest.approx(dd)
-        assert f["f_rad"] == pytest.approx(f_rad_floor(dd))
+        assert f["dhe3_dd_frac"] == pytest.approx(0.85)
+        assert f["f_rad"] == pytest.approx(f_rad_floor(0.85))
         assert f["max_f_rep"] == DEVICES[name]["overrides"]["max_f_rep"]
         assert (f["chamber_length"], f["plasma_t"]) == geometry[name]
         assert f["r_bore"] == pytest.approx(f["plasma_t"] + 0.10)
         assert f["fw_class"] == "panel"
+        assert D_RICH_DEVICES[name] is DEVICES[name]
     cfg, fwd = device_fwd("extrap", 1000.0)
     assert cfg == base_cfg
     assert fwd["net_electric_mw"] == 1000.0
     _, helion = device_fwd("helion", 1000.0)
     assert "max_f_rep" not in helion  # Helion's configuration fires at its 1 Hz grant
-    assert "b_center" not in helion and "e_driver_mj" not in helion  # the basis
+    assert helion["b_center"] == 22.0 and "e_driver_mj" not in helion  # the basis
     for name in ("records", "extrap", "spec"):
         _, f1 = device_fwd(name, 1000.0)
         _, f3 = device_fwd(name, 3000.0)
         assert f3["net_electric_mw"] == 3000.0
         assert {k: v for k, v in f1.items() if k != "net_electric_mw"} == \
             {k: v for k, v in f3.items() if k != "net_electric_mw"}
-    # the field and the bank, graded: the basis at records, the bank
-    # doubled at the design-basis gain at extrapolations and quadrupled
-    # at speculation, the field at the basis at every grade (the coil
-    # bound)
+    # the field and the bank, graded: the basis at records; the 30 T
+    # grant with the bank doubled at the design-basis gain at
+    # extrapolations; the 40 T grant with the bank quadrupled at a gain
+    # of 4.0 at speculation
     _, f = device_fwd("records", 1000.0)
     assert (field_t(f), e_del_mj(f), f["yield_per_shot_mj"]) == (22.0, 50.0, 128.1)
     _, f = device_fwd("extrap", 1000.0)
-    assert (field_t(f), e_del_mj(f)) == (22.0, 100.0)
+    assert (field_t(f), e_del_mj(f)) == (30.0, 100.0)
     assert f["yield_per_shot_mj"] == pytest.approx(GAIN_BASIS * 100.0)
     _, f = device_fwd("spec", 1000.0)
-    assert (field_t(f), e_del_mj(f)) == (22.0, 200.0)
-    assert f["yield_per_shot_mj"] == pytest.approx(GAIN_BASIS * 200.0)
-    assert "b_center" not in f
+    assert (field_t(f), e_del_mj(f), f["yield_per_shot_mj"]) == (40.0, 200.0, 800.0)
     with pytest.raises(KeyError):
         device_fwd("spec", 2000.0)
 

@@ -13,8 +13,6 @@ from pathlib import Path  # noqa: E402
 from study import (  # noqa: E402
     DEVICES,
     DEVICE_ORDER,
-    E_DEL_BASIS_MJ,
-    GAIN_BASIS,
     N_D_PATENT_M3,
     PLANT_SIZES_MWE,
     VENDOR_PULSE_S,
@@ -22,7 +20,6 @@ from study import (  # noqa: E402
     build_model,
     burnup_at_field,
     device_fwd,
-    e_del_mj,
     lcoe_segments,
     load_config,
     run,
@@ -33,6 +30,7 @@ from tritium_burn import (  # noqa: E402
     in_pulse_burn_vs_dwell,
 )
 from reconciliation import anatomy_items  # noqa: E402
+from tornado import tornado_rows  # noqa: E402
 from yield_bound import bound_table  # noqa: E402
 
 BLUE, ORANGE, AQUA, RED, GREY = "#2a78d6", "#eb6834", "#1baf7a", "#e34948", "#a6a5a1"
@@ -118,29 +116,11 @@ def fig1_ladder(model, cfg):
 
 
 def fig2_tornado(model, cfg):
-    fwd = stack(cfg, *TIERS[1], **TIER2_MIN)
-    _, d0 = run(model, fwd)
-    tier1 = stack(cfg, *TIERS[0])
-    rows = []
-    for knob in load_config("tier2.yaml")["records"]:
-        reverted = dict(fwd)
-        if knob in tier1:
-            reverted[knob] = tier1[knob]
-        elif knob == "fw_class":
-            reverted[knob] = "panel"
-        else:
-            reverted.pop(knob, None)
-        if knob == "dhe3_dd_frac":
-            reverted["f_rad"] = tier1["f_rad"]
-        _, dd = run(model, reverted)
-        rows.append((knob, dd["lcoe"] - d0["lcoe"]))
-    if e_del_mj(fwd) > E_DEL_BASIS_MJ:
-        # the bank, a design-search dimension, reverted to the sourced
-        # Polaris 50 MJ at the design-basis gain (scripts/tornado.py)
-        _, dd = run(model, dict(fwd, e_driver_mj=E_DEL_BASIS_MJ,
-                                yield_per_shot_mj=GAIN_BASIS * E_DEL_BASIS_MJ))
-        rows.append(("e_driver_mj", dd["lcoe"] - d0["lcoe"]))
-    rows.sort(key=lambda r: abs(r[1]))
+    # The same reversions scripts/tornado.py tabulates (the bank among
+    # them, and the field with its ceiling re-solved), smallest first.
+    _, fwd = device_fwd("extrap", 1000.0)
+    d0, table = tornado_rows(model, fwd)
+    rows = sorted(((r["knob"], r["delta"]) for r in table), key=lambda r: abs(r[1]))
     labels = [f"{k} (financing)" if k == "interest_rate" else k for k, _ in rows]
     deltas = [v for _, v in rows]
     y = np.arange(len(rows))
@@ -247,7 +227,7 @@ def fig3_burnup(model, cfg):
         if abs(bf_dev - 1.2e-4) > 1e-9:
             # the device's own per-pulse burnup at its compression field
             ax.axvline(bf_dev, color=AQUA, linewidth=1, linestyle=":")
-            ax.text(0.30, 0.97, "device's field", fontsize=8, color=AQUA,
+            ax.text(0.045, 0.90, "device's field", fontsize=8, color=AQUA,
                     transform=ax.transAxes, va="top")
         ax.set_xscale("log")
         ax.set_ylim(0, 30)
@@ -260,7 +240,7 @@ def fig3_burnup(model, cfg):
     axes[0].set_ylabel("LCOE (\\$/MWh)")
     leg = axes[1].legend(frameon=False, fontsize=8, labelcolor=INK,
                          title="per-pulse fuel recovery", title_fontsize=8,
-                         loc="upper right")
+                         loc="lower right")
     leg.get_title().set_color(INK2)
     save(fig, "fig5_burnup")
 

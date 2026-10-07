@@ -57,7 +57,7 @@ def test_design_basis_shot_implies_a_burn_of_a_third_to_three_quarters_of_a_seco
     assert implied_burn_s(128.1, 50.0, 0.5) == pytest.approx(0.73, abs=0.03)
 
 
-def test_speculation_shot_implies_a_burn_of_seconds():
+def test_a_gain_ten_shot_implies_a_burn_of_seconds_at_the_basis():
     assert implied_burn_s(500.0, 50.0, 0.85) == pytest.approx(1.2, abs=0.1)
     assert implied_burn_s(500.0, 50.0, 0.5) == pytest.approx(2.9, abs=0.1)
 
@@ -73,12 +73,12 @@ def test_run_reports_the_implied_burn_of_every_point(model):
     at its own burn mix and at its own compression field. Helion's device
     holds He3/D 0.22 with the recycled bred He-3 counted (the patent's
     0.16 is the purchased share), so its 128 MJ shot reads 0.32 s against
-    0.42 s at the patent mix; the speculation device's 512 MJ shot from
-    its 200 MJ bank, the same gain at the basis field and dd_frac 0.70,
-    reads 0.51 s, between Helion's mix and the deuterium-rich end's 0.68
-    s. A higher field would shorten the burn as B^-2 at pinned burnup,
-    and by more at the point's own burnup, where the field lets more bred
-    He-3 burn in the loop and the plasma it accounts for is richer."""
+    0.42 s at the patent mix; the speculation device's 800 MJ shot from
+    its 200 MJ bank at 40 T and dd_frac 0.85 reads 0.30 s, where the
+    same shot at the basis field would need 1.0 s. The field shortens
+    the burn as B^-2 at pinned burnup, and by more at the point's own
+    burnup, where the field lets more bred He-3 burn in the loop and the
+    plasma it accounts for is richer."""
     assert X_S_REFERENCE == 0.7
     assert chi_from_xs(X_S_REFERENCE) == pytest.approx(0.52, abs=0.01)
     _, fwd = device_fwd("helion", 1000.0)
@@ -87,44 +87,49 @@ def test_run_reports_the_implied_burn_of_every_point(model):
     assert implied_burn_s(128.1, 50.0, X_S_REFERENCE) == pytest.approx(0.42, abs=0.02)
     _, fwd = device_fwd("spec", 1000.0)
     _, diag = run(model, fwd)
-    assert diag["tau_burn_implied_s"] == pytest.approx(0.51, abs=0.02)
+    assert diag["tau_burn_implied_s"] == pytest.approx(0.30, abs=0.02)
     from study import breakeven_time_at_point_s
-    pinned = dict(fwd, burn_fraction=1.2e-4, burn_fraction_he3=4.1e-4)
+    pinned = dict(fwd, b_center=22.0, burn_fraction=1.2e-4, burn_fraction_he3=4.1e-4)
     assert breakeven_time_at_point_s(pinned) / breakeven_time_at_point_s(dict(pinned, b_center=50.0)) \
         == pytest.approx((50.0 / 22.0) ** 2, rel=1e-6)
-    assert breakeven_time_at_point_s(fwd) / breakeven_time_at_point_s(dict(fwd, b_center=50.0)) \
-        > (50.0 / 22.0) ** 2
+    assert breakeven_time_at_point_s(dict(fwd, b_center=22.0)) / breakeven_time_at_point_s(fwd) \
+        > (40.0 / 22.0) ** 2
+    assert breakeven_time_at_point_s(dict(fwd, b_center=22.0)) / breakeven_time_at_point_s(pinned) \
+        == pytest.approx(1.0, rel=1e-6)
 
 
 def test_duty_table_reads_constraint_8_across_the_xs_span():
     """At the reference x_s every design fits its period: the records
-    and extrapolation designs and the deuterium-rich end's at 93 to 100%
-    of it, since the search fires each in the fewest modules whose rate
-    fits its burn, and the speculation device at 86%, its two modules
-    on a bank four times Polaris's; at x_s 0.5 (chi 0.30) every
-    optimized design would overrun, and at 0.85 all pass. The duty is
-    the module's fusion power over the cap chi E_del / breakeven time,
-    which the bank raises in proportion: 1.0 GW at the speculation
-    device's 0.70 mix on 200 MJ. The records device is the
-    deuterium-rich end itself, so it is listed once."""
+    device at 100% of it (the search fires it in the fewest modules whose
+    rate fits its burn), the extrapolation device at 82% and the
+    speculation device at 66%, both wall-bound at their granted fields;
+    at x_s 0.5 (chi 0.30) every optimized design would overrun, and at
+    0.85 all pass. The duty is the module's fusion power over the cap chi
+    E_del / breakeven time, which the bank raises in proportion and the
+    field as B^2 through the breakeven time: 2.7 GW at the speculation
+    device's 0.85 mix on 200 MJ at 40 T. The deuterium-rich end is the
+    device at every grade, so each is listed once."""
     from yield_bound import duty_table
 
     rows = duty_table()
     designs = {r["design"] for r in rows}
-    assert designs == {"records", "helion", "extrap", "spec", "extrap (D-rich)", "spec (D-rich)"}
+    assert designs == {"records", "helion", "extrap", "spec"}
     for r in rows:
         assert r["duty"] == pytest.approx(r["p_fus_module_mw"] / r["p_fus_cap_mw"], rel=1e-9)
         if r["x_s"] == 0.7:
             assert r["duty"] <= 1.0
     ref = {r["design"]: r["duty"] for r in rows if r["x_s"] == 0.7}
     assert ref["helion"] == pytest.approx(0.32, abs=0.01)
-    for d in ("records", "extrap", "extrap (D-rich)", "spec (D-rich)"):
-        assert 0.93 <= ref[d] <= 1.0, d
-    assert ref["spec"] == pytest.approx(0.86, abs=0.01)
+    assert 0.99 <= ref["records"] <= 1.0
+    assert ref["extrap"] == pytest.approx(0.82, abs=0.01)
+    assert ref["spec"] == pytest.approx(0.66, abs=0.01)
     cap = {r["design"]: r["p_fus_cap_mw"] for r in rows if r["x_s"] == 0.7}
-    assert cap["spec"] == pytest.approx(1000, rel=0.01)
-    assert cap["extrap"] == pytest.approx(2 * cap["records"] * 206.3 / 126.1, rel=0.02)
-    assert cap["spec"] == pytest.approx(4 * cap["records"] * 206.3 / 104.2, rel=0.02)
+    tau = {r["design"]: r["tau_f_s"] for r in rows if r["x_s"] == 0.7}
+    assert cap["spec"] == pytest.approx(2700, rel=0.01)
+    assert cap["extrap"] == pytest.approx(2 * cap["records"] * tau["records"] / tau["extrap"], rel=1e-6)
+    assert cap["spec"] == pytest.approx(4 * cap["records"] * tau["records"] / tau["spec"], rel=1e-6)
+    assert tau["records"] / tau["extrap"] > (30.0 / 22.0) ** 2
+    assert tau["records"] / tau["spec"] > (40.0 / 22.0) ** 2
     thin = {r["design"]: r["duty"] for r in rows if r["x_s"] == 0.5}
     fat = {r["design"]: r["duty"] for r in rows if r["x_s"] == 0.85}
     assert all(thin[d] > 1.0 for d in designs - {"helion"})
@@ -136,20 +141,20 @@ def test_bound_table_lists_both_shots_across_the_xs_span():
     from yield_bound import bound_table
     rows = bound_table()
     shots = sorted({round(r["yield_mj"], 1) for r in rows})
-    assert shots == [128.1, 512.4]
+    assert shots == [128.1, 800.0]
     assert sorted({r["x_s"] for r in rows}) == [0.5, 0.7, 0.85]
     row = next(r for r in rows if round(r["yield_mj"], 1) == 128.1 and r["x_s"] == 0.85)
     assert row["b_center_t"] == 22.0
     assert row["tau_burn_s"] == pytest.approx(0.31, abs=0.02)
     assert row["yield_at_vendor_pulse_mj"] == pytest.approx(0.41, abs=0.03)
-    # the speculation shot is the same gain on a bank four times Polaris's
-    # at the basis field: the same burn, and four times the yield at the
-    # vendor's pulse
-    row = next(r for r in rows if round(r["yield_mj"], 1) == 512.4 and r["x_s"] == 0.7)
-    assert (row["b_center_t"], row["e_driver_mj"]) == (22.0, 200.0)
-    assert row["tau_f_s"] == pytest.approx(0.0858, abs=0.0005)
-    assert row["tau_burn_s"] == pytest.approx(0.42, abs=0.01)
-    assert row["yield_at_vendor_pulse_mj"] == pytest.approx(1.21, abs=0.05)
+    # the speculation shot is a gain of 4.0 on a bank four times Polaris's
+    # at 40 T: the breakeven time (40/22)^2 shorter, a burn half the
+    # design-basis shot's, and 13 times the yield at the vendor's pulse
+    row = next(r for r in rows if round(r["yield_mj"], 1) == 800.0 and r["x_s"] == 0.7)
+    assert (row["b_center_t"], row["e_driver_mj"]) == (40.0, 200.0)
+    assert row["tau_f_s"] == pytest.approx(0.0858 * (22.0 / 40.0) ** 2, rel=1e-3)
+    assert row["tau_burn_s"] == pytest.approx(0.20, abs=0.01)
+    assert row["yield_at_vendor_pulse_mj"] == pytest.approx(4.0, abs=0.1)
 
 
 def test_slough_cfr2_design_point_satisfies_the_bound():
