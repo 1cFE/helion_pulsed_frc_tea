@@ -43,9 +43,7 @@ that turns the sourced 50 MJ into the power-purchase agreement's 50 MWe
 at 1 Hz, scaled with the bank at the grades that enlarge it. Helion has
 published no yield for a burning shot, so the records grade has no value
 to put there and without the grant there is no machine to cost; every
-figure here rests on it, the records device's included. At the patent
-point that gain needs a burn of 0.3 to 0.7 s against Helion's own stated
-pulse of hundreds of microseconds to milliseconds.
+figure here rests on it, the records device's included.
 
 The fuel cycle, not the driver, is the load-bearing subsystem, because
 He-3 has no fleet-scale market: what trades does so by the gram at 19-22
@@ -1293,18 +1291,8 @@ financing ladder, and fail loudly if the model moves under this work.
 ## Acknowledgements
 
 We thank David Kirtley, Helion's co-founder and CEO, for his engagement
-with this work <https://x.com/dkirtley/status/2107277032015253549>. His
-comments were incorporated into this work: the compression field and
-the pulsed-power bank are graded as plant-scale design choices rather
-than held at Polaris's values, with the burn point, the pulse width and
-every account that depends on them following. The bank scales the
-devices, doubled at the extrapolation grade and four times Polaris's at
-speculation. The field steps with the evidence grades, the patent's 22
-T at the design basis and records, 30 T granted at extrapolations and
-40 T at speculation, each optimized device taking its grant and the
-scan pricing the field one grade ahead beside it; the coil that would
-hold a granted field is audited on every point and is the open item
-the ladder names. The results are what Sections 4, 6 and 7 report.
+with this work <https://x.com/dkirtley/status/2107277032015253549>,
+which this version reflects.
 
 ## Conflict of interest
 
