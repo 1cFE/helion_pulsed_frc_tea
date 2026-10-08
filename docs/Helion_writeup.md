@@ -40,10 +40,9 @@ Polaris's.
 
 Every number grants Helion's shot as a gain on the bank: 2.56, the yield
 that turns the sourced 50 MJ into the power-purchase agreement's 50 MWe
-at 1 Hz, scaled with the bank at the grades that enlarge it. Helion has
-published no yield for a burning shot, so the records grade has no value
-to put there and without the grant there is no machine to cost; every
-figure here rests on it, the records device's included.
+at 1 Hz, scaled with the bank at the grades that enlarge it. Nothing in
+the record fixes it, so without the grant there is no machine to cost;
+every figure here rests on it, the records device's included.
 
 The fuel cycle, not the driver, is the load-bearing subsystem, because
 He-3 has no fleet-scale market: what trades does so by the gram at 19-22
