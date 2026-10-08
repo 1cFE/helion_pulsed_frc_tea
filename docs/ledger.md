@@ -1,6 +1,6 @@
 # Evidence ledger
 
-*Tal Rubin, Astera Institute*
+*Tal Rubin and Damien Scott, Astera Institute*
 
 **What this is.** Every non-baseline value adopted in the ladder, with
 the analog class named and the reason it applies. Tiers: tier 1 is a

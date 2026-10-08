@@ -24,7 +24,7 @@ pytestmark = pytest.mark.skipif(
 def test_prepare_lifts_the_title_and_byline_and_points_figures_at_pdf():
     title, author, body = prepare_markdown(WRITEUP_MD.read_text(encoding="utf-8"))
     assert title.startswith("The techno-economic floor")
-    assert author == "Tal Rubin, Astera Institute"
+    assert author == "Tal Rubin and Damien Scott, Astera Institute"
     assert not body.lstrip().startswith("# ")
     assert not body.lstrip().startswith("*Tal Rubin")
     assert "figures/fig1_ladder.pdf" in body
@@ -66,7 +66,7 @@ def test_tex_typesets_the_equations(tmp_path):
 def test_tex_carries_the_author_on_both_documents(tmp_path):
     for md in (WRITEUP_MD, LEDGER_MD):
         tex = build_tex(md, tmp_path / (md.stem + ".tex")).read_text(encoding="utf-8")
-        assert "\\author{Tal Rubin, Astera Institute}" in tex
+        assert "\\author{Tal Rubin and Damien Scott, Astera Institute}" in tex
 
 
 def test_prepare_widens_table_separators_with_the_content():
