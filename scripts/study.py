@@ -29,7 +29,7 @@ combine values the review ruled mutually inconsistent:
   7), and that burn must fit inside the pulse period at the solved rep
   rate (constraint 8).
 - coil mechanics: the magnetic pressure the compression coil cycles to
-  on every shot, reported on every point as an audit (constraint 9); it
+  on every shot, reported on every point as the coil audit; it
   binds nowhere, because the coil that delivers a granted field is
   neither designed nor priced here.
 
@@ -126,7 +126,7 @@ DD_FRAC_TRITIUM_THRESHOLD = 0.488
 # grows with the bank (constraint 6), the coil account is priced by
 # costingfe at the field (b_center) and the driver account per joule
 # (e_driver_mj), and the magnetic pressure the coil cycles to rises as
-# B^2 (constraint 9, an audit). The field is graded like the rate
+# B^2 (the coil audit). The field is graded like the rate
 # ceiling: the patent's 22 T (config/baseline.yaml) at the design basis
 # and records, 30 T granted in config/tier2.yaml, 40 T in
 # config/tier3.yaml, and the search may use any field at or below a
@@ -141,7 +141,7 @@ _MU0 = 4e-7 * 3.141592653589793
 # and the burn its shot implies (gain / chi x breakeven time) does not.
 GAIN_BASIS = 128.1 / E_DEL_BASIS_MJ
 
-# Constraint 9 (the coil against its own mechanics) is an audit, not a
+# The coil audit (the coil against its own mechanics) is a record, not a
 # bound. Every shot cycles the compression coil from zero to the magnetic
 # pressure B^2/2mu0 (coil_pressure_mpa: 193 MPa at 22 T, 358 at 30 T,
 # 637 at 40 T), 1e9 to 1e10 times over a book life at the rep rate. No
@@ -287,7 +287,7 @@ def burnup_at_field(fwd: dict) -> tuple[float, float]:
 
 def coil_pressure_mpa(b_t: float) -> float:
     """Magnetic pressure B^2/2mu0 [MPa], the stress the compression coil
-    cycles to on every shot (constraint 9, reported, never binding)."""
+    cycles to on every shot (the coil audit, reported, never binding)."""
     return b_t**2 / (2.0 * _MU0) / 1e6
 
 

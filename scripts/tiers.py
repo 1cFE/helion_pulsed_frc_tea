@@ -122,7 +122,7 @@ def devices():
 
 def d_rich_end():
     """The deuterium-rich end of the mix grid (dd_frac 0.85): its best
-    design at each grade under all nine constraints, the rate included,
+    design at each grade under all eight constraints, the rate included,
     priced at both plant sizes beside the device it is compared against
     (at the records grade it is the device), so the writeup can quote what
     He-3 self-sufficiency costs at each grade."""
@@ -200,7 +200,7 @@ if __name__ == "__main__":
         w = csv.DictWriter(f, fieldnames=list(cf[0]))
         w.writeheader()
         w.writerows(cf)
-    print(f"\nthe deuterium-rich end (dd_frac 0.85), best design under all nine constraints:")
+    print(f"\nthe deuterium-rich end (dd_frac 0.85), best design under all eight constraints:")
     print(f"{'design':<36} {'MWe':>5} {'LCOE':>6} {'device':>6} {'B T':>4} {'E MJ':>5} {'yield':>6} {'n_mod':>5} {'ceil':>6} "
           f"{'f_rep':>6} {'burn s':>6} {'duty':>5} {'T M$':>5}  violations")
     for r in cf:

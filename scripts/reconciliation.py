@@ -285,7 +285,7 @@ def analyze(label, spec):
           + ", ".join(f"{b:.0f} T {c:.1f}" for b, c in coil_by_field)
           + "; magnetic pressure "
           + ", ".join(f"{coil_pressure_mpa(b):.0f}" for b, _ in coil_by_field) + " MPa")
-    print(f"  AUDIT coil (constraint 9): {coil_pressure_mpa(b_dev):.0f} MPa "
+    print(f"  AUDIT coil: {coil_pressure_mpa(b_dev):.0f} MPa "
           f"magnetic pressure at {b_dev:.0f} T, cycled from zero every shot, "
           f"{diag['coil_cycles_life']:.1e} times over the {fwd['lifetime_yr']:.0f} yr "
           f"book life at {diag['f_rep_hz']:.2f} Hz; no conductor or case has a "

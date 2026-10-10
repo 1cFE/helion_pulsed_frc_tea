@@ -550,7 +550,7 @@ def test_tritium_burn_floor_constraint(model, base_cfg):
 
 
 def test_the_coil_is_audited_on_every_point_and_bounds_nothing(model):
-    """Constraint 9 is an audit: every point reports the magnetic pressure
+    """The coil audit: every point reports the magnetic pressure
     its coil cycles to on every shot (193 MPa at 22 T, 358 at 30 T, 637
     at 40 T, 995 at 50 T) and the cycles over its book life, and no
     field trips a coil violation at any grade, the basis field's own

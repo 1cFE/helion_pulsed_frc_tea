@@ -10,7 +10,7 @@ bought wall class, per-shot flash energy under tungsten melt, tritium
 plant charged whenever the mix is D-rich, the shot's implied burn (at the
 point's own mix and field) fitting inside the pulse period at the solved
 rep rate (constraint 8); the coil's magnetic pressure is reported on
-every point (constraint 9, an audit that binds nowhere).
+every point (the coil audit, which restricts no design).
 
 The compression field and the driver bank are scanned, graded by the
 evidence ladder. The patent's 22 T burn point and Polaris's sourced 50 MJ
