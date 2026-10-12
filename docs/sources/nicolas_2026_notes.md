@@ -2,7 +2,7 @@
 
 T. Nicolas, C. Goupil, E. Herbert and J. Ball, "The thermodynamics of
 pulsed magneto-inertial fusion," Journal of Fusion Energy 45:24 (2026).
-Reference [16] in the writeup.
+Reference [18] in the writeup.
 
 ## Used in the writeup
 

@@ -2,7 +2,7 @@
 
 J. Slough (MSNW LLC), "A compact fusion reactor based on the staged
 compression of a field reversed configuration," Nuclear Fusion 65 (2025)
-106019, doi 10.1088/1741-4326/ae034d. Reference [22] in the writeup.
+106019, doi 10.1088/1741-4326/ae034d. Reference [24] in the writeup.
 Publisher page read 2026-09-30; the body beyond section 3 was truncated
 in that read, which is why two of the four claims below are marked
 unverified.
