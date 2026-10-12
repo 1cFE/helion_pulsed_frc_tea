@@ -129,10 +129,18 @@ def main():
               f"(n_D {rr[0]['n_d_m3']:.2e} m^-3): D burnup {f_d[0]:.1%} to "
               f"{f_d[1]:.1%}, thermalized in-pulse tritium burn {f_t[0]:.0%} to "
               f"{f_t[1]:.0%}")
+    # Cross-check against Slough 2025 CFR2. The design point (34.8 T, 15 keV,
+    # gain 9.1) sits in the paper's section 4; the abstract's own numbers,
+    # 20-40 MJ of D-T yield from a 3.5 MJ FRC, bracket that gain at 5.7-11.4,
+    # so the check is quoted across the bracket as well as at the point.
     tau_dt = breakeven_time_dt_s(34.8, 15.0)
+    gain_lo, gain_hi = 20.0 / 3.5, 40.0 / 3.5
     print(f"cross-check, Slough 2025 CFR2 (D-T, 34.8 T, 15 keV): breakeven "
           f"{tau_dt*1e3:.2f} ms; gain 9.1 on the FRC energy is a "
-          f"{9.1*tau_dt*1e3:.1f} ms burn, inside the paper's 2 to 5 ms transit")
+          f"{9.1*tau_dt*1e3:.1f} ms burn, inside the paper's 2 to 5 ms transit; "
+          f"the abstract's 20-40 MJ from 3.5 MJ (gain {gain_lo:.1f}-{gain_hi:.1f}) "
+          f"is {gain_lo*tau_dt*1e3:.1f} to {gain_hi*tau_dt*1e3:.1f} ms, "
+          f"inside it across the bracket")
     OUTPUT_DIR.mkdir(exist_ok=True)
     with open(OUTPUT_DIR / "yield_bound.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))

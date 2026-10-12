@@ -244,12 +244,14 @@ audit rather than a constraint and is recorded after the list:
    the plasma-thermal share, of the delivered driver energy at the
    energy density of a beta = 1 plasma and burns at the fusion power
    density of the burn point, so gain <= chi x burn time / breakeven
-   time, with the breakeven time the ratio of those two densities: 86
-   ms at the patent point (22 T, 70 keV, n_D 0.75e22, He3/D 0.158,
+   time, with the breakeven time the ratio of those two densities: 86 ms
+   at the patent point (22 T, 70 keV, n_D 0.75e22, He3/D 0.158,
    Bosch-Hale rates) with thermalized electrons, 3.7 times shorter with
-   electrons held at a tenth of the ion temperature, which the 1 ms
-   ion-electron equilibration time at that density forbids for any burn
-   long enough to matter (Lackner et al. 2026, JFE 45:12; Nicolas et al.
+   electrons held at a tenth of the ion temperature (colder electrons
+   leave room for more ions at the same pressure, and the fusion power
+   goes as the ion density squared), which the 1 ms ion-electron
+   equilibration time at that density forbids for any burn long enough
+   to matter (Lackner et al. 2026, JFE 45:12; Nicolas et al.
    2026, JFE 45:24). The burn point follows the field: at beta = 1 and
    the patent's ion temperature the density scales as B^2 and the
    breakeven time as B^-2 (`study.breakeven_time_at_point_s`), 1.9
