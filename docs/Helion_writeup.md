@@ -8,19 +8,20 @@ energy. It is one of six studies, each taking such a thesis to its
 physically coherent limit and asking how low the levelized cost of
 electricity (LCOE) can be driven.
 
-Direct energy conversion is attractive because it allows a much higher
-conversion efficiency from energy in the plasma to electricity than the
-limit imposed by the working temperature of a conventional working
-fluid. The direct energy conversion system also replaces the
-conventional and expensive turbine island. The best fusion fuel for this
-purpose is deuterium-helium-3 (D-He3), whose fusion energy is carried
-largely by charged particles, and has relatively manageable photon
-emissions at fusion conditions. One of the most efficient physical
-mechanisms for directly interacting with the plasma is inductive
-recovery: a coil-driven magnetic field compresses the plasma, and the
-plasma then expands against that field much as the gas in an engine
-expands against a piston. That is what Helion Energy is building, so
-this work takes Helion's published design and results as its starting
+Direct energy conversion is attractive because its efficiency is not
+tied to the working temperature of a conventional working fluid, so it
+can convert plasma energy to electricity well above what a steam cycle
+reaches. That is not a thermodynamic exemption, and Section 6.4 prices
+the limit it does have. The direct energy conversion system also
+replaces the conventional and expensive turbine island. The best fusion
+fuel for this purpose is deuterium-helium-3 (D-He3), whose fusion energy
+is carried largely by charged particles, and has relatively manageable
+photon emissions at fusion conditions. One of the most efficient
+physical mechanisms for directly interacting with the plasma is
+inductive recovery: a coil-driven magnetic field compresses the plasma,
+and the plasma then expands against that field much as the gas in an
+engine expands against a piston. That is what Helion Energy is building,
+so this work takes Helion's published design and results as its starting
 point and builds the argument on them. Helion's FAQ has projected its
 cost of electricity production at $0.01 per kWh ($10/MWh) "without
 assuming any economies of scale from mass production, carbon credits, or
@@ -824,8 +825,7 @@ describes the machine.
 
 Every number in this work grants Helion's shot. The bounds below sit
 beyond the composite cap of constraint 2, which only stops the two
-conversion efficiencies from being counted twice, and a three-shot
-sequence on Polaris would measure all of them.
+conversion efficiencies from being counted twice.
 
 ### 6.1 The yield bound
 
@@ -849,7 +849,7 @@ gain against the driver is chi rather than 1. The pulsed gain of Nicolas
 et al. [16], fusion energy over plasma energy, is the same ratio against
 their Lawson time.
 
-At the patent point (Section 5), at Bosch-Hale rates, the breakeven burn
+At the patent point (Section 5), at Bosch-Hale rates, the breakeven time
 is 86 ms with thermalized electrons, and 3.7 times shorter if the
 electrons could be held at a tenth of the ion temperature, which
 electron-ion equilibration at that density, about 1 ms, forbids over a
@@ -866,7 +866,7 @@ count (Section 2).
 The bank and the field are scanned rather than pinned at Polaris's
 values, as Kirtley's response to this work recommends [27]. At beta = 1
 the plasma pressure is the magnetic pressure, so at the patent's ion
-temperature the density scales as B^2 and the breakeven burn falls as
+temperature the density scales as B^2 and the breakeven time falls as
 B^-2: 1.9 times shorter at the 30 T extrapolation grant and 3.3 times at
 the 40 T speculation grant. The bank does nothing to the burn a shot of
 a given gain needs, gain / chi x breakeven time, so a larger bank does
@@ -898,16 +898,16 @@ a 0.32 s burn.
 
 ### 6.3 The duty bound
 
-The burn a shot implies must also fit inside the pulse period, since one
-burn section holds one plasmoid and the next shot cannot fire while the
-last is still burning: burn time x repetition rate <= 1, constraint 8,
-with the limit at the hard bound of 1.0 and nothing reserved for
-exhaust, refill and recharge. Because the implied burn is proportional
-to the yield, the product is the module's fusion power over the cap chi
-E_del / breakeven time, and it is evaluated at x_s 0.7, where a
-coil-filling FRC holds half the driver energy. Across the span the
-reading changes with chi (the breakeven times are at the mix each point
-actually burns, recycled He-3 included):
+Constraint 8 requires the implied burn to fit inside the pulse period.
+Because the burn a shot needs is proportional to the shot, that product
+is the module's fusion power in disguise:
+
+    duty = burn time x rate = P_fus / (chi E_del / breakeven time),
+
+whose denominator is the cap the table reads against. It is evaluated at
+x_s 0.7, where a coil-filling FRC holds half the driver energy, and the
+reading moves with chi across the span (the breakeven times are at the
+mix each point actually burns, recycled He-3 included):
 
 | design (1 GWe) | dd_frac | field, bank | breakeven time (ms) | fusion power per module (MW) | cap at x_s 0.7 (MW) | duty at x_s 0.5 / 0.7 / 0.85 |
 |---|---|---|---|---|---|---|
@@ -916,93 +916,89 @@ actually burns, recycled He-3 included):
 | extrapolations | 0.85 | 30 T, 100 MJ | 71 | 607 | 738 | 1.41 / 0.82 / 0.60 |
 | speculation | 0.85 | 40 T, 200 MJ | 39 | 1786 | 2701 | 1.13 / 0.66 / 0.48 |
 
-The records device sits at 100% of the bound at the reference, because
-the search fires it in the fewest modules whose rate fits its burn, and
-the extrapolation and speculation devices at 82 and 66%, because at
-their granted fields the wall binds first. All pass with room at the
-fat-FRC edge, x_s 0.85, and every optimized device would be excluded at
-x_s 0.5, where a thin FRC holds only 30% of the driver energy.
+The records device sits at 100% of the bound at x_s 0.7, because the
+search fires it in the fewest modules whose rate fits its burn, and the
+extrapolation and speculation devices at 82 and 66%, because at their
+granted fields the wall binds first. All pass with room at the fat-FRC
+edge, x_s 0.85, and every optimized device would be excluded at x_s 0.5,
+where a thin FRC holds only 30% of the driver energy.
 
-The cap is a statement about the fusion power one burn section can
-carry, not about the shot alone: the bank raises it in proportion and
-the field as B^2 through the breakeven time. That is twice the bank and
-2.9 times the field at the extrapolation device, four times the bank and
-5.3 times the field at the speculation device, which takes one burn
-section from the records device's 126 MW on the Polaris bank at 22 T to
-2.7 GW: the reason one 30 m module carries the gigawatt there, and the
-wall rather than the duty is what stops it. Because the rate is a design
+The cap is the fusion power one burn section can carry, not a statement
+about the shot alone. The bank raises it in proportion, and the field
+raises it through the breakeven time: 2.9 and 5.3 times at the two
+grants, steeper than the 1.9 and 3.3 of B^2 alone because each device
+also burns a richer recycled mix. Together they take one burn section
+from the records device's 126 MW on the Polaris bank at 22 T to 2.7 GW,
+which is why one 30 m module carries the gigawatt at speculation and the
+wall, not the duty, is what stops it. Because the rate is a design
 choice, the bound excludes no mix; it sets the fewest modules each mix
 needs where it binds.
 
-### 6.4 Driver thermalization
+### 6.4 What the circuit recovers
 
-The same chi bounds the recovery of the driver energy itself. The
-thermalized share can only return through the same expansion channel as
-the fusion heat, at f_pdv, while the model recovers all of it at the
-flat inductive efficiency. The uncaptured loss is worth +1.3 to +3.1
-$/MWh at the extrapolation device across the x_s span, +0.1 to +0.2
-$/MWh at the speculation device (447 MW of circulating driver power
-against the extrapolation device's 948, at a lower price per MWh), and
-order +10 $/MWh at the low-gain Helion device; it is carried in the
-reconciliation bands.
+The same chi bounds the recovery of the driver energy itself: the
+thermalized share can only come back through the expansion channel the
+fusion heat uses, at f_pdv, while the model returns all of it at the
+flat inductive efficiency. Closing that gap costs 1.3 to 3.1 $/MWh at
+the extrapolation device across the x_s span and 0.1 to 0.2 at the
+speculation device, whose 447 MW of circulating driver power sits
+against the extrapolation device's 948 at a lower price per MWh; at the
+low-gain Helion device it is order 10 $/MWh. The reconciliation bands
+carry it.
 
-### 6.5 The expansion-ratio bound
+Constraint 6's cap, 1 - (V_i/V_f)^(2/3), never binds. The compressed
+flux volume grows with the bank and shrinks as B^-2, so it moves only
+from 0.26 m^3 at 50 MJ and 22 T to 0.28 at the extrapolation device's
+100 MJ and 30 T and 0.31 at the speculation device's 200 MJ and 40 T,
+while the chamber it expands into is orders larger: the records device's
+10 m x 0.75 m chamber caps f_pdv at 0.940 and the extrapolation device's
+15 m x 1.5 m at 0.981, both above the 0.80 those grades claim; the
+speculation device's 30 m x 1.5 m caps it at 0.987 against a claimed
+0.947, whose composite 0.95 x 0.947 = 0.90 sits at its cap exactly.
+Geometry therefore permits what every grade claims; what the circuit
+actually returns is the open question, and the published views span 40%
+to 95%.
 
-Constraint 6 caps f_pdv at the adiabatic-stroke bound 1 -
-(V_i/V_f)^(2/3), with V_i = E_del/(B^2/2mu0): about 0.26 m^3 at 50 MJ
-and 22 T, 0.28 m^3 at the extrapolation device's 100 MJ and 30 T, and
-0.31 m^3 at the speculation device's 200 MJ and 40 T, since the bank
-grows the flux volume and the field compresses it as B^-2. Applied per
-point: the records device's 10 m x 0.75 m chamber caps f_pdv at 0.940
-and the extrapolation device's 15 m x 1.5 m at 0.981, both above the
-0.80 those grades claim; the speculation device's 30 m x 1.5 m chamber
-caps it at 0.987, above the stack's claimed 0.947 by 0.04, so the claim
-stands and the composite the device runs at is 0.95 x 0.947 = 0.90, its
-cap exactly.
+The large chamber therefore buys expansion ratio, not merely wall area:
+recovery cannot be improved without more chamber, and the field buys the
+same ratio in less of it, which is part of why the granted fields pay.
 
-The large chamber therefore buys expansion ratio, not merely wall area,
-and recovery cannot be improved without more chamber; the field buys the
-same ratio in less chamber, which is part of why the granted fields pay.
 About a fifth of the expansion work is axial, against the end-field
-gradient [28]; constraint 6 counts the whole volume stroke, as Helion's
-own burn-cycle framework does, and whether the end circuits return that
-fifth is a design question the shot sequence below measures.
+gradient [28]. Constraint 6 counts the whole volume stroke, as Helion's
+own burn-cycle framework does, so the cap credits that fifth to the
+circuit; whether the end circuits return it is a design question, and a
+shot sequence on Polaris would measure it.
+
+### 6.5 What the evidence says about the recovery
 
 The cycle is Diesel-type with an Atkinson over-expansion (burn at
 roughly constant pressure, then expand further than the compression
 stroke), the framing of Helion's own burn-cycle analysis [29], which
 quotes about 60% for a constant-pressure burn and above 90% for optimal
-cycles. Two published figures sit against it. Nicolas et al. [16], whom
-Helion's FAQ cites for recovery "exceeding 95%", give that number only
-as an ideal Carnot-form bound and set it aside on the thin-cycle
-argument. Slough [22], the co-founder whose patent supplies the fuel
-cycle, derives 40% as the most an ejected FRC can return in a
-flux-conserving expansion chamber, where it comes to rest holding 1.5 pV
-of thermal energy against the field it has compressed, and states that
-an FRC does not free-expand. That is his own recovery topology, not the
-discharged compression coil this work's f_pdv assumes, and Kirtley
-rejects the figure as a one-dimensional compression efficiency that
-neither describes Helion's three-dimensional compression and expansion
-nor preserves adiabaticity [27]. It is carried as a risk row rather than
-a cap: at f_pdv 0.4 the extrapolation device reads 42.2 $/MWh (+16.5)
-and the speculation device 16.7 (+6.2). There is no Carnot exemption in
-any of this: cycle form, the compression and expansion ratios, and the
-entropy of the deliberately irreversible merging set the efficiency,
-which is what the composite cap encodes.
+cycles. Two published figures sit against it.
 
-### 6.6 Measurement protocol
+Nicolas et al. [16], whom Helion's FAQ cites for recovery "exceeding
+95%", give that number only as an ideal Carnot-form bound and set it
+aside on the thin-cycle argument. Kirtley cites the same paper for up to
+97.5% particle recovery, depending on the compression ratio [27]; this
+study has not checked that figure, and particle recovery is not the
+expansion-work share f_pdv prices.
 
-A three-shot sequence on Polaris separates the whole chain: a vacuum
-shot measures eta_dec alone; a plasma no-burn shot returns eta_dec[(1 -
-chi) + chi f_pdv], so its deficit against vacuum measures chi(1 -
-f_pdv); a burning shot adds the fusion composite, and its yield reads
-constraint 7 directly. This single protocol prices the composite cap,
-the thermalization share, the shot, and (through the wall budget) the
-rep-rate ceiling; published excluded-flux radii pin chi per shot in the
-interim. It is Helion's own stated proof point: its FAQ defines
-demonstrating electricity from fusion as showing that energy returned to
-a capacitor bank came from fusion-driven expansion "rather than only
-from ordinary inductive coupling in the circuit".
+Slough [22], the co-founder whose patent supplies the fuel cycle,
+derives 40% as the most an ejected FRC can return in a flux-conserving
+expansion chamber, where it comes to rest holding 1.5 pV of thermal
+energy against the field it has compressed, and states that an FRC does
+not free-expand. That is his own recovery topology, not the discharged
+compression coil this work's f_pdv assumes, and Kirtley rejects the
+figure as a one-dimensional compression efficiency that neither
+describes Helion's three-dimensional compression and expansion nor
+preserves adiabaticity [27]. It is carried as a risk row rather than a
+cap: at f_pdv 0.4 the extrapolation device reads 42.2 $/MWh (+16.5) and
+the speculation device 16.7 (+6.2).
+
+Direct recovery is not a Carnot exemption: cycle form, the compression
+and expansion ratios, and the entropy of the deliberately irreversible
+merging set the efficiency, which is what the composite cap encodes.
 
 ## 7. What would reach $10/MWh, and what stands in the way
 
