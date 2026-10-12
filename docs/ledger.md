@@ -502,9 +502,12 @@ other way: the scan spreads neutrons uniformly over the cylinder, but
 the burn is localized near the compression section, whose wall and coils
 see several times the average load on 15-20% of the event value; a
 localized audit would raise the damage adders by very roughly 2x.
-Together with the fission-spectrum 20 dpa edge and the 10x
-helium-per-dpa of 14 MeV neutrons, the adders are probably
-underestimates.
+The devices are also priced at dhe3_f_T = 0, while the closure's floor
+puts 0.16-0.54% of the bred tritium into the pulse: at 14.4x the
+displacement weight of the D-D neutron it stands beside (14.07 MeV
+against DPA_REL_DD x 2.45), that is 2-8% on the dpa rate. Together with
+the fission-spectrum 20 dpa edge and the 10x helium-per-dpa of 14 MeV
+neutrons, the adders are probably underestimates.
 
 **When replacement becomes rebuilding.** Below the interval the
 writeup's Section 5.3 derives, about 5.7 years at the speculation
