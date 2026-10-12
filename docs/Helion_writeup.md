@@ -1002,16 +1002,19 @@ merging set the efficiency, which is what the composite cap encodes.
 
 ## 7. What would reach $10/MWh, and what stands in the way
 
-One device reaches the target, and only as a park. Two controlled sweeps
-at the speculation device (constant gain, constant wall loading, driver
-and chamber scaled with module power) separate module count from plant
-size, scaling the device's own 1 GWe module. **Module count at fixed
-plant size is nearly free**: across a twentyfold range in module size,
-from the device's single 1 GWe module at 10.5 $/MWh through 5 of 250 MWe
-at 11.1 to 21 of 50 MWe at 12.6, the whole spread is 2.1 $/MWh, because
-buildings, supplementary capital, and balance of plant price plant
-totals; the only modularity tax is per-module fixed items, biting below
-about 100 MWe. **Standalone plant size is expensive**:
+One device reaches the target, and only as a park. Two sweeps scale the
+speculation device's own 1 GWe module: one holds the plant at 1 GWe
+while the modules shrink, the other shrinks the plant. Both keep gain
+and wall loading fixed and size driver and chamber to module power.
+
+Module count at fixed plant size is nearly free: 10.5 $/MWh in the
+device's single 1 GWe module, 11.1 in 5 of 250 MWe and 12.6 in 21 of 50
+MWe, a spread of 2.1 across a twentyfold range in module size.
+Buildings, supplementary capital and balance of plant price plant
+totals, so the only modularity tax is per-module fixed items, biting
+below about 100 MWe.
+
+Standalone plant size is expensive:
 
 | plant | LCOE ($/MWh) | $/kW | dominant penalties |
 |---|---|---|---|
@@ -1019,62 +1022,72 @@ about 100 MWe. **Standalone plant size is expensive**:
 | 250 MWe standalone | 18.8 | 2508 | fixed site buildings, staffing^0.5 |
 | 50 MWe standalone | 45.8 | 6782 | O&M 18.0 $/MWh (staffing law), 141 M$ of buildings |
 
-The standalone penalty is about 141 M$ of fixed site buildings
-calibrated on fission-class analogs, the P^0.5 staffing law of the Idaho
-National Laboratory sodium-fast-reactor basis [30], and the absence of
-any fleet-learning term on equipment, so this concept's economics live
-in power parks, and the 50 MWe module of Helion's gigafactory framing
-[4] is a manufacturing choice the model neither rewards nor punishes at
-park scale.
+The standalone penalty is three things: about 141 M$ of fixed site
+buildings calibrated on fission-class analogs, the P^0.5 staffing law of
+the Idaho National Laboratory sodium-fast-reactor basis [30], and the
+absence of any fleet-learning term on equipment.
 
-As a park the full speculation stack reads 8.2 $/MWh at 3 GWe (10.5 at 1
-GWe, 0.5 above the target), 1.8 under it. Three things bring it there.
+This concept's economics therefore live in power parks, where the 50 MWe
+module of Helion's gigafactory framing [4] is a manufacturing choice the
+model neither rewards nor punishes.
+
+As a park the full speculation stack reads 8.2 $/MWh at 3 GWe, 1.8 under
+the target, against 10.5 at 1 GWe, 0.5 above it. Three things bring it
+there.
+
 The first is financing: at the design-basis 7% real cost of capital the
 same machine reads 14.3 $/MWh (17.6 at 1 GWe), so the 3% real cost of
 capital, sovereign-class money with no mechanism behind it, is worth 6.1
-$/MWh at the park, three times the margin under the target. The second
-is the field: at 40 T, an explicit leap that no public source names, the
-park sits 1.2 $/MWh below the best design at the patent's 22 T (9.4) and
-0.4 below the best at the 30 T extrapolation grant (8.6), on a coil
-squeezed by its own field billions of times over a book life, which this
-work neither designs nor prices; at the basis field the park still
-crosses, at 9.4, so the target is reached on the coil the patent point
-already needs, and the field is what takes the margin from 0.6 to 1.8.
-The third is the bank, four times Polaris's and worth 0.1 $/MWh at this field,
-within precision: with the bank at Polaris's value the same stack reads
-8.3 at 3 GWe (10.6 at 1 GWe). The figure moves with the availability it
-is derived at, 8.8 $/MWh at the model default of 0.85 and 8.0 at a
-pinned 0.95. It also grants Helion's gain, as every number here does,
-carries the wall-and-coil replacement of Section 5.3, and fires its
-single burn section at 66% of the duty bound and 99.7% of the panel
-wall's limit, 0.2% under its ceiling. What would take the coherent park
-further, none of it in the evidence base at any grade:
+$/MWh at the park, three times the margin under the target.
 
-- **He-3 at zero cost**: worth 0.1 $/MWh, within precision, at the
-  device's own mix (10.3 at 1 GWe), and 8.3 $/MWh at 1 GWe and 6.2 at 3
-  GWe with the design search re-run at zero price, which moves it to the
-  He-3-rich preset of Section 4. The He-3 price is the whole of the mix:
-  at the ledger's 0.5 M$/kg the park breeds, at zero it buys, and the
-  two read 2.0 $/MWh apart.
-- **Gas-class site and decommissioning analogs** (about 2.0 $/MWh at 1
-  GWe, the whole of the buildings and CAS50 lines): not defensible for
-  this machine, which carries a tritium plant and stores 0.9 tonnes of
-  tritium. The He-3-rich single-module design that would make the case,
-  with no tritium plant and 80 kg stored, reads 12.1 $/MWh at 1 GWe, so
-  it would need the analog and more.
-- **A real fleet-learning term** on equipment, anchored beyond the fleet
-  the nth-of-a-kind (NOAK) constants already assume, or it double
-  counts: the only mechanism that rewards the mass-produced small-unit
-  strategy at all.
+The second is the field. At 40 T, a leap no public source names, the
+park sits 1.2 $/MWh below the best design at the patent's 22 T (9.4) and
+0.4 below the best at the 30 T extrapolation grant (8.6). It still
+crosses at the basis field, so the target is reached on the coil the
+patent point already needs, and what the leap buys is margin, from 0.6
+to 1.8 $/MWh.
+
+The third is the bank, four times Polaris's and worth 0.1 $/MWh at this
+field, within precision: with the bank at Polaris's value the same stack
+reads 8.3 at 3 GWe (10.6 at 1 GWe).
+
+The figure moves with the availability it is derived at, 8.8 $/MWh at
+the model default of 0.85 and 8.0 at a pinned 0.95. It grants Helion's
+gain, as every number here does, and capacitors at 0.1 $/J with a
+1e10-shot life, the entry whose reversion to the 1e8-shot record costs
+36.2 $/MWh at the extrapolation device; it carries the wall-and-coil
+replacement of Section 5.3, and runs a module with no margin left at its
+wall (Section 4). What would take the coherent park further, none of it
+in the evidence base at any grade:
+
+- **He-3 at zero cost.** At the device's own mix it is worth 0.1 $/MWh,
+  within precision (10.3 at 1 GWe). The saving comes only if the design
+  search is re-run at zero price, which switches the optimum to the
+  He-3-rich preset of Section 4: 8.3 $/MWh at 1 GWe and 6.2 at the park,
+  2.0 under the device. The price is what picks the mix, since at the
+  ledger's 0.5 M$/kg the park breeds and at zero it buys.
+- **Gas-class site and decommissioning analogs.** About 2.0 $/MWh at 1
+  GWe, all of it in the buildings and CAS50 lines, and not defensible
+  for a machine carrying a tritium plant and 0.9 tonnes of tritium. The
+  design that would make the case, the He-3-rich single module with no
+  tritium plant and 80 kg stored, reads 12.1 $/MWh, so the analog alone
+  would still leave it above the target.
+- **A real fleet-learning term on equipment**, anchored beyond the fleet
+  the nth-of-a-kind constants already assume, or it double counts. This
+  study prices none, and it is the only mechanism that would reward the
+  mass-produced small-unit strategy.
 - **A field one grade ahead.** The scan prices 50 T beside the 40 T
   grant: the best coherent design there reads 10.2 $/MWh at 1 GWe and
-  7.9 at the park, 0.2 under the device and within precision; the
+  7.9 at the park, within precision of the device at either size. The
   field's worth has nearly run out at this grade, because the wall, not
-  the burn, limits the module. What stands behind every granted field is
-  the same open item: a fatigue basis for a compression coil that holds
-  a force rising as the square of the field, shot after shot for
-  billions of shots, at the patent's 22 T first, which no public source
-  gives and this work does not design.
+  the burn, limits the module.
+
+Behind every granted field, the basis included, stands the same open
+item: the compression coil. Its own field presses on it at 193 MPa at
+the patent's 22 T and 637 MPa at the speculation device's 40 T, from
+zero to full on every shot, about five billion times over an 80 year
+book life. No conductor or case in the public record has a fatigue basis
+at that stress and cycle count, and this work does not design the coil.
 
 ## 8. Conclusions
 
