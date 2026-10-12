@@ -189,9 +189,9 @@ audit rather than a constraint and is recorded after the list:
    C220500, unit-priced rather than anchored: 50 M$ fixed core plus
    0.657 M$ per MW of plant neutron power (a stated definition; the
    100-300 M$ reconciliation band at reference scale brackets it, and
-   given the tonne-class inventory the allowance is more likely low than
-   high). The adders, 118 M$ at Helion's device, 316 at the records
-   device, 180 at the extrapolation device and 143 at speculation, are
+   given the tonne-class inventory the allowance is probably an
+   underestimate). The adders, 118 M$ at Helion's device, 316 at the
+   records device, 180 at the extrapolation device and 143 at speculation, are
    consequences of throughput, not identities; every device sits above
    the threshold. O&M stays at the baseline 27.5, never at an
    "aneutronic" discount. 5. **dhe3_f_T is
@@ -503,8 +503,8 @@ the burn is localized near the compression section, whose wall and coils
 see several times the average load on 15-20% of the event value; a
 localized audit would raise the damage adders by very roughly 2x.
 Together with the fission-spectrum 20 dpa edge and the 10x
-helium-per-dpa of 14 MeV neutrons, the adders are more likely low than
-high.
+helium-per-dpa of 14 MeV neutrons, the adders are probably
+underestimates.
 
 **When replacement becomes rebuilding.** Below the interval the
 writeup's Section 5.3 derives, about 5.7 years at the speculation
@@ -679,7 +679,7 @@ or an explicit leap. See `config/tier3.yaml` for the per-knob notes.
 | b_center | 40 T granted and used (scan: 22, 30, 40; 50 priced as the sensitivity above the grant) | SPECULATION: an explicit leap, nearly twice the patent's 22 T and ten tesla past the extrapolation grant, with no source at any grade; the burn point follows it (density 3.3x the patent's, breakeven time and implied burn 3.3x shorter, per-pulse burnup 3.3x higher). Worth 1.2 $/MWh against the best design at the basis (512 MJ shots at dd_frac 0.70 in two 15 m x 1.5 m modules at 1.67 Hz, 11.6; 9.4 at the park) and 0.4 against the best at 30 T (600 MJ shots at dd_frac 0.70 in a single 30 m x 1.5 m module at 2.82 Hz, 10.9; 8.6 at the park), and 3.2 reverted in the device's own chamber, bank and mix with the ceiling re-solved for the 1.06 s burn the shot needs at 22 T (3 modules at 0.75 Hz). The 50 T sensitivity reads 10.2 (7.9 at the park), 0.2 under the device, on a coil cycled to 995 MPa. The coil that would deliver 40 T is neither designed nor priced (the coil audit: 637 MPa cycled 5.2e9 times), and the model's coil account prices it below the 22 T coil (28.1 against 33.0 M$ in this chamber) |
 | e_driver_mj | 200 MJ (scan: 50, 100, 200) | SPECULATION above the extrapolation grade's doubling: four times Polaris, the top of the grid, so the bank optimum is the grid's edge rather than an interior optimum; worth 0.1 $/MWh at 1 GWe and at the park (the Polaris bank reads 10.6 in 3 modules of 10 m x 1.5 m at 1.97 Hz, 8.3 at 3 GWe; the 100 MJ bank 10.5 in a single 30 m module firing 400 MJ shots at dd_frac 0.70 at 4.18 Hz), since at 40 T the wall, not the burn, limits the module and a larger shot buys fewer modules only until the wall binds |
 | c_cap_allin_per_joule | 0.1 | below the model's own documented range floor; contradicts the derating physics that buys the cap life above |
-| u_he3 | 5e5 $/kg | no fleet-scale He-3 market exists at any price. The DOE Isotope Program's 2011 allocation was 600 $/L to federal and 1,000 $/L to commercial users (CRS R41419), 4.5-7.4 M$/kg, and prices have risen several-fold since: the 2024-2026 transactions are gram-to-kilogram scale at 19-22 M$/kg (Edelgas spot; Interlune's DOE and Maybell Quantum agreements at the commercial price; TAE's Black Moon lunar option undisclosed), with every new entrant building toward the high price. This entry is 9x below the 2011 allocation and 40x below the commercial spot. The breeder section below prices the He-3 each device buys: 2.0 M$/kg at the records grade against the ledger's 2, unexplainable at the Helion device (6.6 co-sited, 7.4 standalone), 0.70 co-sited at the extrapolation grade (1.06 standalone), and 0.20 co-sited at speculation (0.58 standalone) against this entry. The speculation device buys 20 kg/yr at it, 0.1 $/MWh of its 10.5. |
+| u_he3 | 5e5 $/kg | no fleet-scale He-3 market exists at any price. The DOE Isotope Program's 2011 allocation was 600 $/L to federal and 1,000 $/L to commercial users (CRS R41419), 4.5-7.4 M$/kg, and prices have risen several-fold since: the 2024-2026 transactions are gram-to-kilogram scale at 19-22 M$/kg (Edelgas spot; Interlune's DOE and Maybell Quantum agreements at the commercial price; TAE's Black Moon lunar option undisclosed), with every new entrant building toward the high price. This entry is 9x below the 2011 allocation and 40x below the commercial spot. The breeder section below prices the He-3 each device buys: 2.0 M$/kg at the records grade against the ledger's 2, unexplainable at the Helion device (6.6 co-sited, 7.4 standalone), 0.70 co-sited at the extrapolation grade (1.06 standalone), and 0.20 co-sited at speculation (0.58 standalone) against this entry. The speculation device buys 20 kg/yr at it, 0.1 $/MWh of its 10.5. No external route reaches the 20-176 kg/yr these devices would import if they did not breed: US production is about 1 kg/yr from weapons-stockpile tritium decay (CRS R41419, under 8,000 L/yr); the world civilian heavy-water tritium stock of 25-30 kg yields about 1.4 kg/yr as it decays (0.0563/yr on the 12.32 yr half-life); and transmutation using an accelerator, in its own design, DOE/LANL Accelerator Production of Tritium (1,700 MeV x 100 mA CW = 170 MW of beam for 3 kg T/yr; PAC'97 9B003, DOE EIS-0271 1999, decided against in favor of the commercial light water reactor route), would take seven plants and over 1 GW of beam to feed the speculation device alone, so that route fails on energy balance rather than on readiness. The price axis is scanned from zero regardless (`scripts/he3_scan.py`), so any route's best case is already bracketed. |
 | dec_staged_recovery_factor | 0.5 | patent's unquantified "net reduction in cost and size", optimistic edge |
 | c_inv_per_kw_net | 50 $/kW | small lever |
 | multi_unit_labor_factor | 0.80 | small lever |
