@@ -1219,8 +1219,8 @@ Polaris's values (Section 3.2), and his reading of the recovery
 evidence is carried in Section 6.5. This version also requires the burn
 to fit inside the pulse period (constraint 8) and lets each device
 choose its firing rate under its grade's ceiling. Together these changed
-the optimized designs more than their cost: against the [30 September
-2026 version](https://github.com/1cFE/helion_pulsed_frc_tea/blob/7957bbba1417a6f6ccbc1d7008c7e6ff2994cdc1/docs/Helion_writeup.md),
+the optimized designs more than their cost: against [the first published
+version](https://github.com/1cFE/helion_pulsed_frc_tea/blob/7957bbba1417a6f6ccbc1d7008c7e6ff2994cdc1/docs/Helion_writeup.md),
 the extrapolation and speculation devices read 25.7 and
 10.5 $/MWh at 1 GWe (from 26.8 and 10.6), and the speculation park 8.2
 $/MWh at 3 GWe (from 8.4). The Helion's-requirements device moved from
