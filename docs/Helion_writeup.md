@@ -1228,10 +1228,10 @@ the extrapolation and speculation devices read 25.7 and
 $/MWh at 3 GWe (from 8.4). The Helion's-requirements device moved from
 111.0 to 105.9 $/MWh for a separate reason: its book life was raised
 from 30 to 60 years to match the records device. Tal Rubin's work on
-this revision was funded under the Astera Institute open science grant
-to Borealis Fusion. This revision is archived at
-<https://doi.org/10.5281/zenodo.24146969>; the version as published
-remains archived at <https://doi.org/10.5281/zenodo.23076727>.
+this revision was supported by Borealis Fusion. This revision is
+archived at <https://doi.org/10.5281/zenodo.24146969>; the version as
+published remains archived at
+<https://doi.org/10.5281/zenodo.23076727>.
 
 ## Conflict of interest
 
