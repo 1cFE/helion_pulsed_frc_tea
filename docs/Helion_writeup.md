@@ -1212,9 +1212,11 @@ financing ladder, and fail loudly if the model moves under this work.
 ## Acknowledgements
 
 We thank David Kirtley, Helion's co-founder and CEO, for his engagement
-with this work <https://x.com/dkirtley/status/2107277032015253549>,
-which this version reflects. Following his response, the compression
-field and the driver bank are graded by evidence rather than held at
+with this work on 5 October 2026
+<https://x.com/dkirtley/status/2107277032015253549>, which this
+version, revised 11 November 2026, reflects. Following his response,
+the compression field and the driver bank are graded by evidence
+rather than held at
 Polaris's values (Section 3.2), and his reading of the recovery
 evidence is carried in Section 6.5. This version also requires the burn
 to fit inside the pulse period (constraint 8) and lets each device
@@ -1225,12 +1227,17 @@ the extrapolation and speculation devices read 25.7 and
 10.5 $/MWh at 1 GWe (from 26.8 and 10.6), and the speculation park 8.2
 $/MWh at 3 GWe (from 8.4). The Helion's-requirements device moved from
 111.0 to 105.9 $/MWh for a separate reason: its book life was raised
-from 30 to 60 years to match the records device.
+from 30 to 60 years to match the records device. Tal Rubin's work on
+this revision was funded under the Astera Institute open science grant
+to Borealis Fusion. This revision is archived at
+<https://doi.org/10.5281/zenodo.24146969>; the version as published
+remains archived at <https://doi.org/10.5281/zenodo.23076727>.
 
 ## Conflict of interest
 
-Tal Rubin and Damien Scott are co-founders of a proton-boron-11 fusion
-startup.
+Tal Rubin and Damien Scott are co-founders of Borealis Fusion, a
+company developing proton-boron-11 fusion. Astera Institute is an
+investor in Borealis Fusion.
 
 ## References
 
