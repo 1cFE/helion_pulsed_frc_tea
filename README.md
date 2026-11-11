@@ -160,3 +160,12 @@ python3 -m pytest ../tests # closure, config-integrity, ladder regression
 ```
 
 Outputs (CSV + console tables) land in `outputs/`, which is gitignored.
+
+## Licensing
+
+The code in this repository is released under the [MIT license](LICENSE).
+The documents and figures in `docs/` are released under
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), per Astera's
+[open science policy](https://astera.org/open-science-policy/). The
+third-party source captures in `docs/sources/` remain their authors'
+and are reproduced for documentation.
